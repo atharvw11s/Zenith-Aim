@@ -1,22 +1,5 @@
-/* ================================================================
-   AimRivals — script.js  v2
-   Real scenario DB · 3D Warmup Games (Three.js) ·
-   Dual-dropdown Sens + FOV converters · Routine Engine
-   ================================================================ */
 'use strict';
 
-/* ═══════════════════════════════════════════════════════════════
-   REAL SCENARIO DATABASE  v3
-   ─────────────────────────────────────────────────────────────
-   AIMLABS:  Voltaic S3 benchmark names (VT ... S3) + classic
-             built-in Aimlabs tasks. Search by exact name in-app.
-             S3 sources: aimlab-stats.com, voltaic S2 Steam WS
-             (S3 appends difficulty level to name).
-
-   KOVAAK'S: Voltaic S5 benchmark names (VT ... S5) + classic
-             community scenarios. Search by exact name in-app.
-             S5 sources: blog.voltaic.gg KovaaK's S5 post.
-   ═══════════════════════════════════════════════════════════════ */
 const SCENARIO_DB = {
   aimlabs: {
     tracking: [
