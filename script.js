@@ -1,399 +1,242 @@
+/* ================================================================
+   AimRivals — script.js  v2
+   Real scenario DB · 3D Warmup Games (Three.js) ·
+   Dual-dropdown Sens + FOV converters · Routine Engine
+   ================================================================ */
 'use strict';
 
+/* ═══════════════════════════════════════════════════════════════
+   REAL SCENARIO DATABASE  v3
+   ─────────────────────────────────────────────────────────────
+   AIMLABS:  Voltaic S3 benchmark names (VT ... S3) + classic
+             built-in Aimlabs tasks. Search by exact name in-app.
+             S3 sources: aimlab-stats.com, voltaic S2 Steam WS
+             (S3 appends difficulty level to name).
+
+   KOVAAK'S: Voltaic S5 benchmark names (VT ... S5) + classic
+             community scenarios. Search by exact name in-app.
+             S5 sources: blog.voltaic.gg KovaaK's S5 post.
+   ═══════════════════════════════════════════════════════════════ */
 const SCENARIO_DB = {
   aimlabs: {
+    /* ── TRACKING ─────────────────────────────────────────────────── */
     tracking: [
-      {
-        name: 'VT Spheretrack Novice S3',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 entry-level precise tracking. Single sphere moves predictably — lock on early and ride it.'
-      },
-      {
-        name: 'VT Pilltrack Novice S3',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 reactive tracking at beginner level. Pill-shaped target gives a bigger surface — stay centered.'
-      },
-      {
-        name: 'VT Shifttrack Novice S3',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 precise tracking novice tier. Focus on keeping the crosshair centered without over-correcting.'
-      },
-      {
-        name: 'VT Shifttrack Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 precise tracking intermediate. Unpredictable shifts — stay locked with controlled corrections.'
-      },
-      {
-        name: 'VT Verttrack Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 precise tracking with vertical emphasis. Engage your elbow — wrist alone won\'t cut it here.'
-      },
-      {
-        name: 'VT Quaketrack Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 reactive tracking intermediate. Fast erratic target movement — reaction speed tested hard.'
-      },
-      {
-        name: 'VT Steadytrack Advanced S3',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 control tracking advanced. Smooth deliberate movement — no overcorrection, breathe through it.'
-      },
-      {
-        name: 'VT Verttrack Advanced S3',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 advanced precise tracking. Full vertical movement — demands full arm control and relaxed grip.'
-      },
-      {
-        name: 'VT Quaketrack Advanced S3',
-        difficulty: ['advanced'],
-        duration: 5, sets: 5,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 elite reactive tracking. Fast, chaotic movement — top-tier arm control required.'
-      },
+      /* BEGINNER */
+      { name: 'VT Spheretrack Novice S3',   difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Smooth single-sphere tracking. Lock on early and ride the movement — no over-correction.' },
+      { name: 'VT Pilltrack Novice S3',     difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Pill-shaped target gives a bigger surface. Stay centered on the body, not the edges.' },
+      { name: 'VT Shifttrack Novice S3',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Precise tracking with small positional shifts. Resist micro-corrections — stay locked.' },
+      { name: 'VT Verttrack Novice S3',     difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Vertical tracking emphasis. Engage your elbow slightly — pure wrist will tire fast.' },
+      { name: 'VT Controltrack Novice S3',  difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Control-focused tracking at novice pace. Smoothness over reaction speed here.' },
+      { name: 'Smoothtrack',               difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Classic Aimlabs smooth tracking. No sudden changes — build the habit of constant contact.' },
+      { name: 'Bouncetrack',               difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Target bounces at predictable angles. Anticipate the bounce direction rather than reacting late.' },
+      { name: 'Sidetrack Hard',            difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Horizontal strafing target. Lock your Y axis and focus purely on the left-right movement.' },
+      { name: 'VT Spheretrack Novice S3',   difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Repeat for consistency. Aim for the same score on every run — consistency beats one good run.' },
+
+      /* INTERMEDIATE */
+      { name: 'VT Shifttrack Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster unpredictable shifts. Stay locked through each direction change without chasing.' },
+      { name: 'VT Verttrack Intermediate S3',    difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Full vertical movement at intermediate pace. Use your arm — wrist alone breaks down here.' },
+      { name: 'VT Quaketrack Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Fast erratic reactive tracking. Let your hand be loose — tension = lag behind the target.' },
+      { name: 'VT Jettrack Intermediate S3',     difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Quick lateral bursts. Pre-aim the direction then smooth out — don\'t chase the burst.' },
+      { name: 'VT Controltrack Intermediate S3', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Deliberate control tracking. Breathe — this punishes over-correction harder than under.' },
+      { name: 'VT Steadytrack Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Steady continuous motion. Maintain a fluid stroke — no twitching, no hesitation.' },
+      { name: 'VT Pilltrack Intermediate S3',    difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster pill target. Center-mass focus — wider hitbox doesn\'t mean you can be sloppy.' },
+      { name: 'Multitrack',                     difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Switch between multiple tracked targets. Prioritize the one moving fastest toward you.' },
+      { name: 'Ground Plaza Track',             difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Ground-level tracking with depth changes. React to Z-axis movement, not just X/Y.' },
+
+      /* ADVANCED */
+      { name: 'VT Steadytrack Advanced S3',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite control tracking. No overcorrection. Breathe through it — tense arms fail here.' },
+      { name: 'VT Verttrack Advanced S3',     difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Full vertical at advanced speed. Demand full arm engagement and relaxed grip.' },
+      { name: 'VT Quaketrack Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite reactive tracking. Fast, chaotic — top-tier arm control required.' },
+      { name: 'VT Jettrack Advanced S3',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Lightning burst tracking. Anticipation is the skill — reaction alone is too slow.' },
+      { name: 'VT Controltrack Advanced S3',  difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced control tracking. Precision over speed — micro-corrections must be invisible.' },
+      { name: 'VT Shifttrack Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Maximum shift variance. Position your crosshair slightly ahead of where the target will be.' },
+      { name: 'VT Pilltrack Advanced S3',     difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Fast pill tracking at elite level. Sustain perfect center-mass contact the whole run.' },
+      { name: 'VT Sphereswitch Advanced S3',  difficulty: ['advanced'], duration: 5, sets: 5, tip: 'High-speed sphere targets. Split-second acquisition followed by smooth hold.' },
+      { name: 'VT Jettrack Advanced S3',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite burst tracking. Anticipation is the only skill that works — reaction alone is too slow.' },
     ],
+
+    /* ── FLICKING (CLICKING) ─────────────────────────────────────── */
     flicking: [
-      {
-        name: 'VT Angleshot Novice S3',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 dynamic clicking for beginners. Diagonally-moving targets — read the trajectory before clicking.'
-      },
-      {
-        name: 'VT Sixshot Novice S3',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 static clicking for beginners. Six medium targets — focus on clean direct flicks, not speed.'
-      },
-      {
-        name: 'Gridshot Ultimate',
-        difficulty: ['beginner', 'intermediate', 'advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: false,
-        link: null,
-        tip: 'The most iconic Aimlabs scenario. Single-click habits first — accuracy unlocks speed, not the other way.'
-      },
-      {
-        name: 'Microshot',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: false,
-        link: null,
-        tip: 'Small static targets. Slow down — wrist isolation only, let your arm be still.'
-      },
-      {
-        name: 'VT Waveshot Novice S3',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 dynamic clicking novice. Bots leap and arc — time your click at the apex, don\'t panic-spray.'
-      },
-      {
-        name: 'VT Angleshot Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 dynamic clicking intermediate. Steeper diagonal angles — commit the flick, no hesitation.'
-      },
-      {
-        name: 'VT Wideshot Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 static clicking intermediate. Wide spawns punish low sens — use full arm on far targets.'
-      },
-      {
-        name: 'VT Frogshot Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 linear clicking. Targets strafe predictably in straight lines — smooth approach, then snap.'
-      },
-      {
-        name: 'VT Quadshot Advanced S3',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 static clicking advanced. Four tight targets — maximum precision, zero spray tolerance.'
-      },
-      {
-        name: 'VT Floatshot Advanced S3',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 linear clicking advanced. Floating, gradually-moving targets — control the micro-adjustments.'
-      },
+      /* BEGINNER */
+      { name: 'VT Angleshot Novice S3',   difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Diagonal-moving targets. Read the trajectory before clicking — don\'t react, predict.' },
+      { name: 'VT Sixshot Novice S3',     difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Six medium static targets. Clean direct flicks, not speed — accuracy unlocks speed.' },
+      { name: 'VT Waveshot Novice S3',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Arcing wave-motion targets. Time your click at the apex of the arc, not mid-jump.' },
+      { name: 'VT Quadshot Novice S3',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Four medium targets randomly placed. Flick directly — no spray-and-pray.' },
+      { name: 'VT Wideshot Novice S3',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Wide-spawn static targets. Use arm movement on far targets — don\'t overextend wrist.' },
+      { name: 'VT Frogshot Novice S3',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Targets strafe in straight lines. Smooth approach then snap — don\'t over-flick.' },
+      { name: 'Gridshot Ultimate',        difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Iconic Aimlabs scenario. Accuracy-first — a clean miss wastes more time than a slow hit.' },
+      { name: 'Microshot',               difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Small static targets. Slow down — wrist isolation only, keep your arm still.' },
+      { name: 'Spidershot 180',          difficulty: ['beginner'], duration: 5, sets: 3, tip: '180-degree wide spawns. Build the habit of using your whole arm on distant targets.' },
+
+      /* INTERMEDIATE */
+      { name: 'VT Angleshot Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Steeper diagonal angles. Commit the flick fully — hesitation causes micro-corrections.' },
+      { name: 'VT Waveshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster wave arcs. Read the peak early and pre-aim — don\'t chase the target mid-jump.' },
+      { name: 'VT Wideshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Wider spawns at intermediate speed. Full arm on far targets, wrist only for close ones.' },
+      { name: 'VT Frogshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster linear clicking. Smooth approach to each target, then snap precisely.' },
+      { name: 'VT Floatshot Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Gradually floating targets. Control the micro-adjustments — don\'t over-flick on slow movers.' },
+      { name: 'VT Fiveshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Five medium targets at intermediate pace. Build a consistent rhythm between flicks.' },
+      { name: 'VT Quadshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Tighter four-target spread. Maximum precision — zero spray tolerance.' },
+      { name: 'Multishot 180',               difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Rapid wide-angle static targets. Identify clusters — clear nearest first then work outward.' },
+      { name: 'VT Popshot Novice S3',          difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Popping targets that appear suddenly. React fast but don\'t muscle-memory the spawn point.' },
+
+      /* ADVANCED */
+      { name: 'VT Angleshot Advanced S3',  difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite dynamic clicking. Zero hesitation — commit every flick and own the miss if it happens.' },
+      { name: 'VT Popshot Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Maximum reaction dynamic clicking. Eyes lead, hand follows — never the other way.' },
+      { name: 'VT Quadshot Advanced S3',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Four tight targets — pure precision at elite pace. Any spray is a failed run.' },
+      { name: 'VT Wideshot Advanced S3',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Wide advanced spawns. Full arm mechanics demanded — no compensation with wrist.' },
+      { name: 'VT Frogshot Advanced S3',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Fast linear advanced. Smooth acceleration into each target — no abrupt jerks.' },
+      { name: 'VT Floatshot Advanced S3',  difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Floating targets at elite speed. Micro-adjustment mastery — overshooting = failed click.' },
+      { name: 'VT Waveshot Advanced S3',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Max-speed wave clicking. Read the arc, pre-aim the apex — pure timing and accuracy.' },
+      { name: 'Sixshot Micro',            difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Six tiny targets. Slowdown is allowed — accuracy at small sizes builds elite precision.' },
+      { name: 'VT Popshot Advanced S3',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Pop-style elite dynamic clicking. Eyes lead, hand follows — the click is already decided.' },
     ],
+
+    /* ── SWITCHING ───────────────────────────────────────────────── */
     switching: [
-      {
-        name: 'VT Arcswitch Novice S3',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 speed switching for beginners. Bouncing targets in an arc — flick to the nearest one each time.'
-      },
-      {
-        name: 'VT Sphereswitch Novice S3',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 evasive switching for beginners. Moving sphere targets — track briefly then commit each switch.'
-      },
-      {
-        name: 'VT Pokeswitch Novice S3',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 speed switching novice. Poke at targets rapidly — build decisiveness and flick momentum.'
-      },
-      {
-        name: 'VT Temposwitch Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 speed switching intermediate. Keep momentum — find a rhythm and never pause between switches.'
-      },
-      {
-        name: 'VT Skyswitch Intermediate S3',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 evasive switching. Airborne targets that move unpredictably — eyes lead the flick every time.'
-      },
-      {
-        name: 'VT Boltswitch Advanced S3',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 evasive switching advanced. Targets dash fast — acquire immediately, no hesitation.'
-      },
-      {
-        name: 'VT Leapswitch Advanced S3',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S3 stability switching advanced. Requires smooth, controlled flicks — precision over raw speed.'
-      },
-    ]
+      /* BEGINNER */
+      { name: 'VT Arcswitch Novice S3',     difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Bouncing arc targets. Flick to the nearest one each time — don\'t plan ahead too far.' },
+      { name: 'VT Sphereswitch Novice S3',  difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Moving sphere targets. Brief track then commit the switch — don\'t hover.' },
+      { name: 'VT Pokeswitch Novice S3',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Rapid poke switching. Build decisiveness — the moment you see the next target, go.' },
+      { name: 'VT Smoothswitch Novice S3',  difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Smooth transition switching. Controlled flicks between targets — don\'t rush, find rhythm.' },
+      { name: 'VT Pillswitch Novice S3',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Pill-target switching. Wider targets let you focus on the switch timing rather than precision.' },
+      { name: 'Multitarget Switch',        difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Classic multi-target format. Click-click-click rhythm. Don\'t camp on any single target.' },
+      { name: 'VT Arcswitch Intermediate S3', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Slightly faster arcs. Momentum carries between switches — use it, don\'t fight it.' },
+      { name: 'Reflex Switch',             difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Reaction-focused switching. Eyes move before hands — train the visual lead.' },
+      { name: 'Sixshot Switch',            difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Switch between six arranged targets. Build a mental map of the layout early.' },
+
+      /* INTERMEDIATE */
+      { name: 'VT Temposwitch Intermediate S3', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Maintain momentum — find a rhythm and never pause between switches.' },
+      { name: 'VT Skyswitch Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Airborne targets that move unpredictably. Eyes always lead the flick.' },
+      { name: 'VT Dartswitch Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Fast darting targets. Acquire the trajectory early — don\'t chase from behind.' },
+      { name: 'VT Smoothswitch Intermediate S3',difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Smooth precise switching. Controlled arc between targets — zero wasted motion.' },
+      { name: 'VT Pokeswitch Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster poke pace. Decisiveness is the skill — see target, go immediately.' },
+      { name: 'VT Sphereswitch Intermediate S3',difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Moving spheres at intermediate speed. Track briefly, switch cleanly — don\'t linger.' },
+      { name: 'VT Boltswitch Novice S3',        difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Intro to bolt-style fast switching. Acquire immediately on spawn — pre-aim common areas.' },
+      { name: 'Spidershot Switch',             difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Wide-angle switching. Arm movement between far targets — don\'t drag with wrist only.' },
+      { name: 'VT Leapswitch Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Leaping targets at intermediate difficulty. Smooth, controlled flicks over raw speed.' },
+
+      /* ADVANCED */
+      { name: 'VT Boltswitch Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite evasive switching. Targets dash fast — immediate acquisition, zero hesitation.' },
+      { name: 'VT Leapswitch Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced stability switching. Precision over raw speed — smooth flicks only.' },
+      { name: 'VT Temposwitch Advanced S3',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite speed switching. Maximum momentum maintenance — dead time between targets = lost score.' },
+      { name: 'VT Dartswitch Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced evasive darters. Read trajectory on spawn — chasing from behind fails at this speed.' },
+      { name: 'VT Smoothswitch Advanced S3',  difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite stability switching. Invisible micro-corrections and perfect arc transitions.' },
+      { name: 'VT Skyswitch Advanced S3',     difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced airborne targets. 3D prediction demanded — your eyes must arrive before your cursor.' },
+      { name: 'VT Pokeswitch Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Maximum-speed poke switching. Instant commitment on every target — no second-guessing.' },
+      { name: 'VT DartTS Advanced S3',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Darting targets at advanced pace. Read trajectory on spawn — chasing from behind fails.' },
+      { name: 'VT Pillswitch Advanced S3',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced pill switching at elite pace. Center-mass every switch — no edge-grazing.' },
+    ],
   },
 
   kovaaks: {
+    /* ── TRACKING ─────────────────────────────────────────────────── */
     tracking: [
-      {
-        name: 'Smoothbot',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: false,
-        link: null,
-        tip: 'The classic KovaaK\'s foundation scenario. Smooth, predictable movement — build your tracking base here.'
-      },
-      {
-        name: 'VT Snake Track Novice S5',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 precise tracking novice. Thin target strafes and accelerates — learn to read speed changes.'
-      },
-      {
-        name: 'VT PGT Novice S5',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 Precise Goated Tracking. Targets arc smoothly — stay locked on the arc without over-aiming.'
-      },
-      {
-        name: 'VT Ground Intermediate S5',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 reactive tracking. Ground-level horizontal strafes at varied speeds — react to direction changes.'
-      },
-      {
-        name: 'VT Snake Track Intermediate S5',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 precise tracking intermediate. Faster acceleration/deceleration on the snake — stay smooth.'
-      },
-      {
-        name: 'VT Aether Intermediate S5',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 reactive tracking intermediate. Aerial XYZ movement with fast direction changes — arms stay fluid.'
-      },
-      {
-        name: 'VT Aether Advanced S5',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 reactive tracking. Aerial XYZ movement — fast direction changes demand full arm engagement.'
-      },
-      {
-        name: 'VT Raw Control Advanced S5',
-        difficulty: ['advanced'],
-        duration: 5, sets: 5,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 control tracking. XYZ-axis strafe with smooth changes — precision and patience over reaction.'
-      },
+      /* BEGINNER */
+      { name: 'Smoothbot',              difficulty: ['beginner'], duration: 5, sets: 3, tip: 'The KovaaK\'s tracking foundation. Smooth, predictable movement — build your base here.' },
+      { name: 'VT Snake Track Novice S5', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Thin target strafes and accelerates. Learn to read speed changes, not just direction.' },
+      { name: 'VT PGT Novice S5',       difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Precise Goated Tracking. Targets arc smoothly — stay locked on the arc without over-aiming.' },
+      { name: 'Floating Point V2',      difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Classic floating tracking. Let the target come to you — over-chasing is the main mistake.' },
+      { name: 'controlsphere002',       difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Small sphere reactive tracking. Stay centered — the sphere will drift if you let tension in.' },
+      { name: 'VT Ground Novice S5',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Ground-level horizontal strafes. Focus on matching speed — not just following direction.' },
+      { name: 'Polygon S1',            difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Multi-angle polygon tracking. Read each new wall before it arrives — predict, don\'t react.' },
+      { name: 'Air Angelic 4',         difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Aerial smooth tracking. Loosen grip — tight grip causes oscillation on smooth targets.' },
+      { name: 'VT Pilltrack Novice S5', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Pill-shaped novice target. Aim center-mass — the pill shape rewards proper technique.' },
+
+      /* INTERMEDIATE */
+      { name: 'VT Ground Intermediate S5',       difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Ground-level horizontal strafes with varied speeds. React to direction changes early.' },
+      { name: 'VT Snake Track Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster acceleration and deceleration on the snake path. Stay smooth through speed changes.' },
+      { name: 'VT Aether Intermediate S5',       difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Aerial XYZ movement with fast direction changes. Arms stay fluid — no tension.' },
+      { name: 'VT PGT Intermediate S5',          difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Intermediate precise tracking. Arcs become tighter — lead position slightly ahead.' },
+      { name: 'smoothbot2',                     difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster smoothbot variant. The speed increase exposes any tension in your grip.' },
+      { name: 'Rasp',                           difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Reactive tracking on an unpredictable bot. Embrace the jitter — stay on it regardless.' },
+      { name: 'VT Raw Control Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Control tracking with XYZ axis. Patience — smooth corrections only, no over-chasing.' },
+      { name: 'Parabolic',                      difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Parabolic motion tracking. Anticipate the arc peak and pre-position your crosshair there.' },
+      { name: 'Air Angelic 4 - Hard',           difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Harder aerial tracking. Engage elbow on vertical movement — wrist alone will lose it.' },
+
+      /* ADVANCED */
+      { name: 'VT Aether Advanced S5',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Full XYZ reactive tracking. Fast direction changes demand full arm engagement throughout.' },
+      { name: 'VT Raw Control Advanced S5', difficulty: ['advanced'], duration: 5, sets: 5, tip: 'XYZ-axis control tracking. Precision and patience — smooth corrections are the whole game.' },
+      { name: 'VT Ground Advanced S5',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Maximum-speed ground strafes. React before the direction change completes — not after.' },
+      { name: 'VT Snake Track Advanced S5', difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite snake track speed. Speed reading is the skill — your arm must already know where it\'s going.' },
+      { name: 'pokeball_hard',             difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Hard reactive tracking with evasive movement. Stay composed — panic leads to over-correction.' },
+      { name: 'Air Angelic 4 - Insane',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite aerial tracking. Loose grip + full arm control = the only way to survive this.' },
+      { name: 'VT PGT Advanced S5',        difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced precise goated tracking. Every micro-correction visible — keep them invisible.' },
+      { name: 'Voltaic Tracking Combo',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Mixed tracking demands. Adapt quickly between smooth and reactive phases within one run.' },
+      { name: 'B180T',                    difficulty: ['advanced'], duration: 5, sets: 5, tip: '180-degree reactive tracking. Fast turns — loosen grip completely and let the arm follow.' },
     ],
+
+    /* ── FLICKING (CLICKING) ─────────────────────────────────────── */
     flicking: [
-      {
-        name: '1wall5targets_pasu',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: false,
-        link: null,
-        tip: 'The classic KovaaK\'s pasu scenario. Diagonally-moving targets — timing and flick accuracy above all.'
-      },
-      {
-        name: 'VT Pasu Novice S5',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 dynamic clicking novice. Pasu diagonals — acquire the target, time the click cleanly.'
-      },
-      {
-        name: 'VT Popcorn Novice S5',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 dynamic clicking. Targets leap and arc — prioritize center targets, read jump patterns early.'
-      },
-      {
-        name: 'VT ww5t Intermediate S5',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 wide-wall static clicking. Wide spawns force full arm flicks — accuracy and speed balanced.'
-      },
-      {
-        name: 'VT Pasu Intermediate S5',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 dynamic clicking intermediate. Harder pasu angles — commit the flick, zero hesitation.'
-      },
-      {
-        name: 'VT Floating Heads Advanced S5',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 linear clicking advanced. Head-sized targets strafe horizontally — smooth approach, precise timing.'
-      },
-      {
-        name: 'VT 1wxts Advanced S5',
-        difficulty: ['advanced'],
-        duration: 5, sets: 5,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 static clicking advanced. Small static targets in diamond pattern — pure precision flicking.'
-      },
+      /* BEGINNER */
+      { name: '1wall5targets_pasu',   difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Classic KovaaK\'s pasu. Diagonally-moving targets — timing and flick accuracy above all.' },
+      { name: 'VT Pasu Novice S5',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Pasu diagonals at novice pace. Acquire the target, time the click cleanly — no spray.' },
+      { name: 'VT Popcorn Novice S5', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Targets leap and arc. Prioritize center targets, read jump patterns early.' },
+      { name: 'VT Tile Frenzy Novice S5',  difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Static tile targets in a grid. Direct flicks, no hesitation — build clean habits.' },
+      { name: 'FuglaaXYZ',           difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Classic dynamic clicking. Track briefly then snap — don\'t fire until confident.' },
+      { name: 'Close Fast Strafes',  difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Close-range strafing targets. Short sharp flicks — don\'t use arm on close targets.' },
+      { name: 'Patchwerk Atlas',     difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Mixed target sizes on a wall. Prioritize small targets — they punish flick inaccuracy most.' },
+      { name: '6 sphere easy',       difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Six easy static spheres. Accuracy drill — take your time, land every click cleanly.' },
+      { name: 'VT 1wtsphere Novice S5', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'One-wall target sphere switching and clicking. Good intro to combined skills.' },
+
+      /* INTERMEDIATE */
+      { name: 'VT ww5t Intermediate S5',      difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Wide-wall static clicking. Wide spawns force full arm flicks — accuracy and speed balanced.' },
+      { name: 'VT Pasu Intermediate S5',      difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Harder pasu angles. Commit the flick fully — zero hesitation.' },
+      { name: 'VT Popcorn Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster popcorn arcs. Read the peak early and pre-aim — don\'t mid-arc chase.' },
+      { name: 'VT Tile Frenzy Intermediate S5', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster tile switching. Build speed without breaking accuracy — clean > fast.' },
+      { name: 'Air No Drift',                 difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Aerial static targets at mid-range. Arm movement required — lock position before clicking.' },
+      { name: 'FuglaaXYZ Hard',              difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Harder dynamic clicking. Speed of acquisition is tested — read trajectory on spawn.' },
+      { name: 'Patchwerk Atlas 2',           difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Harder mixed-size wall clicking. Small target accuracy is the bottleneck here.' },
+      { name: '1wall6targets_pasu',          difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Six pasu targets on one wall. More targets means faster cycling — don\'t slow between flicks.' },
+      { name: 'VT 1wtsphere Intermediate S5', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Intermediate sphere clicking. Center-mass every flick — edge hits waste time.' },
+
+      /* ADVANCED */
+      { name: 'VT Floating Heads Advanced S5', difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Head-sized targets strafe horizontally. Smooth approach, precise timing — no over-flick.' },
+      { name: 'VT 1wxts Advanced S5',         difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Small static targets in a diamond. Pure precision flicking — size punishes every error.' },
+      { name: 'VT ww5t Advanced S5',          difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced wide-wall clicking. Full arm on far targets, perfect accuracy demanded.' },
+      { name: 'VT Pasu Advanced S5',          difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite pasu pace. Zero tolerance for late clicks — pre-aim the diagonal path.' },
+      { name: 'VT Popcorn Advanced S5',       difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite arc clicking. Read every jump on spawn — pre-aim the apex before the bot leaves ground.' },
+      { name: 'Smoothbot Goated',            difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced tracking-style clicking. Smooth entry into each target then snap — no abrupt motion.' },
+      { name: 'Air No Drift Hard',           difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite aerial clicking. Lock arm position before firing — any movement on click = miss.' },
+      { name: 'VT Tile Frenzy Advanced S5',  difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Maximum-speed tile clicking. Perfect rhythm — any micro-pause is a lost point.' },
+      { name: 'Close Fast Strafes Hard',   difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite close-range strafing targets. Explosive wrist snaps — arm stays locked in position.' },
     ],
+
+    /* ── SWITCHING ───────────────────────────────────────────────── */
     switching: [
-      {
-        name: 'VT DotTS Novice S5',
-        difficulty: ['beginner'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 speed switching novice. Hold left click throughout — static dot targets on wide wall.'
-      },
-      {
-        name: 'VT EddieTS Novice S5',
-        difficulty: ['beginner', 'intermediate'],
-        duration: 5, sets: 3,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 speed switching. Diagonally-moving greeble targets — regular, predictable movement. Find the rhythm.'
-      },
-      {
-        name: 'VT DriftTS Intermediate S5',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 evasive switching. Targets constantly accelerate and decelerate — micro-correct after each acquire.'
-      },
-      {
-        name: 'VT FlyTS Intermediate S5',
-        difficulty: ['intermediate'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 evasive switching. XYZ-movement targets — harder to read, stay calm and track briefly before clicking.'
-      },
-      {
-        name: 'VT ControlTS Advanced S5',
-        difficulty: ['advanced'],
-        duration: 5, sets: 4,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 stability switching advanced. Small targets with gentle jumps — pure precision switching demanded.'
-      },
-      {
-        name: 'VT PentaBounce Advanced S5',
-        difficulty: ['advanced'],
-        duration: 5, sets: 5,
-        verified: true, voltaic: true,
-        link: null,
-        tip: 'Voltaic S5 stability switching. Targets ricochet inside a pentagon — read the bounce angle, commit cleanly.'
-      },
-    ]
-  }
+      /* BEGINNER */
+      { name: 'VT DotTS Novice S5',     difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Hold left click throughout — static dot targets. Focus on smooth transitions, not speed.' },
+      { name: 'VT EddieTS Novice S5',   difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Diagonally-moving greeble targets. Regular, predictable — find the rhythm early.' },
+      { name: 'Ground Plaza TS',        difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Ground-level target switching. Close range — short crisp flicks between targets.' },
+      { name: 'popcornTS',             difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Popcorn-style target switching. Bouncing targets — anticipate the next spawn location.' },
+      { name: '1w2ts reload',          difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Two-target reload switching. Rhythm is everything — click, switch, click, repeat.' },
+      { name: 'VT SkyTS Novice S5',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Airborne novice targets. Look up — train yourself to track targets above the horizon line.' },
+      { name: 'VT PillTS Novice S5',   difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Pill-target switching at novice speed. Wider targets teach switching rhythm before precision.' },
+      { name: 'popcornTS easy',        difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Easy popcorn switching. Read the bounce angle — each bounce is predictable if you look.' },
+      { name: 'VT ArcTS Novice S5',    difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Arc-pattern switching. Flick along the arc shape — don\'t cut across it.' },
+
+      /* INTERMEDIATE */
+      { name: 'VT DriftTS Intermediate S5', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Targets constantly accelerate and decelerate. Micro-correct after each acquire — stay on it.' },
+      { name: 'VT FlyTS Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'XYZ-movement targets. Harder to read — stay calm and track briefly before clicking.' },
+      { name: 'VT EddieTS Intermediate S5',difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster diagonal targets. Rhythm speeds up — maintain momentum between every switch.' },
+      { name: 'VT DotTS Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Hold-fire intermediate dots. Cleaner entries required — sloppy switches bleed score fast.' },
+      { name: 'VT SkyTS Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Intermediate airborne targets. 3D awareness required — don\'t just track X and Y.' },
+      { name: 'VT PillTS Intermediate S5', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster pill switching. Center-mass accuracy now tested harder — edges no longer forgiven.' },
+      { name: 'popcornTS reload',         difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Reload-mechanic popcorn switching. Misses hurt twice — accuracy becomes a must.' },
+      { name: '1w2ts hard',              difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Hard two-target switching. Speed required now — build explosive transitions.' },
+      { name: 'VT ArcTS Intermediate S5', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster arc-pattern switching. Speed up the flick arc — no pause at each target.' },
+
+      /* ADVANCED */
+      { name: 'VT ControlTS Advanced S5',  difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Small targets with gentle jumps. Pure precision switching — every transition must be clean.' },
+      { name: 'VT PentaBounce Advanced S5',difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Targets ricochet in a pentagon. Read the bounce angle early — commit before it arrives.' },
+      { name: 'VT DriftTS Advanced S5',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite drifting targets. Micro-corrections between each switch — invisible adjustments only.' },
+      { name: 'VT FlyTS Advanced S5',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite XYZ switching. Full 3D prediction demanded — eyes arrive before the cursor.' },
+      { name: 'VT SkyTS Advanced S5',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite aerial switching. Loose grip + arm control — the only combination that works here.' },
+      { name: 'VT EddieTS Advanced S5',    difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Max-speed diagonal targets. Rhythm never stops — any pause destroys the run.' },
+      { name: 'VT PillTS Advanced S5',     difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Advanced pill switching at elite pace. Center-mass every switch — no edge-grazing.' },
+      { name: 'VT DotTS Advanced S5',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite dot switching. Hold-fire discipline + max-speed transitions. Zero wasted motion.' },
+      { name: 'VT ArcTS Advanced S5',      difficulty: ['advanced'], duration: 5, sets: 5, tip: 'Elite arc-pattern switching at maximum pace. Flow along the arc — no pause at peaks.' },
+    ],
+  },
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -448,14 +291,14 @@ const state = {
   trainer: 'aimlabs',
   rank: 'beginner',
   priorities: { tracking: 33, flicking: 34, switching: 33 },
-  callsign: '',
   _playlist: [],
 };
 
 /* ═══════════════════════════════════════════════════════════════
    ROUTINE GENERATOR
-   Distributes 9 slots proportionally across categories.
-   Never repeats a task — slots are capped at pool size per type.
+   Always outputs exactly 9 tasks. If a category has fewer unique
+   scenarios than its slot count, tasks repeat (shuffled each time
+   so the order still feels fresh).
    ═══════════════════════════════════════════════════════════════ */
 function generateRoutine() {
   const { trainer, rank, priorities } = state;
@@ -463,8 +306,8 @@ function generateRoutine() {
   const TOTAL = 9;
   const total = priorities.tracking + priorities.flicking + priorities.switching || 1;
 
-  // Calculate proportional slot counts
-  const raw   = {
+  // Proportional slot counts
+  const raw = {
     tracking:  (priorities.tracking  / total) * TOTAL,
     flicking:  (priorities.flicking  / total) * TOTAL,
     switching: (priorities.switching / total) * TOTAL,
@@ -475,13 +318,13 @@ function generateRoutine() {
     switching: Math.floor(raw.switching),
   };
 
-  // Distribute remainder to whichever category lost the most to flooring
+  // Give remainder slots to categories that lost the most to flooring
   let rem = TOTAL - (slots.tracking + slots.flicking + slots.switching);
   ['tracking','flicking','switching']
     .sort((a,b) => (raw[b] - slots[b]) - (raw[a] - slots[a]))
     .forEach((k,i) => { if (i < rem) slots[k]++; });
 
-  // Ensure every non-zero priority gets at least 1 slot (steal from largest)
+  // Ensure every non-zero priority category gets at least 1 slot
   ['tracking','flicking','switching'].forEach(t => {
     if (priorities[t] > 0 && slots[t] === 0) {
       const big = Object.keys(slots).reduce((a,b) => slots[a] > slots[b] ? a : b);
@@ -489,23 +332,19 @@ function generateRoutine() {
     }
   });
 
-  // Cap each slot count at the available pool size (NO repeats)
-  const pools = {};
-  for (const type of ['tracking','flicking','switching']) {
-    pools[type] = db[type].filter(s => s.difficulty.includes(rank));
-    slots[type] = Math.min(slots[type], pools[type].length);
-  }
-
-  // Pick unique tasks per category via shuffle-then-slice
+  // Build playlist — repeat tasks cyclically if pool smaller than slots needed
   const playlist = [];
   for (const type of ['tracking','flicking','switching']) {
-    const pool    = pools[type];
+    const pool = db[type].filter(s => s.difficulty.includes(rank));
     if (!pool.length || slots[type] === 0) continue;
+
     const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    shuffled.slice(0, slots[type]).forEach(s => playlist.push({ ...s, type }));
+    for (let i = 0; i < slots[type]; i++) {
+      // wrap around with modulo so we never run out of tasks
+      playlist.push({ ...shuffled[i % shuffled.length], type });
+    }
   }
 
-  // Final shuffle so categories aren't always grouped
   return playlist.sort(() => Math.random() - 0.5);
 }
 
@@ -519,12 +358,17 @@ function renderPlaylist() {
   const trainerLabel = state.trainer === 'aimlabs' ? 'Aimlabs' : "Kovaak's";
   const rankLabel = state.rank.charAt(0).toUpperCase() + state.rank.slice(1);
   const totalMins = playlist.reduce((s,t) => s + t.duration * t.sets, 0);
-  document.getElementById('playlistMeta').textContent = `${trainerLabel} · ${rankLabel} · ${playlist.length} tasks`;
-  document.getElementById('totalTasks').textContent = playlist.length;
-  document.getElementById('estTime').textContent = `${totalMins}m`;
-  document.getElementById('navStatus').textContent = `${trainerLabel} · ${rankLabel}`;
+  const _pmEl = document.getElementById('playlistMeta');
+  const _ttEl = document.getElementById('totalTasks');
+  const _etEl = document.getElementById('estTime');
+  const _nsEl = document.getElementById('navStatus');
+  if (_pmEl) _pmEl.textContent = `${trainerLabel} · ${rankLabel} · ${playlist.length} tasks`;
+  if (_ttEl) _ttEl.textContent = playlist.length;
+  if (_etEl) _etEl.textContent = `${totalMins}m`;
+  if (_nsEl) _nsEl.textContent = `${trainerLabel} · ${rankLabel}`;
+  const _subEl = document.getElementById('playlistSubtitle');
+  if (_subEl) _subEl.textContent = `${trainerLabel} · ${rankLabel} · ~${totalMins} min total`;
 
-  const ICONS  = { tracking:'🎯', flicking:'⚡', switching:'🔀' };
   const LABELS = { tracking:'Tracking', flicking:'Flicking', switching:'Switching' };
 
   grid.innerHTML = '';
@@ -532,25 +376,18 @@ function renderPlaylist() {
     const card = document.createElement('div');
     card.className = `task-card ${s.type}`;
     card.style.animationDelay = `${i * 0.055}s`;
-    const statusHTML = s.verified
-      ? `<div class="card-status status-verified">✓ Verified</div>`
-      : `<div class="card-status status-legacy">⚠️ Legacy / Unverified</div>`;
-    const voltaicHTML = s.voltaic ? `<span class="card-sets">· Voltaic</span>` : '';
-    const linkHTML = s.link
-      ? `<a class="card-link" href="${s.link}" target="_blank" rel="noopener">▶ Open in Aimlabs</a>`
-      : `<div class="card-sets" style="font-size:10px;color:var(--tx-4)">Search by name in ${trainerLabel}</div>`;
-
     card.innerHTML = `
-      <div class="card-badge">${ICONS[s.type]} ${LABELS[s.type]}</div>
-      <div class="card-name">${s.name}</div>
-      <div class="card-meta">
-        <span class="card-dur">${s.duration} min</span>
-        <span class="card-sets">${s.sets}× sets</span>
-        ${voltaicHTML}
+      <div class="card-top">
+        <div class="card-name">${s.name}</div>
+        <div class="card-type">${LABELS[s.type]}</div>
       </div>
-      ${statusHTML}
-      ${linkHTML}
-      <div class="card-tip">${s.tip}</div>
+      <div class="card-info">
+        <div class="card-tip">${s.tip}</div>
+        <div class="card-meta-row">
+          <span class="card-dur">${s.duration} min</span>
+          <span class="card-sets">${s.sets}× sets</span>
+        </div>
+      </div>
     `;
     grid.appendChild(card);
   });
@@ -559,18 +396,38 @@ function renderPlaylist() {
 /* ═══════════════════════════════════════════════════════════════
    NAVIGATION
    ═══════════════════════════════════════════════════════════════ */
+function showSection(target) {
+  const valid = ['routines','converters','warmup'];
+  if (!valid.includes(target)) target = 'routines';
+
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section === target));
+  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === target));
+
+  if (target === 'warmup') setTimeout(() => Warmup3D.resize(), 60);
+
+  // Update URL hash without reloading
+  const hash = '#' + target;
+  if (location.hash !== hash) history.pushState({ section: target }, '', hash);
+}
+
 function initNav() {
+  // Clicking nav links
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
-      const target = link.dataset.section;
-      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      link.classList.add('active');
-      document.getElementById(target).classList.add('active');
-      if (target === 'warmup') setTimeout(() => Warmup3D.resize(), 60);
+      showSection(link.dataset.section);
     });
   });
+
+  // Browser back/forward
+  window.addEventListener('popstate', e => {
+    const target = (e.state?.section) || location.hash.replace('#','') || 'routines';
+    showSection(target);
+  });
+
+  // Load from hash on page load
+  const initialSection = location.hash.replace('#','') || 'routines';
+  showSection(initialSection);
 }
 
 function initTrainerToggle() {
@@ -598,10 +455,10 @@ function initRankSelector() {
 function initSliders() {
   const sliders  = { tracking: document.getElementById('trackingSlider'), flicking: document.getElementById('flickingSlider'), switching: document.getElementById('switchingSlider') };
   const displays = { tracking: document.getElementById('trackingVal'),    flicking: document.getElementById('flickingVal'),    switching: document.getElementById('switchingVal')    };
-  const COLORS   = { tracking: '#3b82f6', flicking: '#f59e0b', switching: '#a855f7' };
+  const COLORS   = { tracking: '#f0c800', flicking: '#4a7fff', switching: '#c040ff' };
 
   function fill(slider, type) {
-    slider.style.background = `linear-gradient(to right,${COLORS[type]} ${slider.value}%,var(--bg-3) ${slider.value}%)`;
+    slider.style.background = `linear-gradient(to right,${COLORS[type]} ${slider.value}%,rgba(255,255,255,0.07) ${slider.value}%)`;
   }
   Object.keys(sliders).forEach(t => fill(sliders[t], t));
 
@@ -627,10 +484,6 @@ function initSliders() {
   });
 }
 
-function initCallsign() {
-  document.getElementById('callsignInput').addEventListener('input', e => { state.callsign = e.target.value; });
-}
-
 function initCopyPlaylist() {
   document.getElementById('copyPlaylist').addEventListener('click', () => {
     if (!state._playlist.length) return;
@@ -638,18 +491,19 @@ function initCopyPlaylist() {
     const rankLabel    = state.rank.charAt(0).toUpperCase()+state.rank.slice(1);
     const ICONS = { tracking:'🎯', flicking:'⚡', switching:'🔀' };
     let text = `⚔ AimRivals — ${trainerLabel} · ${rankLabel}\n`;
-    if (state.callsign) text += `👤 ${state.callsign}\n`;
     text += `${'─'.repeat(28)}\n`;
-    state._playlist.forEach((s,i) => { text += `${i+1}. ${ICONS[s.type]} ${s.name} · ${s.sets}×${s.duration}min${s.verified?' ✓':' ⚠️'}\n`; });
+    state._playlist.forEach((s,i) => { text += `${i+1}. ${ICONS[s.type]} ${s.name} · ${s.sets}×${s.duration}min\n`; });
     text += `${'─'.repeat(28)}\nGenerated by AimRivals`;
     navigator.clipboard.writeText(text).then(()=>showToast('📋 Playlist copied!')).catch(()=>showToast('❌ Copy failed'));
   });
 }
 
 function initShare() {
-  document.getElementById('shareBtn').addEventListener('click', () => {
-    const p = new URLSearchParams({ t:state.trainer, r:state.rank, tr:state.priorities.tracking, fl:state.priorities.flicking, sw:state.priorities.switching, cs:state.callsign });
-    const url = `${location.origin}${location.pathname}?${p}`;
+  const shareBtn = document.getElementById('shareBtn');
+  if (!shareBtn) return;
+  shareBtn.addEventListener('click', () => {
+    const p = new URLSearchParams({ t:state.trainer, r:state.rank, tr:state.priorities.tracking, fl:state.priorities.flicking, sw:state.priorities.switching });
+    const url = `${location.origin}${location.pathname}?${p}${location.hash}`;
     navigator.clipboard.writeText(url).then(()=>showToast('🔗 Config link copied!')).catch(()=>showToast('❌ Copy failed'));
   });
 }
@@ -667,7 +521,6 @@ function loadFromURL() {
   [['tr','tracking','trackingSlider','trackingVal'],['fl','flicking','flickingSlider','flickingVal'],['sw','switching','switchingSlider','switchingVal']].forEach(([param,key,sliderId,valId]) => {
     if (p.has(param)) { const v=Math.min(100,Math.max(0,parseInt(p.get(param),10))); state.priorities[key]=v; document.getElementById(sliderId).value=v; document.getElementById(valId).textContent=`${v}%`; }
   });
-  if (p.has('cs')) { state.callsign=p.get('cs'); document.getElementById('callsignInput').value=state.callsign; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -831,7 +684,11 @@ function initFOVConverter() {
 
     document.getElementById('fovOutput').textContent = out.toFixed(2) + '°';
     document.getElementById('fovType').textContent   = typeName(tg.type);
-    document.getElementById('fovNote').textContent   =
+
+    // Write result info into the info box (replaces "put information here")
+    const fovNoteEl = document.getElementById('fovNote');
+    const fovExtraEl = document.getElementById('fovExtraNote');
+    if (fovNoteEl) fovNoteEl.textContent =
       `${fg.label} ${fov}° ${typeName(fg.type)} FOV → ${tg.label} ${out.toFixed(2)}° ${typeName(tg.type)} FOV`;
 
     // Show HFOV helper row whenever input is VFOV (useful for KovaaK's)
@@ -839,22 +696,22 @@ function initFOVConverter() {
     const hfovOut = document.getElementById('fovHfovOut');
     if (fg.type === 'vertical') {
       hfovOut.textContent = hfovDeg.toFixed(2) + '°';
-      hfovRow.style.display = 'flex';
+      hfovRow.style.display = 'block';
     } else {
       hfovRow.style.display = 'none';
     }
 
-    // Extra note for same-type conversions (V→V): explain result is correct
-    const extraNote = document.getElementById('fovExtraNote');
-    if (fg.type === 'vertical' && tg.type === 'vertical') {
-      extraNote.textContent =
-        'ℹ️ Both games use Vertical FOV — set Aimlabs to the same number as your Roblox FOV. '
-        + 'Use the Equivalent HFOV above for KovaaK\'s.';
-    } else {
-      extraNote.textContent = '';
+    if (fovExtraEl) {
+      if (fg.type === 'vertical' && tg.type === 'vertical') {
+        fovExtraEl.textContent = 'Both games use Vertical FOV — the number is the same. Use the HFOV above for KovaaK\'s.';
+      } else {
+        fovExtraEl.textContent = '';
+      }
     }
 
     document.getElementById('fovResult').classList.add('has-result');
+    const nb = document.getElementById('fovNoteBox');
+    if (nb) nb.style.display = 'block';
   });
 }
 
@@ -918,7 +775,7 @@ const Warmup3D = (() => {
     badge           = document.getElementById('overlayBadge');
     titleEl         = document.getElementById('overlayTitle');
     subEl           = document.getElementById('overlaySub');
-    startBtn        = document.getElementById('startGame');
+    startBtn        = document.getElementById('btnStartGame');
     scoreEl         = document.getElementById('wScore');
     timerEl         = document.getElementById('wTimer');
     accEl           = document.getElementById('wAccuracy');
@@ -970,11 +827,11 @@ const Warmup3D = (() => {
   }
 
   function updateOverlayTheme() {
-    const BADGE_LABELS = { tracking:'🎯 TRACKING', flicking:'⚡ FLICKING', switching:'🔀 SWITCHING' };
-    const TITLE_CLASSES = { tracking:'', flicking:'flicking-title', switching:'switching-title' };
-    const BTN_CLASSES   = { tracking:'', flicking:'flicking-btn',   switching:'switching-btn'   };
+    const BADGE_LABELS  = { tracking:'🎯 TRACKING', flicking:'⚡ FLICKING', switching:'🔀 SWITCHING' };
+    const TITLE_CLASSES = { tracking:'tracking-title', flicking:'flicking-title', switching:'switching-title' };
+    const BTN_CLASSES   = { tracking:'tracking-btn',   flicking:'flicking-btn',   switching:'switching-btn'   };
     badge.textContent  = BADGE_LABELS[gameMode];
-    badge.className    = `overlay-game-badge${gameMode !== 'tracking' ? ' ' + gameMode : ''}`;
+    badge.className    = `overlay-game-badge ${gameMode}`;
     titleEl.className  = `overlay-title ${TITLE_CLASSES[gameMode]}`;
     startBtn.className = `btn-begin ${BTN_CLASSES[gameMode]}`;
   }
@@ -1408,7 +1265,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initTrainerToggle();
   initRankSelector();
   initSliders();
-  initCallsign();
   initCopyPlaylist();
   initShare();
   initSensConverter();
