@@ -615,7 +615,12 @@ function initSensConverter() {
       return;
     }
 
-    const slider        = fg.hasMultiplier ? Math.max(0.01, parseFloat(multEl?.value) || 1.0) : 1.0;
+    const sliderRaw  = multEl?.value || '100';
+    const sliderStr  = String(sliderRaw).trim();
+    const sliderNum  = parseFloat(sliderStr.endsWith('%') ? sliderStr.slice(0,-1) : sliderStr);
+    // Slider is in % (100 = 1.0), so divide by 100 unless it's already <= 10 (old-style raw)
+    const sliderVal  = sliderStr.endsWith('%') ? sliderNum / 100 : (sliderNum > 10 ? sliderNum / 100 : sliderNum);
+    const slider     = fg.hasMultiplier ? Math.max(0.0001, sliderVal || 1.0) : 1.0;
     const effectiveSens = effectiveRaw * slider;
 
     const cm360     = 914.4 / (800 * fg.yaw * effectiveSens);
@@ -630,7 +635,7 @@ function initSensConverter() {
       ? (effectiveRaw * 100).toFixed(2) + '%'
       : `${effectiveRaw}`;
     document.getElementById('sensNote').textContent =
-      `${fg.label} ${fromDisplay}${slider !== 1.0 ? ' × ' + slider + ' multiplier' : ''} at 800 DPI`
+      `${fg.label} ${fromDisplay}${slider !== 1.0 ? ' × ' + (slider * 100).toFixed(0) + '% slider' : ''} at 800 DPI`
       + ` = ${tg.label} ${toDisplay} at ${dpi} DPI — same aim speed`;
     document.getElementById('sensResult').classList.add('has-result');
 
