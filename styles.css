@@ -1419,3 +1419,24 @@ main{position:relative;z-index:1}
   color: var(--tx-3);
 }
 .nm-btn-skip:hover { border-color: var(--bdr-hi); color: var(--tx-2); }
+
+/* Sensitivity % input wrapper */
+.sens-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.sens-input-wrap .field-input {
+  width: 100%;
+  padding-right: 36px;
+}
+.sens-pct-hint {
+  position: absolute;
+  right: 12px;
+  font-family: var(--f-j);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  pointer-events: none;
+  align-items: center;
+}

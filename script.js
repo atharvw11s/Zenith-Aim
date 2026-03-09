@@ -562,20 +562,53 @@ function initSensConverter() {
   const dpiLbl    = document.getElementById('sensDpiLabel');
   const dpiVal    = document.getElementById('sensDpiVal');
 
+  function parseSensInput(raw, isRivals) {
+    if (!raw) return NaN;
+    const str = String(raw).trim();
+    const hasPct = str.endsWith('%');
+    const num = parseFloat(hasPct ? str.slice(0, -1) : str);
+    if (isNaN(num) || num <= 0) return NaN;
+    if (!isRivals) return num;
+    // Rivals: raw value (e.g. 2) and % value (200%) are the same thing
+    // Raw input: treat as-is (e.g. 2 = 2 on the 0–100 slider scale internally)
+    // % input: strip the % (200% -> 200, same as typing 2? No: 200% = 2.0 raw)
+    // User said: "2 = 200%" so raw 2 = 200% -> effective = 2 (we multiply by 100 for display)
+    // hasPct: user typed "200%" -> parse 200 -> divide by 100 -> 2 (same)
+    return hasPct ? num / 100 : num;
+  }
+
+  function formatSensOutput(raw, isRivals) {
+    // raw is the real sens value; for Rivals display multiply by 100 to show %
+    if (isRivals) return (raw * 100).toFixed(2) + '%';
+    return raw.toFixed(5);
+  }
+
   function recalc() {
     const fg   = SENS_DB[fromEl.value];
     const tg   = SENS_DB[toEl.value];
-    const sens = parseFloat(sensEl.value);
     const dpi  = parseFloat(dpiEl.value);
+    const isFromRivals = fromEl.value === 'rivals';
+    const isToRivals   = toEl.value   === 'rivals';
 
-    // Update labels
-    if (fromLbl) fromLbl.textContent = fg?.sensLabel || 'Sensitivity';
+    // Update labels + hint
+    if (fromLbl) fromLbl.textContent = isFromRivals ? 'Camera Sensitivity (% or raw)' : (fg?.sensLabel || 'Sensitivity');
     if (toLbl)   toLbl.textContent   = (tg?.label || 'Target') + ' Sensitivity';
     if (multRowEl) multRowEl.style.display = fg?.hasMultiplier ? 'flex' : 'none';
 
-    if (!fg || !tg || isNaN(sens) || sens <= 0 || isNaN(dpi) || dpi <= 0) {
+    // Show % hint badge on input when Rivals is source
+    const pctHint = document.getElementById('sensPctHint');
+    if (pctHint) pctHint.style.display = isFromRivals ? 'flex' : 'none';
+
+    // Update placeholder
+    sensEl.placeholder = isFromRivals ? 'e.g. 50 or 50%' : '0.064';
+
+    const effectiveRaw = parseSensInput(sensEl.value, isFromRivals);
+
+    if (!fg || !tg || isNaN(effectiveRaw) || isNaN(dpi) || dpi <= 0) {
       document.getElementById('sensOutput').textContent = '—';
-      document.getElementById('sensNote').textContent   = 'Enter your sensitivity and DPI above';
+      document.getElementById('sensNote').textContent   = isFromRivals
+        ? 'Enter % (e.g. 50 or 50%) or raw (e.g. 0.5)'
+        : 'Enter your sensitivity and DPI above';
       if (dpiLbl) dpiLbl.textContent = 'at — DPI';
       if (dpiVal) dpiVal.textContent = '— DPI';
       document.getElementById('sensQuick').style.display = 'none';
@@ -583,19 +616,19 @@ function initSensConverter() {
     }
 
     const slider        = fg.hasMultiplier ? Math.max(0.01, parseFloat(multEl?.value) || 1.0) : 1.0;
-    const effectiveSens = sens * (fg.sensScale ?? 1) * slider;
+    const effectiveSens = effectiveRaw * slider;
 
-    // toSens preserves same physical feel at the entered DPI
-    const cm360  = 914.4 / (800 * fg.yaw * effectiveSens); // reference cm/360 at 800 DPI
-    const toSensRaw = 914.4 / (dpi * tg.yaw * cm360);
-    // If target game uses a scale (e.g. Rivals outputs %) convert back
-    const toSens = toSensRaw / (tg.sensScale ?? 1);
+    const cm360     = 914.4 / (800 * fg.yaw * effectiveSens);
+    const toSensRaw = 914.4 / (dpi  * tg.yaw * cm360);
+    const toDisplay = formatSensOutput(toSensRaw, isToRivals);
 
-    document.getElementById('sensOutput').textContent = toSens.toFixed(5);
+    document.getElementById('sensOutput').textContent = toDisplay;
     if (dpiLbl) dpiLbl.textContent = `at ${dpi} DPI`;
     if (dpiVal) dpiVal.textContent = `${dpi} DPI`;
-    const fromDisplay = `${sens}${fg.sensScale === 0.01 ? '%' : ''}`;
-    const toDisplay   = `${toSens.toFixed(5)}${tg.sensScale === 0.01 ? '%' : ''}`;
+
+    const fromDisplay = isFromRivals
+      ? (effectiveRaw * 100).toFixed(2) + '%'
+      : `${effectiveRaw}`;
     document.getElementById('sensNote').textContent =
       `${fg.label} ${fromDisplay}${slider !== 1.0 ? ' × ' + slider + ' multiplier' : ''} at 800 DPI`
       + ` = ${tg.label} ${toDisplay} at ${dpi} DPI — same aim speed`;
@@ -604,19 +637,18 @@ function initSensConverter() {
     // Quick reference grid
     const sqGrid = document.getElementById('sqGrid');
     sqGrid.innerHTML = '';
-    Object.values(SENS_DB).forEach(game => {
+    Object.entries(SENS_DB).forEach(([key, game]) => {
       const eqRaw = 914.4 / (dpi * game.yaw * cm360);
-      const eq    = eqRaw / (game.sensScale ?? 1);
-      const suffix = game.sensScale === 0.01 ? '%' : '';
-      const item = document.createElement('div');
+      const eq    = formatSensOutput(eqRaw, key === 'rivals');
+      const item  = document.createElement('div');
       item.className = 'sq-item';
-      item.innerHTML = `<span class="sq-game">${game.label}</span><span class="sq-val">${eq.toFixed(5)}${suffix}</span>`;
+      item.innerHTML = `<span class="sq-game">${game.label}</span><span class="sq-val">${eq}</span>`;
       sqGrid.appendChild(item);
     });
     document.getElementById('sensQuick').style.display = 'block';
   }
 
-  // Live update on every input change — no button press needed
+  // Live update — also re-run when source game changes (updates placeholder/hint)
   [fromEl, toEl, sensEl, dpiEl, multEl].forEach(el => {
     if (el) { el.addEventListener('input', recalc); el.addEventListener('change', recalc); }
   });
@@ -1507,6 +1539,12 @@ async function loadLeaderboard(mode, forceFetch = false) {
 }
 
 function initLeaderboard() {
+  // Show current week range
+  const weekLbl = document.getElementById('lbWeekLabel');
+  if (weekLbl && typeof Scores !== 'undefined') {
+    weekLbl.textContent = `Week of ${Scores.getWeekLabel()} — resets every Monday`;
+  }
+
   // Tab switching
   document.querySelectorAll('.lb-tab').forEach(tab => {
     tab.addEventListener('click', () => loadLeaderboard(tab.dataset.lbmode, true));
