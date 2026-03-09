@@ -259,7 +259,7 @@ const SCENARIO_DB = {
      Slider = 1.0 (default) → Rivals ≡ Arsenal
    ═══════════════════════════════════════════════════════════════ */
 const SENS_DB = {
-  rivals:  { label: 'Roblox Rivals',  yaw: 0.37503, sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
+  rivals:  { label: 'Roblox Rivals',  yaw: 0.37503, sensLabel: 'Camera Sensitivity (%)', hasMultiplier: true,  sensScale: 0.01 },
   arsenal: { label: 'Roblox Arsenal', yaw: 0.37503, sensLabel: 'Camera Sensitivity',     hasMultiplier: false, sensScale: 1    },
   aimlabs: { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
   kovaaks: { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
@@ -591,7 +591,7 @@ function initSensConverter() {
     const isToRivals   = toEl.value   === 'rivals';
 
     // Update labels + hint
-    if (fromLbl) fromLbl.textContent = fg?.sensLabel || 'Sensitivity';
+    if (fromLbl) fromLbl.textContent = isFromRivals ? 'Camera Sensitivity (% or raw)' : (fg?.sensLabel || 'Sensitivity');
     if (toLbl)   toLbl.textContent   = (tg?.label || 'Target') + ' Sensitivity';
     if (multRowEl) multRowEl.style.display = fg?.hasMultiplier ? 'flex' : 'none';
 
@@ -600,13 +600,15 @@ function initSensConverter() {
     if (pctHint) pctHint.style.display = isFromRivals ? 'flex' : 'none';
 
     // Update placeholder
-    sensEl.placeholder = '0.064';
+    sensEl.placeholder = isFromRivals ? 'e.g. 50 or 50%' : '0.064';
 
     const effectiveRaw = parseSensInput(sensEl.value, isFromRivals);
 
     if (!fg || !tg || isNaN(effectiveRaw) || isNaN(dpi) || dpi <= 0) {
       document.getElementById('sensOutput').textContent = '—';
-      document.getElementById('sensNote').textContent   = 'Enter your sensitivity and DPI above';
+      document.getElementById('sensNote').textContent   = isFromRivals
+        ? 'Enter % (e.g. 50 or 50%) or raw (e.g. 0.5)'
+        : 'Enter your sensitivity and DPI above';
       if (dpiLbl) dpiLbl.textContent = 'at — DPI';
       if (dpiVal) dpiVal.textContent = '— DPI';
       document.getElementById('sensQuick').style.display = 'none';
@@ -792,7 +794,35 @@ const Warmup3D = (() => {
   let hits    = 0;
   let shots   = 0;
   let timeLeft  = 30;
-  let bestScore = { tracking: null, flicking: null, switching: null };
+  let bestScore = (() => {
+    try { const s = JSON.parse(localStorage.getItem('aimrivals_best')); return s || { tracking:null, flicking:null, switching:null }; }
+    catch { return { tracking:null, flicking:null, switching:null }; }
+  })();
+
+  // Load personal bests from Firebase (by IP) on init
+  async function loadGlobalBests() {
+    if (typeof Scores === 'undefined') return;
+    try {
+      const bests = await Scores.loadBests();
+      let changed = false;
+      ['tracking','flicking','switching'].forEach(m => {
+        if (bests[m] != null && (bestScore[m] === null || bests[m] > bestScore[m])) {
+          bestScore[m] = bests[m];
+          changed = true;
+        }
+      });
+      if (changed) {
+        localStorage.setItem('aimrivals_best', JSON.stringify(bestScore));
+        if (bestEl) bestEl.textContent = bestScore[gameMode] ?? '—';
+        const obVal = document.getElementById('overlayBestVal');
+        const obEl  = document.getElementById('overlayBest');
+        if (obVal && bestScore[gameMode] !== null) {
+          obVal.textContent = bestScore[gameMode];
+          if (obEl) obEl.style.display = 'block';
+        }
+      }
+    } catch(e) { console.warn('[Warmup] loadGlobalBests failed', e); }
+  }
   let countdownInt = null;
 
   // ── Three.js objects ──
@@ -951,6 +981,7 @@ const Warmup3D = (() => {
     canvas.addEventListener('click',     onCanvasClick); // fallback for pointer-lock re-acquire
 
     renderIdle();
+    loadGlobalBests();
   }
 
   function updateOverlayTheme() {
@@ -1392,6 +1423,8 @@ const Warmup3D = (() => {
     // Update session best
     if (bestScore[gameMode] === null || score > bestScore[gameMode]) {
       bestScore[gameMode] = score;
+      localStorage.setItem('aimrivals_best', JSON.stringify(bestScore));
+      if (typeof Scores !== 'undefined') Scores.saveBest(gameMode, score);
     }
     bestEl.textContent = bestScore[gameMode] ?? '—';
     timerEl.style.color = '';

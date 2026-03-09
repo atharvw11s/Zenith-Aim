@@ -1,42 +1,71 @@
 /* ================================================================
    AimRivals — scores.js
-   Weekly global leaderboard via Firebase Realtime Database.
-   Resets every Monday. All visitors share the same board.
+   Weekly global leaderboard + IP-based personal bests via Firebase.
+   Leaderboard resets every Monday. Personal bests are permanent.
    ================================================================ */
 
 const Scores = (() => {
   'use strict';
 
   const FIREBASE_URL = 'https://aimrivals-default-rtdb.asia-southeast1.firebasedatabase.app';
-  const MODES  = ['tracking', 'flicking', 'switching'];
-  const LS_KEY = 'aimrivals_lb_v3';
+  const MODES   = ['tracking', 'flicking', 'switching'];
+  const LS_KEY  = 'aimrivals_lb_v3';
+  const BEST_KEY = 'aimrivals_best';
 
-  let cache  = null;
-  let saving = false;
+  let cache     = null;
+  let saving    = false;
+  let _ipKey    = null; // resolved once, reused
 
-  // ── ISO week key: "2025-W22" style — changes every Monday ──────
+  // ── Simple hash (djb2) for IP privacy ──────────────────────────
+  function hashStr(str) {
+    let h = 5381;
+    for (let i = 0; i < str.length; i++) h = ((h << 5) + h) ^ str.charCodeAt(i);
+    return (h >>> 0).toString(36); // unsigned 32-bit, base36
+  }
+
+  // ── Get IP-based key (cached) ───────────────────────────────────
+  async function getIpKey() {
+    if (_ipKey) return _ipKey;
+    try {
+      const res  = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      _ipKey = 'ip_' + hashStr(data.ip);
+    } catch {
+      // Fallback: use a random ID stored in localStorage
+      let id = localStorage.getItem('aimrivals_uid');
+      if (!id) { id = 'uid_' + Math.random().toString(36).slice(2); localStorage.setItem('aimrivals_uid', id); }
+      _ipKey = id;
+    }
+    return _ipKey;
+  }
+
+  // ── ISO week key ────────────────────────────────────────────────
   function getWeekKey() {
-    const now  = new Date();
-    const day  = now.getUTCDay() || 7;           // Mon=1 … Sun=7
-    const mon  = new Date(now);
-    mon.setUTCDate(now.getUTCDate() - (day - 1)); // rewind to Monday
-    const y    = mon.getUTCFullYear();
+    const now = new Date();
+    const day = now.getUTCDay() || 7;
+    const mon = new Date(now);
+    mon.setUTCDate(now.getUTCDate() - (day - 1));
+    const y     = mon.getUTCFullYear();
     const start = new Date(Date.UTC(y, 0, 1));
     const week  = Math.ceil(((mon - start) / 86400000 + start.getUTCDay() + 1) / 7);
     return `${y}-W${String(week).padStart(2, '0')}`;
   }
 
   function weekPath() { return `/weeks/${getWeekKey()}`; }
+  function empty()    { return { tracking:[], flicking:[], switching:[], week: getWeekKey() }; }
 
-  function empty() { return { tracking:[], flicking:[], switching:[], week: getWeekKey() }; }
+  function lsRead()   { try { return JSON.parse(localStorage.getItem(LS_KEY));   } catch { return null; } }
+  function lsWrite(d) { try { localStorage.setItem(LS_KEY, JSON.stringify(d));   } catch {} }
+  function lsBestRead()   { try { return JSON.parse(localStorage.getItem(BEST_KEY)) || {}; } catch { return {}; } }
+  function lsBestWrite(d) { try { localStorage.setItem(BEST_KEY, JSON.stringify(d)); } catch {} }
 
-  function lsRead()  { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch { return null; } }
-  function lsWrite(d) { try { localStorage.setItem(LS_KEY, JSON.stringify(d)); } catch {} }
+  // ══════════════════════════════════════════════════════════════
+  //  WEEKLY LEADERBOARD
+  // ══════════════════════════════════════════════════════════════
 
-  // ── Fetch this week's data from Firebase ────────────────────────
   async function load() {
     try {
-      const res = await fetch(`${FIREBASE_URL}${weekPath()}.json`);
+      const res  = await fetch(`${FIREBASE_URL}${weekPath()}.json`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const rec  = data || empty();
@@ -46,19 +75,14 @@ const Scores = (() => {
       lsWrite(rec);
       return rec;
     } catch (e) {
-      console.warn('[Scores] load failed — using localStorage cache:', e.message);
+      console.warn('[Scores] load failed — using cache:', e.message);
       const cached = lsRead();
-      // If cached data is from a different week, return fresh empty
-      if (cached && cached.week === getWeekKey()) {
-        cache = cached;
-        return cache;
-      }
+      if (cached && cached.week === getWeekKey()) { cache = cached; return cache; }
       cache = empty();
       return cache;
     }
   }
 
-  // ── Write to Firebase ───────────────────────────────────────────
   async function save(data) {
     if (saving) return;
     saving = true;
@@ -78,13 +102,22 @@ const Scores = (() => {
     }
   }
 
-  // ── Submit a score ──────────────────────────────────────────────
+  // One entry per name per mode — updates if new score beats old one
   async function submit(mode, score, name) {
-    const data = await load();
+    const data      = await load();
     if (!Array.isArray(data[mode])) data[mode] = [];
+    const cleanName = (name || 'Anonymous').trim().slice(0, 20);
+    const roundedScore = Math.round(score);
+    const existing  = data[mode].findIndex(
+      e => e.name.toLowerCase() === cleanName.toLowerCase()
+    );
+    if (existing !== -1) {
+      if (roundedScore <= data[mode][existing].score) return data[mode]; // not a new best
+      data[mode].splice(existing, 1); // remove old entry, replace with new best
+    }
     data[mode].push({
-      name:  (name || 'Anonymous').trim().slice(0, 20),
-      score: Math.round(score),
+      name:  cleanName,
+      score: roundedScore,
       date:  new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short' }),
       ts:    Date.now(),
     });
@@ -94,13 +127,61 @@ const Scores = (() => {
     return data[mode];
   }
 
-  // ── Get top N ───────────────────────────────────────────────────
   async function getTop(mode, n = 10) {
     const data = cache || await load();
     return (data[mode] || []).slice(0, n);
   }
 
-  // ── Get current week label for UI ──────────────────────────────
+  // ══════════════════════════════════════════════════════════════
+  //  GLOBAL PERSONAL BESTS  — stored by hashed IP in Firebase
+  //  Path: /bests/<ipKey>/tracking|flicking|switching
+  //  Permanent — never resets with the weekly leaderboard.
+  // ══════════════════════════════════════════════════════════════
+
+  async function loadBests() {
+    const key = await getIpKey();
+    try {
+      const res  = await fetch(`${FIREBASE_URL}/bests/${key}.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const bests = data || {};
+      // Merge with localStorage — take the higher value
+      const local = lsBestRead();
+      MODES.forEach(m => {
+        const fb  = bests[m]  ?? null;
+        const ls  = local[m]  ?? null;
+        bests[m]  = (fb !== null && ls !== null) ? Math.max(fb, ls) : (fb ?? ls);
+      });
+      lsBestWrite(bests);
+      return bests;
+    } catch (e) {
+      console.warn('[Scores] loadBests failed — using localStorage:', e.message);
+      return lsBestRead();
+    }
+  }
+
+  async function saveBest(mode, score) {
+    const key          = await getIpKey();
+    const roundedScore = Math.round(score);
+    // Update localStorage immediately
+    const local = lsBestRead();
+    if (local[mode] != null && local[mode] >= roundedScore) return; // not a new best
+    local[mode] = roundedScore;
+    lsBestWrite(local);
+    // Push to Firebase
+    try {
+      const res = await fetch(`${FIREBASE_URL}/bests/${key}.json`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ [mode]: roundedScore }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    } catch (e) {
+      console.warn('[Scores] saveBest failed:', e.message);
+    }
+  }
+
+  // ── Week label for UI ─────────────────────────────────────────
   function getWeekLabel() {
     const now = new Date();
     const day = now.getUTCDay() || 7;
@@ -112,5 +193,5 @@ const Scores = (() => {
     return `${fmt(mon)} – ${fmt(sun)}`;
   }
 
-  return { load, submit, getTop, getWeekKey, getWeekLabel };
+  return { load, submit, getTop, getWeekKey, getWeekLabel, loadBests, saveBest };
 })();

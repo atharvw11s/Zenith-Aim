@@ -991,7 +991,9 @@ main{position:relative;z-index:1}
 .overlay-title.tracking-title {color:var(--track-col);text-shadow:0 0 50px rgba(232,192,0,.65)}
 @keyframes titlePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.75;transform:scale(.99)}}
 
-.overlay-sub{font-family:var(--f-k);color:var(--tx-3);font-size:13px;margin-bottom:28px;line-height:1.6}
+.overlay-sub{font-family:var(--f-k);color:var(--tx-3);font-size:13px;margin-bottom:16px;line-height:1.6}
+.overlay-best{font-family:var(--f-j);font-size:13px;font-weight:600;color:var(--tx-3);margin-bottom:20px;opacity:.8}
+.overlay-best span{color:var(--track-col);font-size:15px;font-weight:700}
 
 .btn-begin{
   background:var(--accent);
@@ -1421,22 +1423,4 @@ main{position:relative;z-index:1}
 .nm-btn-skip:hover { border-color: var(--bdr-hi); color: var(--tx-2); }
 
 /* Sensitivity % input wrapper */
-.sens-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.sens-input-wrap .field-input {
-  width: 100%;
-  padding-right: 36px;
-}
-.sens-pct-hint {
-  position: absolute;
-  right: 12px;
-  font-family: var(--f-j);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
-  pointer-events: none;
-  align-items: center;
-}
+
