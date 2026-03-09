@@ -1093,3 +1093,65 @@ main{position:relative;z-index:1}
   .warmup-section-wrap{padding:16px 14px 40px}
   .playlist-area{padding:18px 16px 30px}
 }
+
+/* ═══════════════════════════════
+   APP NAV EXTRAS
+═══════════════════════════════ */
+.nav-home-link {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  text-decoration: none;
+  transition: opacity .2s;
+}
+.nav-home-link:hover { opacity: .75; }
+
+.nav-right-app {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+.nav-gh-app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--bdr);
+  border-radius: var(--r-s);
+  color: var(--tx-4);
+  transition: all .2s;
+}
+.nav-gh-app:hover {
+  border-color: var(--bdr-hi);
+  color: var(--tx);
+  background: var(--accent-lo);
+}
+
+/* ═══════════════════════════════
+   APP FOOTER (inside sections)
+═══════════════════════════════ */
+.app-footer {
+  border-top: 1px solid var(--bdr);
+  margin-top: 32px;
+  padding: 20px 0 0;
+}
+.app-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: var(--f-k);
+  font-size: 12px;
+  color: var(--tx-4);
+}
+.footer-gh-link {
+  display: flex;
+  align-items: center;
+  color: var(--tx-4);
+  font-family: var(--f-k);
+  font-size: 12px;
+  transition: color .2s;
+}
+.footer-gh-link:hover { color: var(--tx-2); }

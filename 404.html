@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AimRivals — Redirecting…</title>
+  <script>
+    // GitHub Pages 404 redirect trick.
+    // When someone visits /routines, /converters, or /warmup,
+    // GitHub Pages hits this 404.html. We extract the path and
+    // redirect to app.html with the section as a query param,
+    // which app.html reads on load and switches to the right tab.
+    (function () {
+      var path = window.location.pathname;
+      var valid = ['routines', 'converters', 'warmup'];
+      var seg = path.split('/').filter(Boolean).pop() || '';
+
+      if (valid.indexOf(seg) !== -1) {
+        // Redirect to app.html?section=routines (no hash, no #)
+        window.location.replace(
+          window.location.origin + '/app.html?section=' + seg
+        );
+      } else {
+        // Unknown path → go home
+        window.location.replace(window.location.origin + '/');
+      }
+    })();
+  </script>
+  <style>
+    body { background: #080612; color: #ede8f8; font-family: sans-serif;
+           display: flex; align-items: center; justify-content: center;
+           min-height: 100vh; margin: 0; }
+    p { opacity: .5; font-size: 14px; }
+  </style>
+</head>
+<body><p>Redirecting…</p></body>
+</html>

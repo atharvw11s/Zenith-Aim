@@ -3,392 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AimRivals — Daily Training Guide</title>
+  <title>AimRivals — Upgraded by PurplsXD</title>
+  <meta name="description" content="Daily aim training routines, sensitivity & FOV converters, and 3D warmup games. Powered by Voltaic benchmarks.">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="landing.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link rel="manifest" href="manifest.json">
 </head>
-<body>
-<div class="app-frame">
+<body class="landing-body">
 
   <!-- Animated rainbow bar -->
   <div class="page-rainbow"></div>
 
   <!-- NAV -->
-  <nav class="nav" id="nav">
+  <nav class="nav land-nav">
     <div class="nav-brand">
       <span class="nav-title">AimRivals - Upgraded</span>
       <span class="nav-sub">by PurplsXD</span>
     </div>
-    <div class="nav-links">
-      <a href="#" class="nav-link active" data-section="routines">Routines</a>
-      <a href="#" class="nav-link" data-section="converters">Converters</a>
-      <a href="#" class="nav-link" data-section="warmup">Warmup</a>
+    <div class="land-nav-right">
+      <a href="/routines" class="nav-pill">Routines</a>
+      <a href="/converters" class="nav-pill">Converters</a>
+      <a href="/warmup" class="nav-pill">Warmup</a>
+      <a href="https://github.com/atharvw11s/AimRivals-Upgraded" target="_blank" rel="noopener" class="nav-gh">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
     </div>
   </nav>
 
-  <main id="app">
+  <!-- HERO -->
+  <section class="hero">
+    <!-- Background particles canvas -->
+    <canvas class="hero-canvas" id="heroCanvas"></canvas>
 
-    <!-- ═══ ROUTINES ═══ -->
-    <section id="routines" class="section active">
-      <div class="routines-layout">
+    <!-- Floating glow orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
-        <!-- OPTIONS PANEL -->
-        <aside class="settings-panel" id="settingsPanel">
-          <div class="panel-rainbow"></div>
-          <div class="panel-inner">
+    <div class="hero-content">
+      <!-- Badge -->
+      <div class="hero-badge">
+        <span class="hb-dot"></span>
+        <span>Voltaic S3/S5 · Aimlabs &amp; KovaaK's</span>
+      </div>
 
-            <h2 class="panel-title">Options</h2>
+      <!-- Title -->
+      <h1 class="hero-title">
+        <span class="ht-line">Level Up Your</span>
+        <span class="ht-line ht-glow">Aim Game</span>
+      </h1>
 
-            <!-- Platform -->
-            <div class="setting-block">
-              <label class="setting-label">Platform</label>
-              <div class="trainer-toggle" id="trainerToggle">
-                <button class="toggle-btn active" data-trainer="aimlabs">Aimlabs</button>
-                <div class="toggle-sep"></div>
-                <button class="toggle-btn" data-trainer="kovaaks">Kovaak's</button>
-              </div>
-            </div>
+      <!-- Subtitle -->
+      <p class="hero-sub">
+        Daily training routines built on Voltaic benchmarks.<br>
+        Sensitivity converters, FOV calculators, and 3D warmup games.
+      </p>
 
-            <!-- Rank -->
-            <div class="setting-block">
-              <label class="setting-label">Rank</label>
-              <div class="rank-selector" id="rankSelector">
-                <button class="rank-btn active" data-rank="beginner">Beginner</button>
-                <button class="rank-btn" data-rank="intermediate">Intermediate</button>
-                <button class="rank-btn" data-rank="advanced">Advanced</button>
-              </div>
-            </div>
+      <!-- CTA buttons -->
+      <div class="hero-ctas">
+        <a href="/routines" class="cta-primary">
+          <span class="cta-icon">🎯</span>
+          Generate Playlist
+        </a>
+        <a href="/converters" class="cta-secondary">Converters →</a>
+      </div>
 
-            <!-- Priority Sliders -->
-            <div class="setting-block">
-              <label class="setting-label">Training Priority</label>
-              <div class="sliders-wrap">
-                <div class="slider-row">
-                  <div class="slider-header">
-                    <span class="sl-label flicking-label">⚡ Flicking</span>
-                    <span class="sl-val" id="flickingVal">34%</span>
-                  </div>
-                  <input type="range" class="pslider flicking-slider" id="flickingSlider" min="0" max="100" value="34">
-                </div>
-                <div class="slider-row">
-                  <div class="slider-header">
-                    <span class="sl-label tracking-label">🎯 Tracking</span>
-                    <span class="sl-val" id="trackingVal">33%</span>
-                  </div>
-                  <input type="range" class="pslider tracking-slider" id="trackingSlider" min="0" max="100" value="33">
-                </div>
-                <div class="slider-row">
-                  <div class="slider-header">
-                    <span class="sl-label switching-label">🔀 Switching</span>
-                    <span class="sl-val" id="switchingVal">33%</span>
-                  </div>
-                  <input type="range" class="pslider switching-slider" id="switchingSlider" min="0" max="100" value="33">
-                </div>
-              </div>
-            </div>
+      <!-- Feature pills -->
+      <div class="hero-pills">
+        <div class="feat-pill">
+          <span class="fp-icon">📋</span>
+          <span>Daily Routines</span>
+        </div>
+        <div class="feat-pill">
+          <span class="fp-icon">🖱️</span>
+          <span>Sens Converter</span>
+        </div>
+        <div class="feat-pill">
+          <span class="fp-icon">🔭</span>
+          <span>FOV Converter</span>
+        </div>
+        <div class="feat-pill">
+          <span class="fp-icon">🎮</span>
+          <span>3D Warmup</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            <!-- Total tasks -->
-            <div class="total-tasks-box">
-              <span class="total-tasks-lbl">Total Tasks: <span id="totalTasks">9</span></span>
-            </div>
+  <!-- FEATURES SECTION -->
+  <section class="features">
+    <div class="features-wrap">
+      <h2 class="feat-heading">Everything you need to train smarter</h2>
+      <p class="feat-sub">Built around Voltaic's benchmark system. Pick your rank, pick your trainer, get your daily routine.</p>
 
-            <div class="panel-spacer"></div>
+      <div class="feat-grid">
 
-            <!-- Hidden spans the JS reads -->
-            <span id="playlistMeta" style="display:none"></span>
-            <span id="estTime"      style="display:none"></span>
-            <span id="navStatus"    style="display:none"></span>
+        <div class="feat-card fc-blue">
+          <div class="fc-icon">📋</div>
+          <h3 class="fc-title">Daily Routines</h3>
+          <p class="fc-desc">9 scenarios per session, weighted by your preferred training split — Tracking, Flicking, and Switching.</p>
+          <a href="/routines" class="fc-link">Open Routines →</a>
+        </div>
 
-            <button class="btn-copy" id="copyPlaylist">📋 Copy Playlist</button>
+        <div class="feat-card fc-yellow">
+          <div class="fc-icon">🖱️</div>
+          <h3 class="fc-title">Sensitivity Converter</h3>
+          <p class="fc-desc">Convert between Roblox Rivals, Arsenal, Aimlabs, and KovaaK's — with full cm/360 cross-reference.</p>
+          <a href="/converters" class="fc-link">Open Converter →</a>
+        </div>
 
-          </div>
-        </aside>
+        <div class="feat-card fc-purple">
+          <div class="fc-icon">🔭</div>
+          <h3 class="fc-title">FOV Converter</h3>
+          <p class="fc-desc">Convert Vertical and Horizontal FOV between any game. Automatic HFOV output for KovaaK's.</p>
+          <a href="/converters" class="fc-link">Open Converter →</a>
+        </div>
 
-        <!-- TASK GRID -->
-        <div class="playlist-area">
-          <div class="playlist-heading">
-            <div>
-              <h1 class="playlist-title">Today's Routine</h1>
-              <p class="playlist-subtitle" id="playlistSubtitle">Generating playlist…</p>
-            </div>
-          </div>
-          <div class="task-grid" id="taskGrid"></div>
-          <div class="playlist-footer">Curated by <strong>PurplsXD</strong> · Voltaic S3/S5 · Aimlabs &amp; KovaaK's</div>
+        <div class="feat-card fc-green">
+          <div class="fc-icon">🎮</div>
+          <h3 class="fc-title">3D Warmup Games</h3>
+          <p class="fc-desc">Real-time 3D tracking, flicking, and switching scenarios. Pointer-lock controls, live score tracking.</p>
+          <a href="/warmup" class="fc-link">Open Warmup →</a>
         </div>
 
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ═══ CONVERTERS ═══ -->
-    <section id="converters" class="section">
-      <div class="conv-section-wrap">
-
-        <h1 class="conv-page-title">CONVERTERS</h1>
-
-        <div class="converters-grid">
-
-          <!-- Sensitivity Converter -->
-          <div class="conv-card">
-            <h3 class="conv-card-title">Sensitivity Converter</h3>
-            <div class="conv-body">
-
-              <div class="conv-fromto-row">
-                <div class="field-group">
-                  <label class="field-label">Convert From</label>
-                  <select id="sensFrom" class="field-select">
-                    <optgroup label="Roblox FPS">
-                      <option value="rivals" selected>Roblox Rivals</option>
-                      <option value="arsenal">Roblox Arsenal</option>
-                    </optgroup>
-                    <optgroup label="Aim Trainers">
-                      <option value="aimlabs">Aimlabs</option>
-                      <option value="kovaaks">Kovaak's</option>
-                    </optgroup>
-                  </select>
-                </div>
-                <button class="swap-btn" id="sensSwapBtn" title="Swap">⇄</button>
-                <div class="field-group">
-                  <label class="field-label">Convert To</label>
-                  <select id="sensTo" class="field-select">
-                    <optgroup label="Roblox FPS">
-                      <option value="rivals">Roblox Rivals</option>
-                      <option value="arsenal">Roblox Arsenal</option>
-                    </optgroup>
-                    <optgroup label="Aim Trainers">
-                      <option value="aimlabs" selected>Aimlabs</option>
-                      <option value="kovaaks">Kovaak's</option>
-                    </optgroup>
-                  </select>
-                </div>
-              </div>
-
-              <div class="conv-inputs-row">
-                <div class="field-group">
-                  <label class="field-label" id="sensFromLabel">Camera Sensitivity</label>
-                  <input type="number" id="rivalsSens" class="field-input" placeholder="0.064" step="0.0001" min="0.0001" max="100">
-                </div>
-                <div class="field-group">
-                  <label class="field-label">DPI</label>
-                  <input type="number" id="mouseDPI" class="field-input" placeholder="800" step="1" min="100" max="32000" value="800">
-                </div>
-              </div>
-
-              <div class="field-group" id="sensMultiplierRow" style="display:none">
-                <label class="field-label">Rivals In-Game Slider <span style="font-size:10px;opacity:.5">(default 1.0)</span></label>
-                <input type="number" id="rivalsMultiplier" class="field-input" placeholder="1.0" step="0.01" min="0.01" max="10" value="1">
-              </div>
-
-              <div class="sens-result-box" id="sensResult">
-                <p class="sens-result-label" id="sensResultLabel">Calculated Sensitivity:</p>
-                <p class="sens-result-value" id="sensOutput">—</p>
-                <p class="sens-result-note" id="sensNote">Enter your sensitivity and DPI above</p>
-                <span id="sensDpiLabel" style="display:none"></span>
-                <span id="sensDpiVal"   style="display:none"></span>
-              </div>
-
-              <div class="sens-quick" id="sensQuick" style="display:none">
-                <p class="sq-title">All platforms — same aim feel</p>
-                <div class="sq-grid" id="sqGrid"></div>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- FOV Converter -->
-          <div class="conv-card">
-            <h3 class="conv-card-title">FOV Converter</h3>
-            <div class="conv-body">
-
-              <div class="conv-fromto-row">
-                <div class="field-group">
-                  <label class="field-label">Convert From</label>
-                  <select id="fovFrom" class="field-select">
-                    <option value="rivals" selected>Roblox Rivals</option>
-                    <option value="arsenal">Roblox Arsenal</option>
-                    <option value="aimlabs">Aimlabs</option>
-                    <option value="kovaaks">Kovaak's</option>
-                  </select>
-                </div>
-                <button class="swap-btn" id="fovSwapBtn" title="Swap">⇄</button>
-                <div class="field-group">
-                  <label class="field-label">Convert To</label>
-                  <select id="fovTo" class="field-select">
-                    <option value="rivals">Roblox Rivals</option>
-                    <option value="arsenal">Roblox Arsenal</option>
-                    <option value="aimlabs">Aimlabs</option>
-                    <option value="kovaaks" selected>Kovaak's</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="conv-inputs-row">
-                <div class="field-group">
-                  <label class="field-label" id="fovFromLabel">Vertical FOV</label>
-                  <input type="number" id="robloxVFOV" class="field-input" placeholder="80" min="1" max="179" value="80">
-                </div>
-                <div class="field-group">
-                  <label class="field-label">Aspect Ratio</label>
-                  <select id="fovAspect" class="field-select">
-                    <option value="1.7778" selected>16:9 (Standard)</option>
-                    <option value="1.6">16:10</option>
-                    <option value="1.3333">4:3</option>
-                    <option value="2.3333">21:9 (Ultra)</option>
-                  </select>
-                </div>
-              </div>
-
-              <button class="btn-calc-fov" id="convertFOV">CALCULATE</button>
-
-              <div id="fovResult">
-              <div class="fov-result-row">
-                <div class="fov-result-col">
-                  <p class="fov-result-lbl" id="fovResultLabel">Calculated FOV</p>
-                  <p class="fov-result-val" id="fovOutput">0</p>
-                </div>
-                <div class="fov-result-col">
-                  <p class="fov-result-lbl">FOV Type</p>
-                  <p class="fov-result-val fov-type-val" id="fovType">Vertical</p>
-                </div>
-              </div>
-              </div>
-
-              <div id="fovHfovRow" style="display:none;padding:10px 0 0">
-                <p class="fov-result-lbl" style="margin-bottom:4px">Equivalent HFOV (KovaaK's)</p>
-                <p class="fov-result-val" id="fovHfovOut" style="font-size:22px">—</p>
-              </div>
-
-              <div class="fov-note-box" id="fovNoteBox" style="display:none">
-                <p id="fovNote" class="fov-note-text"></p>
-                <p id="fovExtraNote" class="fov-note-text fov-note-sub"></p>
-              </div>
-
-            </div>
-          </div>
-
-        </div><!-- /converters-grid -->
-
-        <div class="formula-note">
-          <span class="fn-icon">ℹ️</span>
-          <div>
-            <strong>Sensitivity:</strong>
-            Rivals &amp; Arsenal yaw = 0.37503 · Aimlabs yaw = 0.05 · KovaaK's yaw = 0.022 ·
-            Formula: <code>toSens = (fromDPI × fromYaw × effectiveSens) / (toDPI × toYaw)</code><br>
-            <strong>FOV:</strong>
-            Rivals default 80 VFOV · Arsenal &amp; Aimlabs default 70 VFOV · KovaaK's uses HFOV ·
-            Formula: <code>HFOV = 2·atan(tan(VFOV/2)·aspect)</code>
-          </div>
-        </div>
-
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <div class="footer-wrap">
+      <div class="footer-brand">
+        <span class="footer-title">AimRivals - Upgraded</span>
+        <span class="footer-by">by PurplsXD</span>
       </div>
-    </section>
-
-    <!-- ═══ WARMUP ═══ -->
-    <section id="warmup" class="section">
-      <div class="warmup-section-wrap">
-
-        <!-- Header + Controls row -->
-        <div class="warmup-header-row">
-          <div>
-            <h1 class="warmup-title">3D Warmup</h1>
-            <p class="warmup-sub">Lock your cursor &amp; warm up before your aim trainer session</p>
-          </div>
-          <div class="warmup-controls">
-            <div class="wc-group">
-              <label class="wc-label">Duration</label>
-              <select id="gameDuration" class="wc-select">
-                <option value="15">15 sec</option>
-                <option value="30" selected>30 sec</option>
-                <option value="60">60 sec</option>
-              </select>
-            </div>
-            <div class="wc-group">
-              <label class="wc-label">Sensitivity</label>
-              <select id="gameSensitivity" class="wc-select">
-                <option value="0.0008">Very Low</option>
-                <option value="0.0015">Low</option>
-                <option value="0.0022" selected>Medium</option>
-                <option value="0.003">High</option>
-                <option value="0.005">Very High</option>
-              </select>
-            </div>
-            <div class="wc-group">
-              <label class="wc-label">Difficulty</label>
-              <select id="gameDifficulty" class="wc-select">
-                <option value="easy">Easy</option>
-                <option value="medium" selected>Medium</option>
-                <option value="hard">Hard</option>
-              </select>
-            </div>
-            <button class="btn-restart" id="restartGame">↺ Restart</button>
-          </div>
-        </div>
-
-        <!-- Mode tabs -->
-        <div class="game-tabs" id="gameTabs">
-          <button class="game-tab active" data-game="tracking">
-            <span class="gt-icon">🎯</span>
-            <div class="gt-text"><span class="gt-name">Tracking</span><span class="gt-desc">Follow a moving sphere</span></div>
-          </button>
-          <button class="game-tab" data-game="flicking">
-            <span class="gt-icon">⚡</span>
-            <div class="gt-text"><span class="gt-name">Flicking</span><span class="gt-desc">Fast target acquisition</span></div>
-          </button>
-          <button class="game-tab" data-game="switching">
-            <span class="gt-icon">🔀</span>
-            <div class="gt-text"><span class="gt-name">Switching</span><span class="gt-desc">Rapid multi-target</span></div>
-          </button>
-        </div>
-
-        <!-- HUD -->
-        <div class="warmup-hud" id="warmupHUD">
-          <div class="hud-stat"><span class="hud-num" id="wScore">0</span><span class="hud-lbl" id="wScoreLbl">Score</span></div>
-          <div class="hud-stat hud-center"><span class="hud-num" id="wTimer">30</span><span class="hud-lbl">Seconds</span></div>
-          <div class="hud-stat"><span class="hud-num" id="wAccuracy">—</span><span class="hud-lbl">Accuracy</span></div>
-          <div class="hud-stat"><span class="hud-num" id="wBest">—</span><span class="hud-lbl">Best</span></div>
-        </div>
-
-        <!-- Canvas -->
-        <div class="canvas-wrap" id="canvasWrap">
-          <canvas id="warmupCanvas"></canvas>
-
-          <div class="crosshair" id="crosshair">
-            <div class="ch-line ch-t"></div>
-            <div class="ch-line ch-b"></div>
-            <div class="ch-line ch-l"></div>
-            <div class="ch-line ch-r"></div>
-            <div class="ch-dot"></div>
-          </div>
-
-          <div class="hit-ring" id="hitRing"></div>
-
-          <div class="canvas-overlay" id="canvasOverlay">
-            <div class="overlay-inner">
-              <div class="overlay-game-badge tracking" id="overlayBadge">🎯 TRACKING</div>
-              <div class="overlay-title tracking-title" id="overlayTitle">READY?</div>
-              <div class="overlay-sub" id="overlaySub">Click Begin to lock your cursor and start the round</div>
-              <button class="btn-begin tracking-btn" id="btnStartGame">▶ Begin Warmup</button>
-            </div>
-          </div>
-
-          <div class="pointer-prompt" id="pointerPrompt">Click anywhere to regain cursor lock</div>
-        </div>
-
-        <!-- Tip -->
-        <div class="game-tips" id="gameTips">
-          <span class="tip-badge">💡 Tip</span>
-          <p class="tip-text" id="tipText">Keep your crosshair ahead of the target — predict its path rather than chasing it.</p>
-        </div>
-
+      <div class="footer-links">
+        <a href="/routines">Routines</a>
+        <a href="/converters">Converters</a>
+        <a href="/warmup">Warmup</a>
+        <a href="https://github.com/atharvw11s/AimRivals-Upgraded" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px;margin-right:4px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub Repository
+        </a>
       </div>
-    </section>
+      <p class="footer-copy">Scenarios sourced from Voltaic, VDIM &amp; the community · Open source</p>
+    </div>
+  </footer>
 
-  </main>
-</div>
-
-<div class="toast" id="toast"></div>
-<script src="script.js"></script>
+  <script src="landing.js"></script>
 </body>
 </html>

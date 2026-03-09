@@ -394,24 +394,46 @@ function renderPlaylist() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   NAVIGATION
+   NAVIGATION — clean paths (/routines, /converters, /warmup)
    ═══════════════════════════════════════════════════════════════ */
+function parsePath() {
+  const valid = ['routines','converters','warmup'];
+  // 1. Query param set by 404.html redirect
+  const qs = new URLSearchParams(location.search).get('section');
+  if (valid.includes(qs)) {
+    // Clean the URL immediately — remove ?section= 
+    history.replaceState({ section: qs }, '', '/' + qs);
+    return qs;
+  }
+  // 2. Pathname segment (/routines, /converters, /warmup)
+  const seg = location.pathname.split('/').filter(Boolean).pop() || '';
+  if (valid.includes(seg)) return seg;
+  // 3. Hash fallback (#routines or #/routines)
+  const fromHash = location.hash.replace(/^#\/?/, '');
+  if (valid.includes(fromHash)) return fromHash;
+  return 'routines';
+}
+
 function showSection(target) {
   const valid = ['routines','converters','warmup'];
   if (!valid.includes(target)) target = 'routines';
 
   document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section === target));
-  document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === target));
+  document.querySelectorAll('.section').forEach(s  => s.classList.toggle('active', s.id === target));
 
   if (target === 'warmup') setTimeout(() => Warmup3D.resize(), 60);
 
-  // Update URL hash without reloading
-  const hash = '#' + target;
-  if (location.hash !== hash) history.pushState({ section: target }, '', hash);
+  // Push clean path — no # at all, no app.html prefix
+  const newPath = '/' + target;
+  if (location.pathname !== newPath) {
+    history.pushState({ section: target }, '', newPath);
+  }
+
+  const titles = { routines:'Routines', converters:'Converters', warmup:'Warmup' };
+  document.title = 'AimRivals — ' + titles[target];
 }
 
 function initNav() {
-  // Clicking nav links
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
@@ -419,15 +441,11 @@ function initNav() {
     });
   });
 
-  // Browser back/forward
   window.addEventListener('popstate', e => {
-    const target = (e.state?.section) || location.hash.replace('#','') || 'routines';
-    showSection(target);
+    showSection(e.state?.section || parsePath());
   });
 
-  // Load from hash on page load
-  const initialSection = location.hash.replace('#','') || 'routines';
-  showSection(initialSection);
+  showSection(parsePath());
 }
 
 function initTrainerToggle() {

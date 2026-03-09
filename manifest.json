@@ -1,0 +1,17 @@
+{
+  "name": "AimRivals - Upgraded",
+  "short_name": "AimRivals",
+  "description": "Daily aim training routines, sensitivity & FOV converters, and 3D warmup games for Roblox FPS players.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080612",
+  "theme_color": "#8b00ff",
+  "orientation": "landscape-primary",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "categories": ["games", "utilities", "sports"],
+  "author": "PurplsXD",
+  "repository": "https://github.com/atharvw11s/AimRivals-Upgraded"
+}
