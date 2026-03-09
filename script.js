@@ -259,7 +259,7 @@ const SCENARIO_DB = {
      Slider = 1.0 (default) → Rivals ≡ Arsenal
    ═══════════════════════════════════════════════════════════════ */
 const SENS_DB = {
-  rivals:  { label: 'Roblox Rivals',  yaw: 0.37503, sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
+  rivals:  { label: 'Roblox Rivals',  yaw: 0.37503, sensLabel: 'Camera Sensitivity (%)', hasMultiplier: true,  sensScale: 0.01 },
   arsenal: { label: 'Roblox Arsenal', yaw: 0.37503, sensLabel: 'Camera Sensitivity',     hasMultiplier: false, sensScale: 1    },
   aimlabs: { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
   kovaaks: { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
@@ -591,7 +591,7 @@ function initSensConverter() {
     const isToRivals   = toEl.value   === 'rivals';
 
     // Update labels + hint
-    if (fromLbl) fromLbl.textContent = isFromRivals ? 'Camera Sensitivity' : (fg?.sensLabel || 'Sensitivity');
+    if (fromLbl) fromLbl.textContent = isFromRivals ? 'Camera Sensitivity (% or raw)' : (fg?.sensLabel || 'Sensitivity');
     if (toLbl)   toLbl.textContent   = (tg?.label || 'Target') + ' Sensitivity';
     if (multRowEl) multRowEl.style.display = fg?.hasMultiplier ? 'flex' : 'none';
 
@@ -600,14 +600,14 @@ function initSensConverter() {
     if (pctHint) pctHint.style.display = isFromRivals ? 'flex' : 'none';
 
     // Update placeholder
-    sensEl.placeholder = isFromRivals ? '0.5' : '0.5';
+    sensEl.placeholder = isFromRivals ? 'e.g. 50 or 50%' : '0.064';
 
     const effectiveRaw = parseSensInput(sensEl.value, isFromRivals);
 
     if (!fg || !tg || isNaN(effectiveRaw) || isNaN(dpi) || dpi <= 0) {
       document.getElementById('sensOutput').textContent = '—';
       document.getElementById('sensNote').textContent   = isFromRivals
-        ? 'Enter Camera Sensitivity (e.g. 0.5)'
+        ? 'Enter % (e.g. 50 or 50%) or raw (e.g. 0.5)'
         : 'Enter your sensitivity and DPI above';
       if (dpiLbl) dpiLbl.textContent = 'at — DPI';
       if (dpiVal) dpiVal.textContent = '— DPI';
@@ -615,12 +615,7 @@ function initSensConverter() {
       return;
     }
 
-    const sliderRaw  = multEl?.value || '100';
-    const sliderStr  = String(sliderRaw).trim();
-    const sliderNum  = parseFloat(sliderStr.endsWith('%') ? sliderStr.slice(0,-1) : sliderStr);
-    // Slider is in % (100 = 1.0), so divide by 100 unless it's already <= 10 (old-style raw)
-    const sliderVal  = sliderStr.endsWith('%') ? sliderNum / 100 : (sliderNum > 10 ? sliderNum / 100 : sliderNum);
-    const slider     = fg.hasMultiplier ? Math.max(0.0001, sliderVal || 1.0) : 1.0;
+    const slider        = fg.hasMultiplier ? Math.max(0.01, parseFloat(multEl?.value) || 1.0) : 1.0;
     const effectiveSens = effectiveRaw * slider;
 
     const cm360     = 914.4 / (800 * fg.yaw * effectiveSens);
@@ -635,7 +630,7 @@ function initSensConverter() {
       ? (effectiveRaw * 100).toFixed(2) + '%'
       : `${effectiveRaw}`;
     document.getElementById('sensNote').textContent =
-      `${fg.label} ${fromDisplay}${slider !== 1.0 ? ' × ' + (slider * 100).toFixed(0) + '% slider' : ''} at 800 DPI`
+      `${fg.label} ${fromDisplay}${slider !== 1.0 ? ' × ' + slider + ' multiplier' : ''} at 800 DPI`
       + ` = ${tg.label} ${toDisplay} at ${dpi} DPI — same aim speed`;
     document.getElementById('sensResult').classList.add('has-result');
 
