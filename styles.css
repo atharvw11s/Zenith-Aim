@@ -1155,3 +1155,27 @@ main{position:relative;z-index:1}
   transition: color .2s;
 }
 .footer-gh-link:hover { color: var(--tx-2); }
+
+/* Warmup number input (sensitivity) */
+.wc-input {
+  background: var(--bg-card);
+  border: 1px solid var(--bdr);
+  border-radius: var(--r-s);
+  padding: 8px 14px;
+  font-family: var(--f-j);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--tx);
+  outline: none;
+  width: 120px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.wc-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-lo);
+}
+.wc-input::placeholder { color: var(--tx-4); }
+/* Hide browser spinner arrows */
+.wc-input::-webkit-outer-spin-button,
+.wc-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.wc-input[type=number] { -moz-appearance: textfield; }

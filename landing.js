@@ -112,3 +112,13 @@
   }
 
 })();
+
+/* ── Section routing via sessionStorage (no # in URL) ── */
+document.querySelectorAll('[data-goto]').forEach(el => {
+  el.addEventListener('click', function(e) {
+    e.preventDefault();
+    const section = this.dataset.goto;
+    sessionStorage.setItem('aimrivals_section', section);
+    window.location.href = 'app.html';
+  });
+});

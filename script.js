@@ -394,21 +394,17 @@ function renderPlaylist() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   NAVIGATION — clean paths (/routines, /converters, /warmup)
+   NAVIGATION — sessionStorage routing (no # in URL)
    ═══════════════════════════════════════════════════════════════ */
 function parsePath() {
   const valid = ['routines','converters','warmup'];
-  // 1. Query param set by 404.html redirect
-  const qs = new URLSearchParams(location.search).get('section');
-  if (valid.includes(qs)) {
-    // Clean the URL immediately — remove ?section= 
-    history.replaceState({ section: qs }, '', '/' + qs);
-    return qs;
+  // Check sessionStorage first (set by landing page links)
+  const stored = sessionStorage.getItem('aimrivals_section');
+  if (stored && valid.includes(stored)) {
+    sessionStorage.removeItem('aimrivals_section');
+    return stored;
   }
-  // 2. Pathname segment (/routines, /converters, /warmup)
-  const seg = location.pathname.split('/').filter(Boolean).pop() || '';
-  if (valid.includes(seg)) return seg;
-  // 3. Hash fallback (#routines or #/routines)
+  // Fall back to hash if someone typed it manually
   const fromHash = location.hash.replace(/^#\/?/, '');
   if (valid.includes(fromHash)) return fromHash;
   return 'routines';
@@ -423,11 +419,8 @@ function showSection(target) {
 
   if (target === 'warmup') setTimeout(() => Warmup3D.resize(), 60);
 
-  // Push clean path — no # at all, no app.html prefix
-  const newPath = '/' + target;
-  if (location.pathname !== newPath) {
-    history.pushState({ section: target }, '', newPath);
-  }
+  // Store in history state — no hash, no path change
+  history.replaceState({ section: target }, '', location.pathname);
 
   const titles = { routines:'Routines', converters:'Converters', warmup:'Warmup' };
   document.title = 'AimRivals — ' + titles[target];
@@ -442,7 +435,7 @@ function initNav() {
   });
 
   window.addEventListener('popstate', e => {
-    showSection(e.state?.section || parsePath());
+    if (e.state?.section) showSection(e.state.section);
   });
 
   showSection(parsePath());
@@ -779,11 +772,10 @@ const Warmup3D = (() => {
   let crosshairEl, hitRingEl, pointerPromptEl;
   let currentTabEl;
 
-  // Tips per game
   const TIPS = {
     tracking:  'Keep your crosshair ahead of the sphere — predict the path, don\'t just chase.',
     flicking:  'Fix your eyes on the lit target before moving your mouse — eyes lead, hand follows.',
-    switching: 'Develop a scanning rhythm — sweep in one direction, click each lit target cleanly.',
+    switching: 'All targets are live — deplete each one\'s health bar to zero. Shoot precisely, no HP regenerates.',
   };
 
   // ── INIT ──
@@ -833,7 +825,15 @@ const Warmup3D = (() => {
 
     startBtn.addEventListener('click', startGame);
     document.getElementById('restartGame').addEventListener('click', () => { stopGame(); resetHUD(); buildScene(); renderIdle(); showOverlay(true); });
-    document.getElementById('gameSensitivity').addEventListener('change', e => { mouseSens = parseFloat(e.target.value); });
+    // Sensitivity — read from number input
+    const sensInput = document.getElementById('gameSensitivity');
+    if (sensInput) {
+      mouseSens = parseFloat(sensInput.value) || 0.0022;
+      sensInput.addEventListener('input', e => {
+        const v = parseFloat(e.target.value);
+        if (!isNaN(v) && v > 0) mouseSens = v;
+      });
+    }
 
     // Pointer lock
     document.addEventListener('pointerlockchange', onPointerLockChange);
@@ -1043,91 +1043,142 @@ const Warmup3D = (() => {
     }
   }
 
-  // ─── SWITCHING ───
+  // ─── SWITCHING — targets have HP bars, no respawn, deplete permanently ───
   const SWITCH_POSITIONS = [
-    [-7, 2,   -12],
-    [-3.5, 3.2,-11],
-    [ 0,  1,   -10],
-    [ 3.5, 3.2,-11],
-    [ 7,  2,   -12],
+    [-7,   2.8, -14],
+    [-3.8, 1.4, -12],
+    [ 0,   3.2, -13],
+    [ 3.8, 1.4, -12],
+    [ 7,   2.8, -14],
+    [-5.5, 0.5, -13],
+    [ 5.5, 0.5, -13],
   ];
 
-  function buildSwitching() {
-    switchTargets  = [];
-    switchActive   = 0;
+  // Health-bar canvas sprites rendered as textures above each target
+  let switchHealthBars = []; // { mesh, hp, maxHp, barMesh }
 
-    const diff = document.getElementById('gameDifficulty').value;
-    const R    = diff === 'easy' ? 0.42 : diff === 'hard' ? 0.22 : 0.32;
+  function makeHealthBarTexture(hp, maxHp) {
+    const W = 128, H = 20;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const c = cv.getContext('2d');
+    // Background
+    c.fillStyle = 'rgba(0,0,0,0.6)';
+    c.fillRect(0, 0, W, H);
+    // Bar fill
+    const frac = Math.max(0, hp / maxHp);
+    const barColor = frac > 0.6 ? '#22c55e' : frac > 0.3 ? '#f59e0b' : '#ef4444';
+    c.fillStyle = barColor;
+    c.fillRect(2, 4, Math.round((W - 4) * frac), H - 8);
+    // Border
+    c.strokeStyle = 'rgba(255,255,255,0.25)';
+    c.lineWidth = 1;
+    c.strokeRect(2, 4, W - 4, H - 8);
+    const tex = new THREE.CanvasTexture(cv);
+    return tex;
+  }
+
+  function buildSwitching() {
+    switchTargets   = [];
+    switchHealthBars = [];
+
+    const diff  = document.getElementById('gameDifficulty').value;
+    const R     = diff === 'easy' ? 0.44 : diff === 'hard' ? 0.22 : 0.32;
+    const maxHp = diff === 'easy' ? 5    : diff === 'hard' ? 15   : 10;
 
     SWITCH_POSITIONS.forEach((pos, i) => {
-      const isActive = i === 0;
-      const geo = new THREE.SphereGeometry(R, 18, 18);
+      // Target sphere
+      const geo = new THREE.SphereGeometry(R, 20, 20);
       const mat = new THREE.MeshStandardMaterial({
-        color:             isActive ? 0xa855f7 : 0x2a2a3a,
-        emissive:          isActive ? 0x7c3aed : 0x080810,
-        emissiveIntensity: isActive ? 1.0      : 0.1,
-        roughness: 0.4, metalness: 0.3,
+        color:             0xa855f7,
+        emissive:          0x7c3aed,
+        emissiveIntensity: 0.8,
+        roughness: 0.35, metalness: 0.3,
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(...pos);
-      mesh._switchIdx = i;
+      mesh._switchIdx  = i;
+      mesh._hp         = maxHp;
+      mesh._maxHp      = maxHp;
+      mesh._dead       = false;
       scene.add(mesh);
       switchTargets.push(mesh);
+
+      // Glow shell (starts visible)
+      const gGeo = new THREE.SphereGeometry(R * 1.7, 12, 12);
+      const gMat = new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.09, side: THREE.BackSide });
+      const glow = new THREE.Mesh(gGeo, gMat);
+      glow.position.set(...pos);
+      mesh._glow = glow;
+      scene.add(glow);
+
+      // Point light
+      const pt = new THREE.PointLight(0xa855f7, 2.5, 8);
+      pt.position.set(...pos);
+      mesh._light = pt;
+      scene.add(pt);
+
+      // Health bar sprite above target
+      const tex    = makeHealthBarTexture(maxHp, maxHp);
+      const barGeo = new THREE.PlaneGeometry(R * 3.5, R * 0.7);
+      const barMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false });
+      const bar    = new THREE.Mesh(barGeo, barMat);
+      bar.position.set(pos[0], pos[1] + R * 2.2, pos[2]);
+      scene.add(bar);
+      mesh._barMesh = bar;
+
+      switchHealthBars.push({ mesh, hp: maxHp, maxHp });
     });
-
-    // Connector lines between targets
-    SWITCH_POSITIONS.forEach((pos, i) => {
-      if (i < SWITCH_POSITIONS.length - 1) {
-        const pts = [new THREE.Vector3(...pos), new THREE.Vector3(...SWITCH_POSITIONS[i+1])];
-        const geo = new THREE.BufferGeometry().setFromPoints(pts);
-        const mat = new THREE.LineBasicMaterial({ color: 0x2a1040, transparent: true, opacity: 0.4 });
-        scene.add(new THREE.Line(geo, mat));
-      }
-    });
-
-    // Glow and light for first active
-    addSwitchGlowAndLight(0, R);
-  }
-
-  function addSwitchGlowAndLight(idx, R) {
-    scene.children = scene.children.filter(c => !c._switchGlow && !c._switchLight);
-    const pos = SWITCH_POSITIONS[idx];
-    const gGeo = new THREE.SphereGeometry((R || 0.32) * 1.9, 12, 12);
-    const gMat = new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.1, side: THREE.BackSide });
-    const glow = new THREE.Mesh(gGeo, gMat);
-    glow.position.set(...pos); glow._switchGlow = true;
-    scene.add(glow);
-    const pt = new THREE.PointLight(0xa855f7, 3.5, 10);
-    pt.position.set(...pos); pt._switchLight = true;
-    scene.add(pt);
-  }
-
-  function activateSwitchTarget(idx) {
-    switchActive = idx;
-    switchTargets.forEach((mesh, i) => {
-      const active = i === switchActive;
-      mesh.material.color.setHex(active ? 0xa855f7 : 0x1e1e2a);
-      mesh.material.emissive.setHex(active ? 0x7c3aed : 0x050508);
-      mesh.material.emissiveIntensity = active ? 1.0 : 0.05;
-    });
-    addSwitchGlowAndLight(idx);
   }
 
   function onSwitchClick() {
     if (!gameRunning || switchTargets.length === 0) return;
     shots++;
     raycaster.setFromCamera(CENTER, camera);
-    const intersects = raycaster.intersectObjects(switchTargets);
+    // Only raycast alive targets
+    const alive = switchTargets.filter(m => !m._dead);
+    if (alive.length === 0) return;
+
+    const intersects = raycaster.intersectObjects(alive);
     if (intersects.length > 0) {
-      const hitIdx = intersects[0].object._switchIdx;
-      if (hitIdx === switchActive) {
-        hits++;
-        score++;
+      const hit = intersects[0].object;
+      hits++;
+      hit._hp -= 1;
+
+      // Update health bar texture
+      const tex = makeHealthBarTexture(hit._hp, hit._maxHp);
+      hit._barMesh.material.map = tex;
+      hit._barMesh.material.needsUpdate = true;
+
+      // Color target by remaining HP
+      const frac = hit._hp / hit._maxHp;
+      const r = Math.round(255 * (1 - frac)), g = Math.round(80 * frac);
+      hit.material.color.setRGB(r/255 * 0.7 + 0.15, g/255 * 0.5, frac > 0.5 ? 0.85 : 0.2);
+      hit.material.emissive.setRGB(r/255 * 0.3, g/255 * 0.2, frac > 0.5 ? 0.4 : 0.05);
+
+      score++;
+      scoreEl.textContent = score;
+      accEl.textContent   = `${Math.round((hits/shots)*100)}%`;
+      flashHitRing();
+
+      if (hit._hp <= 0) {
+        // Target dead — grey out, remove glow/light
+        hit._dead = true;
+        hit.material.color.setHex(0x2a2a3a);
+        hit.material.emissive.setHex(0x050508);
+        hit.material.emissiveIntensity = 0.02;
+        hit.material.opacity = 0.4;
+        hit.material.transparent = true;
+        if (hit._glow)  { hit._glow.visible  = false; }
+        if (hit._light) { hit._light.visible  = false; }
+        hit._barMesh.visible = false;
+      }
+
+      // If all dead — end round early with a bonus
+      if (switchTargets.every(m => m._dead)) {
+        score += 5; // Bonus for clearing all
         scoreEl.textContent = score;
-        accEl.textContent   = `${Math.round((hits/shots)*100)}%`;
-        flashHitRing();
-        // Advance to next target in sequence (wraps)
-        activateSwitchTarget((switchActive + 1) % SWITCH_POSITIONS.length);
+        stopGame();
       }
     }
   }
@@ -1210,7 +1261,8 @@ const Warmup3D = (() => {
     // Show end overlay
     updateOverlayTheme();
     titleEl.textContent  = 'ROUND OVER';
-    subEl.textContent    = `Score: ${score}  ·  ${gameMode === 'tracking' ? 'Tracked well!' : `Accuracy: ${acc}`}  ·  Best: ${bestScore[gameMode]}`;
+    const modeMsg = gameMode === 'tracking' ? 'Tracked well!' : gameMode === 'switching' ? `Damage dealt: ${score}` : `Accuracy: ${acc}`;
+    subEl.textContent    = `Score: ${score}  ·  ${modeMsg}  ·  Best: ${bestScore[gameMode]}`;
     startBtn.textContent = '▶ Play Again';
     overlay.classList.remove('hidden');
 
@@ -1224,7 +1276,7 @@ const Warmup3D = (() => {
     timerEl.textContent  = d;
     accEl.textContent    = '—';
     timerEl.style.color  = '';
-    scoreLblEl.textContent = gameMode === 'tracking' ? 'On Target' : 'Score';
+    scoreLblEl.textContent = gameMode === 'tracking' ? 'On Target' : gameMode === 'switching' ? 'Damage' : 'Score';
   }
 
   function flashHitRing() {

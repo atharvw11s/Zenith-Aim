@@ -26,9 +26,9 @@
       </a>
     </div>
     <div class="nav-links">
-      <a href="/routines" class="nav-link active" data-section="routines">Routines</a>
-      <a href="/converters" class="nav-link" data-section="converters">Converters</a>
-      <a href="/warmup" class="nav-link" data-section="warmup">Warmup</a>
+      <a href="app.html" class="nav-link active" data-section="routines">Routines</a>
+      <a href="app.html" class="nav-link" data-section="converters">Converters</a>
+      <a href="app.html" class="nav-link" data-section="warmup">Warmup</a>
     </div>
     <div class="nav-right-app">
       <a href="https://github.com/atharvw11s/AimRivals-Upgraded" target="_blank" rel="noopener" class="nav-gh-app" title="GitHub Repository">
@@ -293,14 +293,8 @@
               </select>
             </div>
             <div class="wc-group">
-              <label class="wc-label">Sensitivity</label>
-              <select id="gameSensitivity" class="wc-select">
-                <option value="0.0008">Very Low</option>
-                <option value="0.0015">Low</option>
-                <option value="0.0022" selected>Medium</option>
-                <option value="0.003">High</option>
-                <option value="0.005">Very High</option>
-              </select>
+              <label class="wc-label">Mouse Sensitivity</label>
+              <input type="number" id="gameSensitivity" class="wc-input" placeholder="0.0022" step="0.0001" min="0.0001" max="1" value="0.0022">
             </div>
             <div class="wc-group">
               <label class="wc-label">Difficulty</label>
