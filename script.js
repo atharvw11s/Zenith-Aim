@@ -561,8 +561,7 @@ function initSensConverter() {
   const multRowEl  = document.getElementById('sensMultiplierRow');
   const fromLbl    = document.getElementById('sensFromLabel');
   const toLbl      = document.getElementById('sensResultLabel');
-  const dpiLbl     = document.getElementById('sensDpiLabel');
-  const dpiVal     = document.getElementById('sensDpiVal');
+  const rivalsNote = document.getElementById('sensRivalsNote');
 
   let dpiLocked = false;
 
@@ -588,7 +587,8 @@ function initSensConverter() {
   }
 
   function formatSensOutput(raw, isRivals) {
-    if (isRivals) return (raw * 100).toFixed(2) + '%';
+    // Rivals output = raw Camera Sensitivity value (no % — that's only the in-game slider)
+    if (isRivals) return raw.toFixed(5);
     return raw.toFixed(5);
   }
 
@@ -601,8 +601,9 @@ function initSensConverter() {
     const isToRivals   = toEl.value   === 'rivals';
 
     if (fromLbl) fromLbl.textContent = fg?.sensLabel || 'Sensitivity';
-    if (toLbl)   toLbl.textContent   = (tg?.label || 'Target') + ' Sensitivity';
+    if (toLbl)   toLbl.textContent   = isToRivals ? 'Roblox Rivals Camera Sensitivity' : (tg?.label || 'Target') + ' Sensitivity';
     if (multRowEl) multRowEl.style.display = fg?.hasMultiplier ? 'flex' : 'none';
+    if (rivalsNote) rivalsNote.style.display = isToRivals ? 'block' : 'none';
 
     sensEl.placeholder = isFromRivals ? 'e.g. 0.5' : 'e.g. 0.064';
 
@@ -611,8 +612,6 @@ function initSensConverter() {
     if (!fg || !tg || isNaN(effectiveRaw) || isNaN(dpiFrom) || dpiFrom <= 0 || isNaN(dpiTo) || dpiTo <= 0) {
       document.getElementById('sensOutput').textContent = '—';
       document.getElementById('sensNote').textContent   = 'Enter your sensitivity and DPI above';
-      if (dpiLbl) dpiLbl.textContent = '— DPI';
-      if (dpiVal) dpiVal.textContent = '— DPI';
       document.getElementById('sensQuick').style.display = 'none';
       return;
     }
@@ -625,8 +624,6 @@ function initSensConverter() {
     const toDisplay = formatSensOutput(toSensRaw, isToRivals);
 
     document.getElementById('sensOutput').textContent = toDisplay;
-    if (dpiLbl) dpiLbl.textContent = `${dpiFrom} → ${dpiTo} DPI`;
-    if (dpiVal) dpiVal.textContent = `${dpiFrom} → ${dpiTo} DPI`;
 
     const fromDisplay = isFromRivals ? (effectiveRaw * 100).toFixed(2) + '%' : `${effectiveRaw}`;
     document.getElementById('sensNote').textContent =

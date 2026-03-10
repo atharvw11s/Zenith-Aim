@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AimRivals — App</title>
   <meta name="description" content="Daily aim training routines, sensitivity converters, FOV calculators and 3D warmup games.">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=13">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -189,6 +189,9 @@
                 <p class="sens-result-label" id="sensResultLabel">Calculated Sensitivity:</p>
                 <p class="sens-result-value" id="sensOutput">—</p>
                 <p class="sens-result-note" id="sensNote">Enter your sensitivity and DPI above</p>
+                <div class="rivals-sens-notice" id="sensRivalsNote" style="display:none">
+                  ⚠️ Set your <strong>Rivals In-Game Slider to 1</strong> (or 100%) if not already — then change your <strong>Roblox Camera Sensitivity</strong> to the value above.
+                </div>
                 <span id="sensDpiLabel" style="display:none"></span>
                 <span id="sensDpiVal"   style="display:none"></span>
               </div>
@@ -437,11 +440,10 @@
 <div class="toast" id="toast"></div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="auth.js?v=12"></script>
-<script src="scores.js?v=12"></script>
-<script src="script.js?v=12"></script>
+<script src="auth.js?v=13"></script>
+<script src="scores.js?v=13"></script>
+<script src="script.js?v=13"></script>
 
-  <!-- Firebase Auth SDK -->
   <!-- Auth Modal -->
   <div class="auth-modal-bg" id="authModalBg">
     <div class="auth-modal">

@@ -1597,3 +1597,21 @@ main{position:relative;z-index:1}
   box-sizing: border-box; outline: none; transition: border-color .2s;
 }
 .auth-name-input:focus { border-color: var(--accent); }
+
+/* ── Rivals camera sensitivity notice ──────────────────────────── */
+.rivals-sens-notice {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: rgba(139,0,255,0.1);
+  border: 1px solid rgba(139,0,255,0.35);
+  border-radius: 10px;
+  font-family: var(--f-k);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--tx-3);
+  text-align: left;
+}
+.rivals-sens-notice strong {
+  color: var(--tx);
+  font-weight: 700;
+}
