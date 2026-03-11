@@ -534,8 +534,8 @@ function initSensConverter() {
 
     if (fromLbl) fromLbl.textContent = fg?.sensLabel || 'Sensitivity';
     if (toLbl)   toLbl.textContent   = isToRivals ? 'Roblox Rivals Camera Sensitivity' : (tg?.label || 'Target') + ' Sensitivity';
-    if (multRowEl) multRowEl.style.display = fg?.hasMultiplier ? 'flex' : 'none';
-    if (rivalsNote) if (rivalsNote) rivalsNote.style.display = isToRivals ? 'block' : 'none';
+    if (multRowEl) multRowEl.style.display = (isFromRivals && !isToRivals) ? 'flex' : 'none';
+    if (rivalsNote) rivalsNote.style.display = isToRivals ? 'block' : 'none';
 
     sensEl.placeholder = isFromRivals ? 'e.g. 0.5' : 'e.g. 0.064';
 
