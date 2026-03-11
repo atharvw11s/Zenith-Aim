@@ -262,7 +262,8 @@ const SENS_DB = {
   rivals:  { label: 'Roblox Rivals',  yaw: 0.37503, sensLabel: 'Camera Sensitivity',      hasMultiplier: true,  sensScale: 0.01 },
   arsenal: { label: 'Roblox Arsenal', yaw: 0.37503, sensLabel: 'Camera Sensitivity',     hasMultiplier: false, sensScale: 1    },
   aimlabs: { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
-  kovaaks: { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
+  kovaaks:  { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
+  valorant: { label: 'Valorant',        yaw: 0.07,    sensLabel: 'Sensitivity',             hasMultiplier: false, sensScale: 1    },
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -591,9 +592,13 @@ function initSensConverter() {
   }
 
   function parseMultiplier(raw) {
-    const str = String(raw || '1').trim();
-    const num = parseFloat(str.endsWith('%') ? str.slice(0, -1) / 100 : str);
-    return isNaN(num) ? 1.0 : Math.max(0.01, num);
+    const str    = String(raw || '1').trim();
+    const hasPct = str.endsWith('%');
+    const num    = parseFloat(hasPct ? str.slice(0, -1) : str);
+    if (isNaN(num)) return 1.0;
+    if (hasPct)     return Math.max(0.001, num / 100);
+    // 0–10 = raw multiplier (1 = 100%), above 10 = treat as percentage (100 = 1.0)
+    return num > 10 ? Math.max(0.001, num / 100) : Math.max(0.001, num);
   }
 
   function recalc() {
@@ -607,7 +612,7 @@ function initSensConverter() {
     if (fromLbl) fromLbl.textContent = fg?.sensLabel || 'Sensitivity';
     if (toLbl)   toLbl.textContent   = isToRivals ? 'Roblox Rivals Camera Sensitivity' : (tg?.label || 'Target') + ' Sensitivity';
     if (multRowEl) multRowEl.style.display = fg?.hasMultiplier ? 'flex' : 'none';
-    if (rivalsNote) rivalsNote.style.display = isToRivals ? 'block' : 'none';
+    if (rivalsNote) if (rivalsNote) rivalsNote.style.display = isToRivals ? 'block' : 'none';
 
     sensEl.placeholder = isFromRivals ? 'e.g. 0.5' : 'e.g. 0.064';
 
