@@ -749,10 +749,30 @@ const Warmup3D = (() => {
     timerEl         = document.getElementById('wTimer');
     accEl           = document.getElementById('wAccuracy');
     bestEl          = document.getElementById('wBest');
+
+    // Load persisted personal bests from Firebase/localStorage
+    if (typeof Scores !== 'undefined') {
+      Scores.loadBests().then(bests => {
+        ['tracking','flicking','switching'].forEach(m => {
+          if (bests[m] != null) bestScore[m] = bests[m];
+        });
+        if (bestEl) bestEl.textContent = bestScore[gameMode] ?? '—';
+      }).catch(() => {});
+    }
     scoreLblEl      = document.getElementById('wScoreLbl');
     crosshairEl     = document.getElementById('crosshair');
     hitRingEl       = document.getElementById('hitRing');
     pointerPromptEl = document.getElementById('pointerPrompt');
+
+    // Load persistent personal bests
+    if (typeof Scores !== 'undefined') {
+      Scores.loadBests().then(bests => {
+        if (bests.tracking  != null) bestScore.tracking  = bests.tracking;
+        if (bests.flicking  != null) bestScore.flicking  = bests.flicking;
+        if (bests.switching != null) bestScore.switching = bests.switching;
+        if (bestEl) bestEl.textContent = bestScore[gameMode] ?? '—';
+      }).catch(() => {});
+    }
 
     // Build Three.js renderer
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -1304,9 +1324,12 @@ const Warmup3D = (() => {
     // Capture accuracy NOW before anything resets
     const acc = shots > 0 ? `${Math.round((hits/shots)*100)}%` : '—';
 
-    // Update session best
+    // Update persistent personal best
     if (bestScore[gameMode] === null || score > bestScore[gameMode]) {
       bestScore[gameMode] = score;
+      if (typeof Scores !== 'undefined') {
+        Scores.saveBest(gameMode, score).catch(() => {});
+      }
     }
     bestEl.textContent = bestScore[gameMode] ?? '—';
     timerEl.style.color = '';
