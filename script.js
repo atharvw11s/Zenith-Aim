@@ -331,7 +331,11 @@ function parsePath() {
     sessionStorage.removeItem('aimrivals_section');
     return stored;
   }
-  // Fall back to hash if someone typed it manually
+  // Read from URL path — works with folder structure (/routines/, /converters/ etc.)
+  const parts = location.pathname.replace(/\/+$/, '').split('/');
+  const fromPath = parts[parts.length - 1];
+  if (valid.includes(fromPath)) return fromPath;
+  // Fall back to hash
   const fromHash = location.hash.replace(/^#\/?/, '');
   if (valid.includes(fromHash)) return fromHash;
   return 'routines';
@@ -347,7 +351,9 @@ function showSection(target) {
   if (target === 'warmup') setTimeout(() => Warmup3D.resize(), 60);
 
   // Store in history state — no hash, no path change
-  history.replaceState({ section: target }, '', location.pathname);
+  // Update URL to match folder structure
+  const base = location.pathname.replace(/\/(routines|converters|warmup)\/?$/, '').replace(/\/+$/, '');
+  history.replaceState({ section: target }, '', base + '/' + target + '/');
 
   const titles = { routines:'Routines', converters:'Converters', warmup:'Warmup' };
   document.title = 'AimRivals — ' + titles[target];
