@@ -346,9 +346,9 @@ function showSection(target) {
 
   if (target === 'warmup') setTimeout(() => Warmup3D.resize(), 60);
 
-  // Update URL to reflect current section cleanly
-  const base = window.location.origin + window.location.pathname.replace(/\/(routines|converters|warmup)(\/.*)?$/, '');
-  history.pushState({ section: target }, '', base + '/' + target + '/');
+  // Update URL to always be /AimRivals-Upgraded/<section>/
+  const repoBase = window.location.origin + '/AimRivals-Upgraded';
+  history.pushState({ section: target }, '', repoBase + '/' + target + '/');
 
   const titles = { routines:'Routines', converters:'Converters', warmup:'Warmup' };
   document.title = 'AimRivals — ' + titles[target];
