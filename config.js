@@ -1,13 +1,12 @@
-<DOCUMENT filename="config.js">
 /* ================================================================
-   AimRivals — config.js
+   Zenith Aim — config.js
    ================================================================ */
 
 const AimRivalsConfig = {
 
   version: '6.0.0',
   author:  'PurplsXD',
-  repo:    'https://github.com/atharvw11s/AimRivals-Upgraded',
+  repo:    'https://github.com/atharvw11s/Zenith-Aim',
 
   SENS_DB: {
     rivals:  { label: 'Roblox Rivals',  yaw: 0.37503, sensLabel: 'Rivals In-Game Slider (default 100%)', hasMultiplier: true  },
@@ -42,4 +41,3 @@ const AimRivalsConfig = {
 
 if (typeof window !== 'undefined') window.AimRivalsConfig = AimRivalsConfig;
 if (typeof module !== 'undefined') module.exports = AimRivalsConfig;
-</DOCUMENT>
