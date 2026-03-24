@@ -346,11 +346,9 @@ function showSection(target) {
 
   if (target === 'warmup') setTimeout(() => Warmup3D.resize(), 60);
 
-  // Update URL to clean folder path — works from app.html or any subfolder
+  // Update displayed URL cosmetically without adding a history entry
   const repoBase = window.location.origin + '/AimRivals-Upgraded';
-  history.pushState({ section: target }, '', repoBase + '/' + target + '/');
-  // Update nav active state to match
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section === target));
+  history.replaceState({ section: target }, '', repoBase + '/' + target + '/');
 
   const titles = { routines:'Routines', converters:'Converters', warmup:'Warmup' };
   document.title = 'AimRivals — ' + titles[target];
@@ -365,7 +363,9 @@ function initNav() {
   });
 
   window.addEventListener('popstate', e => {
-    if (e.state?.section) showSection(e.state.section);
+    const slug  = location.pathname.replace(/\/+$/, '').split('/').pop();
+    const valid = ['routines', 'converters', 'warmup'];
+    showSection(valid.includes(slug) ? slug : 'routines');
   });
 
   showSection(parsePath());
