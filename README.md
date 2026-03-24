@@ -2,7 +2,7 @@
 
 > Daily aim training routines, sensitivity converters, FOV calculators and live 3D warmup games — built for FPS players.
 
-**Live site:**https://atharvw11s.github.io/Zenith-Aim/  
+**Live site:** https://atharvw11s.github.io/Zenith-Aim/  
 **Author:** PurplsXD
 
 ---
