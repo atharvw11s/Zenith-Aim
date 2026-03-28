@@ -358,7 +358,8 @@ function showSection(target, fromPopState) {
       };
       document.head.appendChild(script);
     } else {
-      setTimeout(() => Warmup3D.resize(), 60);
+      // THREE already loaded — re-init to restore canvas/listeners
+      setTimeout(() => { Warmup3D.init(); }, 60);
     }
   }
 

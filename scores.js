@@ -51,7 +51,7 @@ const Scores = (() => {
     return `${y}-W${String(week).padStart(2, '0')}`;
   }
 
-  function weekPath() { return `/weeks/v2_${getWeekKey()}`; }
+  function weekPath() { return `/weeks/${getWeekKey()}`; }
   function empty()    { return { tracking:[], flicking:[], switching:[], week: getWeekKey() }; }
 
   function lsRead()   { try { return JSON.parse(localStorage.getItem(LS_KEY));   } catch { return null; } }
