@@ -758,8 +758,8 @@ const Warmup3D = (() => {
   let switchTargets  = [];
   let switchActive   = 0;
 
-  const raycaster = typeof THREE !== 'undefined' ? new THREE.Raycaster() : null;
-  const CENTER    = typeof THREE !== 'undefined' ? new THREE.Vector2(0, 0) : null;
+  let raycaster = null;
+  let CENTER    = null;
 
   // ── DOM refs ──
   let canvas, overlay, badge, titleEl, subEl, startBtn, beginBtn;
@@ -812,6 +812,9 @@ const Warmup3D = (() => {
 
     // Build Three.js renderer
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    // Init raycaster here — THREE is guaranteed loaded at this point
+    raycaster = new THREE.Raycaster();
+    CENTER    = new THREE.Vector2(0, 0);
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setClearColor(0x050507);
 
