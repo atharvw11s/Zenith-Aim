@@ -863,57 +863,55 @@ const Warmup3D = (() => {
       });
     });
 
-    startBtn.addEventListener('click', startGame);
-    document.getElementById('restartGame').addEventListener('click', () => {
-      // Silent stop — no modal, just reset
-      gameRunning = false;
-      mouseHeld = false;
-      clearInterval(autoFireInterval);
-      clearInterval(countdownInt);
-      if (animId) { cancelAnimationFrame(animId); animId = null; }
-      document.exitPointerLock();
-      crosshairEl.classList.remove('visible');
-      pointerPromptEl.classList.remove('visible');
-      timerEl.style.color = '';
-      score = 0; hits = 0; shots = 0;
-      resetHUD();
-      buildScene();
-      renderIdle();
-      showOverlay(true);
-    });
-
-    // Fullscreen button
-    const fsBtn = document.getElementById('fullscreenBtn');
-    if (fsBtn) {
-      fsBtn.addEventListener('click', () => {
-        const wrap = document.getElementById('canvasWrap');
-        if (!document.fullscreenElement) {
-          wrap.requestFullscreen().catch(() => {});
-          fsBtn.textContent = '⛶ Exit';
-        } else {
-          document.exitFullscreen();
-          fsBtn.textContent = '⛶ Fullscreen';
-        }
-      });
-      document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) fsBtn.textContent = '⛶ Fullscreen';
-        setTimeout(() => Warmup3D.resize(), 60);
-      });
-    }
-
-    // Sensitivity input
-    const sensInput = document.getElementById('gameSensitivity');
-    if (sensInput) {
-      mouseSens = parseFloat(sensInput.value) || 0.0022;
-      sensInput.addEventListener('input', e => {
-        const v = parseFloat(e.target.value);
-        if (!isNaN(v) && v > 0) mouseSens = v;
-      });
-    }
-
-    // Attach event listeners only once to avoid duplicates on re-init
+    // Attach ALL event listeners only once to avoid duplicates on re-init
     if (!Warmup3D._listenersAttached) {
       Warmup3D._listenersAttached = true;
+
+      startBtn.addEventListener('click', startGame);
+      document.getElementById('restartGame').addEventListener('click', () => {
+        gameRunning = false;
+        mouseHeld = false;
+        clearInterval(autoFireInterval);
+        clearInterval(countdownInt);
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+        document.exitPointerLock();
+        crosshairEl.classList.remove('visible');
+        pointerPromptEl.classList.remove('visible');
+        timerEl.style.color = '';
+        score = 0; hits = 0; shots = 0;
+        resetHUD();
+        buildScene();
+        renderIdle();
+        showOverlay(true);
+      });
+
+      const fsBtn = document.getElementById('fullscreenBtn');
+      if (fsBtn) {
+        fsBtn.addEventListener('click', () => {
+          const wrap = document.getElementById('canvasWrap');
+          if (!document.fullscreenElement) {
+            wrap.requestFullscreen().catch(() => {});
+            fsBtn.textContent = '⛶ Exit';
+          } else {
+            document.exitFullscreen();
+            fsBtn.textContent = '⛶ Fullscreen';
+          }
+        });
+        document.addEventListener('fullscreenchange', () => {
+          if (!document.fullscreenElement) fsBtn.textContent = '⛶ Fullscreen';
+          setTimeout(() => Warmup3D.resize(), 60);
+        });
+      }
+
+      const sensInput = document.getElementById('gameSensitivity');
+      if (sensInput) {
+        mouseSens = parseFloat(sensInput.value) || 0.0022;
+        sensInput.addEventListener('input', e => {
+          const v = parseFloat(e.target.value);
+          if (!isNaN(v) && v > 0) mouseSens = v;
+        });
+      }
+
       document.addEventListener('pointerlockchange', onPointerLockChange);
       document.addEventListener('mozpointerlockchange', onPointerLockChange);
       document.addEventListener('mousemove', onMouseMove);
