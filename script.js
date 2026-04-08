@@ -41,7 +41,6 @@ const SCENARIO_DB = {
       { name: 'VT Quaketrack Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite reactive chaos. Top-tier arm control required — stay loose, stay fast.' },
       { name: 'VT Controltrack Advanced S3', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Precision over speed. Micro-corrections must be completely invisible at this level.' },
       { name: 'VT Steadytrack Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite control tracking. No overcorrection — breathe through it, tense arms fail here.' },
-
       { name: 'VT Controlsphere', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'VT A360TI', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'VT Smoothpill', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
@@ -90,7 +89,6 @@ const SCENARIO_DB = {
       { name: 'VT Wideshot Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Full arm mechanics demanded. No wrist compensation for wide targets.' },
       { name: 'VT Frogshot Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Fast linear at elite speed. Smooth acceleration into each target — no abrupt jerks.' },
       { name: 'VT Floatshot Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Floating targets at max pace. Overshooting at this level costs the entire run.' },
-
       { name: 'VT Angleshot Widow', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'VT Curveshot Widow', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'VT Blinkshot Widow', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
@@ -141,7 +139,6 @@ const SCENARIO_DB = {
       { name: 'VT Dartswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced darters. Read trajectory on spawn — chasing from behind is a failed switch.' },
       { name: 'VT Smoothswitch Advanced S3', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite stability switching. Invisible micro-corrections and perfect arc transitions.' },
       { name: 'VT Leapswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced stability. Precision over raw speed — smooth flicks only, no slamming.' },
-
       { name: 'VT EvaTS 200%', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'VT EvaTS 300%', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'VT 1w2ts smallflicks', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
@@ -186,7 +183,6 @@ const SCENARIO_DB = {
       { name: 'VT Quaketrack Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite reactive chaos. Loose grip, arm-led — the only way to survive this.' },
       { name: 'VT Controltrack Advanced S5', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Precision at elite pace. Micro-corrections must be completely invisible.' },
       { name: 'VT Steadytrack Advanced S5',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'No overcorrection allowed. Breathe, commit, maintain contact the entire run.' },
-
       { name: 'Smoothsphere', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'Controlsphere', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'FuglaaXYShortStrafes', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
@@ -259,7 +255,6 @@ const SCENARIO_DB = {
       { name: 'VT Wideshot Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Full arm mechanics required. No wrist compensation for wide-range targets.' },
       { name: 'VT Frogshot Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Fast linear at elite speed. Smooth acceleration into each click — no abrupt jerks.' },
       { name: 'VT Floatshot Advanced S5',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Floating at max pace. Any overshoot at this level costs the entire run.' },
-
       { name: '1wall6targets TE', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: '1wall6targets small', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: '1wall2targets small flicks', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
@@ -328,7 +323,6 @@ const SCENARIO_DB = {
       { name: 'VT Dartswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced darters. Chasing from behind is always a failed switch at this speed.' },
       { name: 'VT Smoothswitch Advanced S5', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite stability. Perfect arc transitions — micro-corrections must be invisible.' },
       { name: 'VT Leapswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced stability switching. Precision over raw speed — smooth flicks only.' },
-
       { name: 'PatTargetSwitch', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'Bounce 180 Tracking', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
       { name: 'LG Pin Practice 360', difficulty: ['beginner','intermediate','advanced'], duration: 5, sets: 3, tip: 'Focus on consistency over speed.' },
@@ -765,7 +759,8 @@ function initSensConverter() {
     if (multRowEl) multRowEl.style.display = (isFromRivals && !isToRivals) ? 'flex' : 'none';
     if (rivalsNote) rivalsNote.style.display = isToRivals ? 'block' : 'none';
 
-    sensEl.placeholder = isFromRivals ? 'e.g. 0.5' : 'e.g. 0.064';
+    const _ph = { rivals:'e.g. 0.5', valorant:'e.g. 0.35', aimlabs:'e.g. 0.40', kovaaks:'e.g. 0.35', arsenal:'e.g. 0.5' };
+    sensEl.placeholder = _ph[fromEl.value] || 'e.g. 0.35';
 
     const effectiveRaw = parseSensInput(sensEl.value, isFromRivals);
 
@@ -956,8 +951,8 @@ const Warmup3D = (() => {
   let switchTargets  = [];
   let switchActive   = 0;
 
-  let raycaster = null;
-  let CENTER    = null;
+  const raycaster = typeof THREE !== 'undefined' ? new THREE.Raycaster() : null;
+  const CENTER    = typeof THREE !== 'undefined' ? new THREE.Vector2(0, 0) : null;
 
   // ── DOM refs ──
   let canvas, overlay, badge, titleEl, subEl, startBtn, beginBtn;
@@ -1010,8 +1005,6 @@ const Warmup3D = (() => {
 
     // Build Three.js renderer
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    raycaster = new THREE.Raycaster();
-    CENTER    = new THREE.Vector2(0, 0);
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.setClearColor(0x050507);
 
@@ -1063,55 +1056,57 @@ const Warmup3D = (() => {
       });
     });
 
-    // Attach ALL event listeners only once to avoid duplicates on re-init
+    startBtn.addEventListener('click', startGame);
+    document.getElementById('restartGame').addEventListener('click', () => {
+      // Silent stop — no modal, just reset
+      gameRunning = false;
+      mouseHeld = false;
+      clearInterval(autoFireInterval);
+      clearInterval(countdownInt);
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+      document.exitPointerLock();
+      crosshairEl.classList.remove('visible');
+      pointerPromptEl.classList.remove('visible');
+      timerEl.style.color = '';
+      score = 0; hits = 0; shots = 0;
+      resetHUD();
+      buildScene();
+      renderIdle();
+      showOverlay(true);
+    });
+
+    // Fullscreen button
+    const fsBtn = document.getElementById('fullscreenBtn');
+    if (fsBtn) {
+      fsBtn.addEventListener('click', () => {
+        const wrap = document.getElementById('canvasWrap');
+        if (!document.fullscreenElement) {
+          wrap.requestFullscreen().catch(() => {});
+          fsBtn.textContent = '⛶ Exit';
+        } else {
+          document.exitFullscreen();
+          fsBtn.textContent = '⛶ Fullscreen';
+        }
+      });
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) fsBtn.textContent = '⛶ Fullscreen';
+        setTimeout(() => Warmup3D.resize(), 60);
+      });
+    }
+
+    // Sensitivity input
+    const sensInput = document.getElementById('gameSensitivity');
+    if (sensInput) {
+      mouseSens = parseFloat(sensInput.value) || 0.0022;
+      sensInput.addEventListener('input', e => {
+        const v = parseFloat(e.target.value);
+        if (!isNaN(v) && v > 0) mouseSens = v;
+      });
+    }
+
+    // Attach event listeners only once to avoid duplicates on re-init
     if (!Warmup3D._listenersAttached) {
       Warmup3D._listenersAttached = true;
-
-      startBtn.addEventListener('click', startGame);
-      document.getElementById('restartGame').addEventListener('click', () => {
-        gameRunning = false;
-        mouseHeld = false;
-        clearInterval(autoFireInterval);
-        clearInterval(countdownInt);
-        if (animId) { cancelAnimationFrame(animId); animId = null; }
-        document.exitPointerLock();
-        crosshairEl.classList.remove('visible');
-        pointerPromptEl.classList.remove('visible');
-        timerEl.style.color = '';
-        score = 0; hits = 0; shots = 0;
-        resetHUD();
-        buildScene();
-        renderIdle();
-        showOverlay(true);
-      });
-
-      const fsBtn = document.getElementById('fullscreenBtn');
-      if (fsBtn) {
-        fsBtn.addEventListener('click', () => {
-          const wrap = document.getElementById('canvasWrap');
-          if (!document.fullscreenElement) {
-            wrap.requestFullscreen().catch(() => {});
-            fsBtn.textContent = '⛶ Exit';
-          } else {
-            document.exitFullscreen();
-            fsBtn.textContent = '⛶ Fullscreen';
-          }
-        });
-        document.addEventListener('fullscreenchange', () => {
-          if (!document.fullscreenElement) fsBtn.textContent = '⛶ Fullscreen';
-          setTimeout(() => Warmup3D.resize(), 60);
-        });
-      }
-
-      const sensInput = document.getElementById('gameSensitivity');
-      if (sensInput) {
-        mouseSens = parseFloat(sensInput.value) || 0.0022;
-        sensInput.addEventListener('input', e => {
-          const v = parseFloat(e.target.value);
-          if (!isNaN(v) && v > 0) mouseSens = v;
-        });
-      }
-
       document.addEventListener('pointerlockchange', onPointerLockChange);
       document.addEventListener('mozpointerlockchange', onPointerLockChange);
       document.addEventListener('mousemove', onMouseMove);
@@ -1661,6 +1656,8 @@ const Warmup3D = (() => {
     buildScene();
 
     overlay.classList.add('hidden');
+    crosshairEl.classList.add('visible');
+    canvas.requestPointerLock();
 
     countdownInt = setInterval(() => {
       timeLeft--;
