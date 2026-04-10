@@ -41,6 +41,8 @@ const SCENARIO_DB = {
       { name: 'VT Quaketrack Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite reactive chaos. Top-tier arm control required — stay loose, stay fast.' },
       { name: 'VT Controltrack Advanced S3', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Precision over speed. Micro-corrections must be completely invisible at this level.' },
       { name: 'VT Steadytrack Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite control tracking. No overcorrection — breathe through it, tense arms fail here.' },
+      { name: 'Smoothtrack Warzone', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Smooth tracking tuned for Warzone TTK. Stay on target longer — CoD fights last more than one shot.' },
+      { name: 'Reactivetrack Warzone', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Reactive tracking for Warzone. Opponents jump and slide constantly — build reactive control.' },
       { name: 'Strafe Track CS2', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Single invincible target moving horizontally with slight direction changes. Mimics a CS2 player constantly strafing.' },
       { name: 'Angle Track CS2', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Player moves side to side while tracking a static target. Excellent for stability and angle control — very CS2.' },
       { name: 'Flytrack OW', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Pill-shaped target doing long strafes while flying. Mimics Mercy — develop tracking stability on aerial targets.' },
@@ -105,6 +107,7 @@ const SCENARIO_DB = {
       { name: 'VT Wideshot Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Full arm mechanics demanded. No wrist compensation for wide targets.' },
       { name: 'VT Frogshot Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Fast linear at elite speed. Smooth acceleration into each target — no abrupt jerks.' },
       { name: 'VT Floatshot Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Floating targets at max pace. Overshooting at this level costs the entire run.' },
+      { name: 'Sixshot Warzone', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Six static targets tuned for Warzone headshot practice. Clean one-tap discipline.' },
       { name: 'Micro 2 Sphere CS2', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Two small static targets in a tiny space. Core micro training — small motions, big precision gains.' },
       { name: 'Microshot CS2', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Two targets in a corridor with readable strafes. Chain micros between targets — a very common CS2 scenario.' },
       { name: 'Adjustshot CS2', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Two targets with gentle movement. Initial flick then microcorrect — the exact skill that wins CS2 duels.' },
@@ -123,7 +126,7 @@ const SCENARIO_DB = {
       { name: 'HEADSHOT', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Standard Headshot task. Moving targets at head height — trains the most important click in any FPS.' },
       { name: 'HEADSHOTREFLEX', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Reflex version of Headshot. Faster spawns, tighter windows — pure reaction speed.' },
       { name: 'MICROFLEX', difficulty: ['advanced'], duration: 5, sets: 3, tip: 'Micro-adjustment flicking. Tiny targets, tiny movements — the hardest precision task in Aimlabs.' },
-      { name: 'GRIDSHOT', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'The iconic 3-target flick drill. Focus on clean acquisition — speed follows accuracy.' },
+      { name: 'Gridshot (Ultimate)', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'The iconic 3-target flick drill. Focus on clean acquisition — speed follows accuracy.' },
       { name: 'SPIDERSHOT 180', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Wide-screen 180° flicking. Train full arm range — wrist alone won\'t cut it here.' },
       { name: 'SIXSHOT', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Six static targets. Dial in your precision — smaller than Gridshot, demands accuracy.' },
       { name: 'MOTIONSHOT', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Moving targets in every direction. Let your eyes lead — hand follows naturally.' },
@@ -184,6 +187,7 @@ const SCENARIO_DB = {
       { name: 'VT Dartswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced darters. Read trajectory on spawn — chasing from behind is a failed switch.' },
       { name: 'VT Smoothswitch Advanced S3', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite stability switching. Invisible micro-corrections and perfect arc transitions.' },
       { name: 'VT Leapswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced stability. Precision over raw speed — smooth flicks only, no slamming.' },
+      { name: 'Evaswitch Warzone', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Evasive switching for Warzone. Multiple enemies moving unpredictably — prioritize and fire.' },
       { name: 'Smoothswitch OW', difficulty: ['beginner'], duration: 5, sets: 3, tip: 'Flying targets surrounding the player with health regen. Leans toward tracking — eliminate before switching.' },
       { name: 'Controlswitch OW', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Evasive flying targets with erratic but readable movement. Full eliminations required — very Overwatch.' },
       { name: 'Evaswitch APEX', difficulty: ['intermediate'], duration: 5, sets: 3, tip: 'Evasive target switching. Replicates Apex fights where enemies are actively moving to avoid elimination.' },
@@ -1105,57 +1109,55 @@ const Warmup3D = (() => {
       });
     });
 
-    startBtn.addEventListener('click', startGame);
-    document.getElementById('restartGame').addEventListener('click', () => {
-      // Silent stop — no modal, just reset
-      gameRunning = false;
-      mouseHeld = false;
-      clearInterval(autoFireInterval);
-      clearInterval(countdownInt);
-      if (animId) { cancelAnimationFrame(animId); animId = null; }
-      document.exitPointerLock();
-      crosshairEl.classList.remove('visible');
-      pointerPromptEl.classList.remove('visible');
-      timerEl.style.color = '';
-      score = 0; hits = 0; shots = 0;
-      resetHUD();
-      buildScene();
-      renderIdle();
-      showOverlay(true);
-    });
-
-    // Fullscreen button
-    const fsBtn = document.getElementById('fullscreenBtn');
-    if (fsBtn) {
-      fsBtn.addEventListener('click', () => {
-        const wrap = document.getElementById('canvasWrap');
-        if (!document.fullscreenElement) {
-          wrap.requestFullscreen().catch(() => {});
-          fsBtn.textContent = '⛶ Exit';
-        } else {
-          document.exitFullscreen();
-          fsBtn.textContent = '⛶ Fullscreen';
-        }
-      });
-      document.addEventListener('fullscreenchange', () => {
-        if (!document.fullscreenElement) fsBtn.textContent = '⛶ Fullscreen';
-        setTimeout(() => Warmup3D.resize(), 60);
-      });
-    }
-
-    // Sensitivity input
-    const sensInput = document.getElementById('gameSensitivity');
-    if (sensInput) {
-      mouseSens = parseFloat(sensInput.value) || 0.0022;
-      sensInput.addEventListener('input', e => {
-        const v = parseFloat(e.target.value);
-        if (!isNaN(v) && v > 0) mouseSens = v;
-      });
-    }
-
-    // Attach event listeners only once to avoid duplicates on re-init
+    // Attach ALL event listeners only once to avoid duplicates on re-init
     if (!Warmup3D._listenersAttached) {
       Warmup3D._listenersAttached = true;
+
+      startBtn.addEventListener('click', startGame);
+      document.getElementById('restartGame').addEventListener('click', () => {
+        gameRunning = false;
+        mouseHeld = false;
+        clearInterval(autoFireInterval);
+        clearInterval(countdownInt);
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+        document.exitPointerLock();
+        crosshairEl.classList.remove('visible');
+        pointerPromptEl.classList.remove('visible');
+        timerEl.style.color = '';
+        score = 0; hits = 0; shots = 0;
+        resetHUD();
+        buildScene();
+        renderIdle();
+        showOverlay(true);
+      });
+
+      const fsBtn = document.getElementById('fullscreenBtn');
+      if (fsBtn) {
+        fsBtn.addEventListener('click', () => {
+          const wrap = document.getElementById('canvasWrap');
+          if (!document.fullscreenElement) {
+            wrap.requestFullscreen().catch(() => {});
+            fsBtn.textContent = '⛶ Exit';
+          } else {
+            document.exitFullscreen();
+            fsBtn.textContent = '⛶ Fullscreen';
+          }
+        });
+        document.addEventListener('fullscreenchange', () => {
+          if (!document.fullscreenElement) fsBtn.textContent = '⛶ Fullscreen';
+          setTimeout(() => Warmup3D.resize(), 60);
+        });
+      }
+
+      const sensInput = document.getElementById('gameSensitivity');
+      if (sensInput) {
+        mouseSens = parseFloat(sensInput.value) || 0.0022;
+        sensInput.addEventListener('input', e => {
+          const v = parseFloat(e.target.value);
+          if (!isNaN(v) && v > 0) mouseSens = v;
+        });
+      }
+
       document.addEventListener('pointerlockchange', onPointerLockChange);
       document.addEventListener('mozpointerlockchange', onPointerLockChange);
       document.addEventListener('mousemove', onMouseMove);
