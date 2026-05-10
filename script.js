@@ -1,5 +1,5 @@
 /* ================================================================
-   Zenith Aim — script.js  v2
+   Zenith Aim — script.js  v20
    Real scenario DB · 3D Warmup Games (Three.js) ·
    Dual-dropdown Sens + FOV converters · Routine Engine
    ================================================================ */
@@ -570,9 +570,9 @@ function initGameFilters() {
       // Update tip text
       const tipEl = document.getElementById('tipText');
       if (tipEl) {
-        const mode = document.querySelector('.game-tab.active')?.dataset.game || 'tracking';
-        const p = WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
-        tipEl.textContent = p.tip[mode] || WARMUP_GAME_PROFILES.all.tip[mode];
+        const tipMode = document.querySelector('.game-tab.active')?.dataset.game || 'tracking';
+        const tipProfile = WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
+        tipEl.textContent = tipProfile.tip[tipMode] || WARMUP_GAME_PROFILES.all.tip[tipMode];
       }
 
       // Rebuild scene with new profile (only if game not running)
@@ -1873,12 +1873,12 @@ function initLeaderboard() {
   input?.addEventListener('keydown', e => { if (e.key === 'Enter') doSubmit(); });
 
   skipBtn?.addEventListener('click', () => {
-    const badge = document.getElementById('nmBadge');
-    const mode  = badge?.dataset.mode  || lbCurrentMode;
-    const score = parseInt(badge?.dataset.score || '0', 10);
-    const acc   = badge?.dataset.acc   || '—';
+    const skipBadge = document.getElementById('nmBadge');
+    const skipMode  = skipBadge?.dataset.mode  || lbCurrentMode;
+    const skipScore = parseInt(skipBadge?.dataset.score || '0', 10);
+    const skipAcc   = skipBadge?.dataset.acc   || '—';
     hideNameModal();
-    showEndOverlay(mode, score, acc);
+    showEndOverlay(skipMode, skipScore, skipAcc);
   });
 
   // Click outside modal to skip
