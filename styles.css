@@ -453,6 +453,7 @@ main{position:relative;z-index:1}
 }
 
 .task-card{
+  background:var(--bg-card);
   border-radius:var(--r-l);
   overflow:hidden;
   display:flex;
