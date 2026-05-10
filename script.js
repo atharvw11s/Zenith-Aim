@@ -330,7 +330,6 @@ function renderPlaylist() {
   if (_subEl) _subEl.textContent = `${trainerLabel} · ${rankLabel} · ${gameInfo.icon} ${gameInfo.label} · ~${totalMins} min total`;
 
   const LABELS = { tracking:'Tracking', flicking:'Flicking', switching:'Switching' };
-  const gameInfo = GAME_BIAS[state.activeGame] || GAME_BIAS.all;
 
   // Show/hide game note bar
   let noteBar = document.getElementById('gameNoteBar');
