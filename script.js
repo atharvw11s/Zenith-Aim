@@ -1,5 +1,5 @@
 /* ================================================================
-   Zenith Aim — script.js  v20
+   Zenith Aim — script.js  v22
    Real scenario DB · 3D Warmup Games (Three.js) ·
    Dual-dropdown Sens + FOV converters · Routine Engine
    ================================================================ */
@@ -1167,51 +1167,57 @@ const Warmup3D = (() => {
     trackingTarget.rotation.y += delta * 0.8;
   }
 
-  // ─── FLICKING ───
+  // ─── FLICKING — Gridshot style ───
+  // All target slots always visible (dim), ONE lit at a time.
+  // Feels like KovaaK's Gridshot / Aimlabs Microshot.
   const FLICK_POSITIONS = [
-    [-5, 2.5, -12], [ 0, 2.5, -12], [5, 2.5, -12],
-    [-5, 0.5, -12], [ 0, 0.5, -12], [5, 0.5, -12],
-    [-7, 1.5, -14], [ 7, 1.5, -14],
+    // 3×3 grid front
+    [-4.5, 3.5, -11], [ 0, 3.5, -11], [ 4.5, 3.5, -11],
+    [-4.5, 1.5, -11], [ 0, 1.5, -11], [ 4.5, 1.5, -11],
+    [-4.5,-0.2, -11], [ 0,-0.2, -11], [ 4.5,-0.2, -11],
+    // 2 outer wide targets (angled flicks)
+    [-8,   2.0, -13], [ 8,   2.0, -13],
+    // 2 far targets (long flicks)
+    [-3,   1.5, -16], [ 3,   1.5, -16],
   ];
 
   function buildFlicking() {
     flickTargets = [];
     flickActive  = Math.floor(Math.random() * FLICK_POSITIONS.length);
 
-    const diff = document.getElementById('gameDifficulty').value;
-    const p    = getWarmupProfile();
-    const base = diff === 'easy' ? 0.45 : diff === 'hard' ? 0.2 : 0.3;
-    const R    = base * p.sizeM;
+    const diff      = document.getElementById('gameDifficulty').value;
+    const p         = getWarmupProfile();
+    const base      = diff === 'easy' ? 0.42 : diff === 'hard' ? 0.18 : 0.28;
+    const R         = base * p.sizeM;
     const activeCol = p.color.flicking;
 
     FLICK_POSITIONS.forEach((pos, i) => {
       const isActive = i === flickActive;
-      const geo = new THREE.SphereGeometry(R, 18, 18);
+      const geo = new THREE.SphereGeometry(R, 20, 20);
       const mat = new THREE.MeshStandardMaterial({
-        color:            isActive ? activeCol : 0x2a2a3a,
-        emissive:         isActive ? activeCol : 0x080810,
-        emissiveIntensity: isActive ? 1.0     : 0.1,
-        roughness: 0.4, metalness: 0.3,
+        color:             isActive ? activeCol : 0x1a1a28,
+        emissive:          isActive ? activeCol : 0x0a0a16,
+        emissiveIntensity: isActive ? 1.2        : 0.15,
+        roughness: 0.45, metalness: 0.25,
+        transparent: true,
+        opacity:     isActive ? 1.0 : 0.0,
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(...pos);
       mesh._flickIdx = i;
       scene.add(mesh);
       flickTargets.push(mesh);
-
-      // Glow shell for active
-      if (isActive) {
-        const gGeo = new THREE.SphereGeometry(R * 1.8, 12, 12);
-        const gMat = new THREE.MeshBasicMaterial({ color: activeCol, transparent: true, opacity: 0.1, side: THREE.BackSide });
-        const glow = new THREE.Mesh(gGeo, gMat);
-        glow.position.set(...pos);
-        glow._flickGlow = true;
-        scene.add(glow);
-      }
     });
 
-    // Light at active target
-    const pt = new THREE.PointLight(0xf59e0b, 3, 10);
+    // Glow + light only on active
+    const gGeo = new THREE.SphereGeometry(base * p.sizeM * 2.0, 12, 12);
+    const gMat = new THREE.MeshBasicMaterial({ color: activeCol, transparent: true, opacity: 0.12, side: THREE.BackSide });
+    const glow = new THREE.Mesh(gGeo, gMat);
+    glow.position.set(...FLICK_POSITIONS[flickActive]);
+    glow._flickGlow = true;
+    scene.add(glow);
+
+    const pt = new THREE.PointLight(activeCol, 4, 9);
     pt.position.set(...FLICK_POSITIONS[flickActive]);
     pt._flickLight = true;
     scene.add(pt);
@@ -1224,27 +1230,31 @@ const Warmup3D = (() => {
     flickActive = idx;
     const diff = document.getElementById('gameDifficulty').value;
     const p    = getWarmupProfile();
-    const base = diff === 'easy' ? 0.45 : diff === 'hard' ? 0.2 : 0.3;
+    const base = diff === 'easy' ? 0.42 : diff === 'hard' ? 0.18 : 0.28;
     const R    = base * p.sizeM;
     const col  = p.color.flicking;
 
+    // Update ALL targets — active = bright, rest = dim (still visible)
     flickTargets.forEach((mesh, i) => {
       const active = i === flickActive;
-      mesh.material.color.setHex(active ? col : 0x1e1e2a);
-      mesh.material.emissive.setHex(active ? col : 0x050508);
-      mesh.material.emissiveIntensity = active ? 1.0 : 0.05;
+      mesh.material.color.setHex(active ? col : 0x1a1a28);
+      mesh.material.emissive.setHex(active ? col : 0x0a0a16);
+      mesh.material.emissiveIntensity = active ? 1.2 : 0.0;
+      mesh.material.transparent = true;
+      mesh.material.opacity     = active ? 1.0 : 0.0;
+      mesh.material.needsUpdate = true;
     });
 
-    // New glow
-    const gGeo = new THREE.SphereGeometry(R * 1.8, 12, 12);
-    const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.12, side: THREE.BackSide });
+    // New glow shell
+    const gGeo = new THREE.SphereGeometry(R * 2.0, 12, 12);
+    const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.13, side: THREE.BackSide });
     const glow = new THREE.Mesh(gGeo, gMat);
     glow.position.set(...FLICK_POSITIONS[flickActive]);
     glow._flickGlow = true;
     scene.add(glow);
 
-    // New light
-    const pt = new THREE.PointLight(col, 3, 10);
+    // New point light
+    const pt = new THREE.PointLight(col, 4, 9);
     pt.position.set(...FLICK_POSITIONS[flickActive]);
     pt._flickLight = true;
     scene.add(pt);
@@ -1271,70 +1281,80 @@ const Warmup3D = (() => {
     }
   }
 
-  // ─── SWITCHING — targets have HP bars, respawn after death, hold LMB to auto-fire ───
+  // ─── SWITCHING — machine gun feel ───
+  // Low HP per target, hold LMB to spray, targets flash red on death and
+  // instantly respawn with a brief invincibility flash (like aim trainers).
   const SWITCH_POSITIONS = [
-    [-7,   2.8, -14],
-    [-3.8, 1.4, -12],
-    [ 0,   3.2, -13],
-    [ 3.8, 1.4, -12],
-    [ 7,   2.8, -14],
-    [-5.5, 0.5, -13],
-    [ 5.5, 0.5, -13],
+    [-6.5, 2.8, -13],
+    [-3.2, 1.2, -11],
+    [  0,  3.0, -12],
+    [ 3.2, 1.2, -11],
+    [ 6.5, 2.8, -13],
+    [-5.0, 0.2, -12],
+    [ 5.0, 0.2, -12],
   ];
 
   let switchHealthBars = [];
-  let mouseHeld        = false;   // tracks LMB held state
-  let autoFireInterval = null;    // interval for held fire in switching
+  let mouseHeld        = false;
+  let autoFireInterval = null;
 
   function makeHealthBarTexture(hp, maxHp) {
-    const W = 128, H = 20;
+    const W = 128, H = 16;
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     const c = cv.getContext('2d');
-    c.fillStyle = 'rgba(0,0,0,0.6)';
+    c.fillStyle = 'rgba(0,0,0,0.5)';
     c.fillRect(0, 0, W, H);
     const frac = Math.max(0, hp / maxHp);
-    const barColor = frac > 0.6 ? '#22c55e' : frac > 0.3 ? '#f59e0b' : '#ef4444';
-    c.fillStyle = barColor;
-    c.fillRect(2, 4, Math.round((W - 4) * frac), H - 8);
-    c.strokeStyle = 'rgba(255,255,255,0.25)';
-    c.lineWidth = 1;
-    c.strokeRect(2, 4, W - 4, H - 8);
+    c.fillStyle = frac > 0.5 ? '#22c55e' : frac > 0.25 ? '#f59e0b' : '#ef4444';
+    c.fillRect(2, 3, Math.round((W - 4) * frac), H - 6);
     return new THREE.CanvasTexture(cv);
   }
 
   function respawnTarget(mesh) {
     const col = getWarmupProfile().color.switching;
-    mesh._hp    = mesh._maxHp;
-    mesh._dead  = false;
-    mesh.material.color.setHex(col);
-    mesh.material.emissive.setHex(col);
-    mesh.material.emissiveIntensity = 0.5;
-    mesh.material.opacity = 1;
+    mesh._hp          = mesh._maxHp;
+    mesh._dead        = false;
+    mesh._invincible  = true;
+    // Flash white on spawn
+    mesh.material.color.setHex(0xffffff);
+    mesh.material.emissive.setHex(0xffffff);
+    mesh.material.emissiveIntensity = 2.0;
+    mesh.material.opacity     = 1;
     mesh.material.transparent = false;
-    if (mesh._glow)  mesh._glow.visible  = true;
-    if (mesh._light) mesh._light.visible = true;
+    if (mesh._glow)  { mesh._glow.visible  = true; mesh._glow.material.opacity = 0.25; }
+    if (mesh._light) { mesh._light.visible = true; mesh._light.intensity = 5; }
     mesh._barMesh.visible = true;
-    const tex = makeHealthBarTexture(mesh._maxHp, mesh._maxHp);
-    mesh._barMesh.material.map = tex;
+    mesh._barMesh.material.map = makeHealthBarTexture(mesh._maxHp, mesh._maxHp);
     mesh._barMesh.material.needsUpdate = true;
+    // Fade back to normal color after 120ms
+    setTimeout(() => {
+      if (!mesh._dead) {
+        mesh.material.color.setHex(col);
+        mesh.material.emissive.setHex(col);
+        mesh.material.emissiveIntensity = 0.5;
+        if (mesh._glow)  mesh._glow.material.opacity = 0.09;
+        if (mesh._light) mesh._light.intensity = 2.5;
+        mesh._invincible = false;
+      }
+    }, 120);
   }
 
   function buildSwitching() {
     switchTargets    = [];
     switchHealthBars = [];
 
-    const diff  = document.getElementById('gameDifficulty').value;
-    const p     = getWarmupProfile();
-    const base  = diff === 'easy' ? 0.44 : diff === 'hard' ? 0.22 : 0.32;
-    const R     = base * p.sizeM;
-    const maxHp = diff === 'easy' ? 5    : diff === 'hard' ? 15   : 10;
-    const col   = p.color.switching;
-    // switchN: extra targets (+1 = 6, +2 = 7, -1 = 5 positions)
+    const diff   = document.getElementById('gameDifficulty').value;
+    const p      = getWarmupProfile();
+    const base   = diff === 'easy' ? 0.44 : diff === 'hard' ? 0.24 : 0.32;
+    const R      = base * p.sizeM;
+    // Machine gun HP — much lower so targets die fast and keep cycling
+    const maxHp  = diff === 'easy' ? 3 : diff === 'hard' ? 8 : 5;
+    const col    = p.color.switching;
     const posCount = Math.min(Math.max(5 + (p.switchN || 0), 3), SWITCH_POSITIONS.length);
     const positions = SWITCH_POSITIONS.slice(0, posCount);
 
-    positions.forEach((pos, i) => {
+    positions.forEach((pos) => {
       const geo = new THREE.SphereGeometry(R, 20, 20);
       const mat = new THREE.MeshStandardMaterial({
         color: col, emissive: col, emissiveIntensity: 0.5,
@@ -1342,10 +1362,10 @@ const Warmup3D = (() => {
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(...pos);
-      mesh._switchIdx = i;
-      mesh._hp        = maxHp;
-      mesh._maxHp     = maxHp;
-      mesh._dead      = false;
+      mesh._hp         = maxHp;
+      mesh._maxHp      = maxHp;
+      mesh._dead       = false;
+      mesh._invincible = false;
       scene.add(mesh);
       switchTargets.push(mesh);
 
@@ -1362,65 +1382,77 @@ const Warmup3D = (() => {
       scene.add(pt);
 
       const tex    = makeHealthBarTexture(maxHp, maxHp);
-      const barGeo = new THREE.PlaneGeometry(R * 3.5, R * 0.7);
+      const barGeo = new THREE.PlaneGeometry(R * 3.2, R * 0.55);
       const barMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false });
       const bar    = new THREE.Mesh(barGeo, barMat);
-      bar.position.set(pos[0], pos[1] + R * 2.2, pos[2]);
+      bar.position.set(pos[0], pos[1] + R * 2.0, pos[2]);
       scene.add(bar);
       mesh._barMesh = bar;
-
-      switchHealthBars.push({ mesh, hp: maxHp, maxHp });
     });
   }
 
   function onSwitchFire() {
-    if (!gameRunning || switchTargets.length === 0 || (!pointerLocked && !isMobile())) return;
+    if (!gameRunning || switchTargets.length === 0) return;
+    if (!pointerLocked && !isMobile()) return;
     shots++;
     raycaster.setFromCamera(CENTER, camera);
-    const alive = switchTargets.filter(m => !m._dead);
-    const intersects = raycaster.intersectObjects(alive.length ? alive : switchTargets);
+    const alive = switchTargets.filter(m => !m._dead && !m._invincible);
+    const targets = alive.length ? alive : switchTargets.filter(m => !m._dead);
+    const intersects = raycaster.intersectObjects(targets);
+
     if (intersects.length > 0) {
       const hit = intersects[0].object;
-      if (hit._dead) return;
+      if (hit._dead || hit._invincible) return;
       hits++;
-      hit._hp -= 1;
+      hit._hp--;
 
-      const tex = makeHealthBarTexture(hit._hp, hit._maxHp);
-      hit._barMesh.material.map = tex;
+      // Update health bar
+      hit._barMesh.material.map = makeHealthBarTexture(hit._hp, hit._maxHp);
       hit._barMesh.material.needsUpdate = true;
 
+      // Damage colour shift: green → orange → red as HP drops
       const frac = hit._hp / hit._maxHp;
-      hit.material.color.setRGB(0.15 + 0.55*(1-frac), 0.2*frac, frac > 0.5 ? 0.85 : 0.2);
-      hit.material.emissive.setRGB(0.3*(1-frac), 0.2*frac, frac > 0.5 ? 0.4 : 0.05);
+      const col  = getWarmupProfile().color.switching;
+      if (frac > 0.5) {
+        hit.material.emissiveIntensity = 0.9;
+      } else if (frac > 0.25) {
+        hit.material.color.setHex(0xf59e0b);
+        hit.material.emissive.setHex(0xf59e0b);
+        hit.material.emissiveIntensity = 1.1;
+        if (hit._light) hit._light.color.setHex(0xf59e0b);
+      } else {
+        hit.material.color.setHex(0xef4444);
+        hit.material.emissive.setHex(0xef4444);
+        hit.material.emissiveIntensity = 1.4;
+        if (hit._light) hit._light.color.setHex(0xef4444);
+      }
 
       score++;
       scoreEl.textContent = score;
-      accEl.textContent   = `${Math.round((hits/shots)*100)}%`;
+      accEl.textContent   = `${Math.round((hits / shots) * 100)}%`;
       flashHitRing();
 
       if (hit._hp <= 0) {
+        // Kill — flash bright white then fade out
         hit._dead = true;
-        hit.material.color.setHex(0x2a2a3a);
-        hit.material.emissive.setHex(0x050508);
-        hit.material.emissiveIntensity = 0.02;
-        hit.material.opacity = 0.35;
-        hit.material.transparent = true;
-        if (hit._glow)  hit._glow.visible  = false;
-        if (hit._light) hit._light.visible  = false;
-        hit._barMesh.visible = false;
+        hit.material.color.setHex(0xffffff);
+        hit.material.emissive.setHex(0xffffff);
+        hit.material.emissiveIntensity = 3.0;
+        if (hit._light) { hit._light.color.setHex(0xffffff); hit._light.intensity = 6; }
 
-        // Respawn after a short delay (scaled by difficulty)
-        const diff = document.getElementById('gameDifficulty').value;
-        const delay = diff === 'easy' ? 1200 : diff === 'hard' ? 3000 : 2000;
         setTimeout(() => {
-          if (gameRunning) respawnTarget(hit);
-        }, delay);
+          hit.material.opacity     = 0;
+          hit.material.transparent = true;
+          if (hit._glow)  hit._glow.visible  = false;
+          if (hit._light) hit._light.visible  = false;
+          hit._barMesh.visible = false;
+        }, 60);
+
+        // Instant respawn — machine gun feel
+        setTimeout(() => { if (gameRunning) respawnTarget(hit); }, 80);
       }
-    } else {
-      // Miss — penalise accuracy only, no score deduction
     }
   }
-
   // ── CANVAS CLICK + HOLD HANDLER ──
   function onCanvasMouseDown(e) {
     if (e.button !== 0) return;
@@ -1440,7 +1472,7 @@ const Warmup3D = (() => {
       autoFireInterval = setInterval(() => {
         if (!mouseHeld || !gameRunning) { clearInterval(autoFireInterval); return; }
         onSwitchFire();
-      }, 100);
+      }, 65);
     }
   }
 

@@ -5,15 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zenith Aim — App</title>
   <meta name="description" content="Daily aim training routines, sensitivity converters, FOV calculators and 3D warmup games.">
-  <link rel="stylesheet" href="styles.css?v=18">
+  <link rel="stylesheet" href="styles.css?v=22">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
   <style>
-    .game-filter-bar,.warmup-game-filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
-    .game-filter-btn,.warmup-game-btn{padding:7px 12px;border:1px solid rgba(255,255,255,.16);border-radius:10px;background:rgba(255,255,255,.04);color:#ede8f8;cursor:pointer}
-    .game-filter-btn.active,.warmup-game-btn.active{border-color:#8b00ff;background:rgba(139,0,255,.12)}
+    .game-filter-bar,.warmup-game-filter-bar{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 16px}
+    .game-filter-btn,.warmup-game-btn{padding:6px 13px;border:1px solid rgba(255,255,255,.14);border-radius:20px;background:rgba(255,255,255,.04);color:rgba(237,232,248,.55);font-size:12px;font-weight:600;cursor:pointer;transition:all .18s ease;white-space:nowrap}
+    .game-filter-btn:hover,.warmup-game-btn:hover{border-color:rgba(255,255,255,.28);color:#ede8f8;background:rgba(255,255,255,.07)}
+    .game-filter-btn.active,.warmup-game-btn.active{border-color:#8b00ff;background:rgba(139,0,255,.15);color:#fff;box-shadow:0 0 12px rgba(139,0,255,.25)}
+    .warmup-game-btn[data-wgame="rivals"].active{border-color:#22c55e;background:rgba(34,197,94,.12);color:#22c55e}
+    .warmup-game-btn[data-wgame="arsenal"].active{border-color:#f43f5e;background:rgba(244,63,94,.12);color:#f43f5e}
+    .warmup-game-btn[data-wgame="valorant"].active{border-color:#ff4655;background:rgba(255,70,84,.12);color:#ff4655}
+    .warmup-game-btn[data-wgame="cs2"].active{border-color:#f59e0b;background:rgba(245,158,11,.12);color:#f59e0b}
+    .warmup-game-btn[data-wgame="apex"].active{border-color:#f97316;background:rgba(249,115,22,.12);color:#f97316}
+    .warmup-game-banner{margin:0 0 10px;padding:8px 14px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:rgba(255,255,255,.04);font-size:12px;color:rgba(255,255,255,.6)}
     .warmup-game-banner{margin:8px 0 14px;padding:10px 12px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:rgba(255,255,255,.04)}
   </style>
 </head>
@@ -112,14 +119,14 @@
             </div>
           </div>
           <div class="game-filter-bar" id="gameFilterBar">
-            <button class="game-filter-btn active" data-game="all">🎮 All Games</button>
+            <button class="game-filter-btn active" data-game="all">🎮 All</button>
+            <button class="game-filter-btn" data-game="rivals">🎯 Rivals</button>
+            <button class="game-filter-btn" data-game="arsenal">🔫 Arsenal</button>
             <button class="game-filter-btn" data-game="valorant">⚔️ Valorant</button>
             <button class="game-filter-btn" data-game="cs2">💣 CS2</button>
             <button class="game-filter-btn" data-game="apex">🦾 Apex</button>
             <button class="game-filter-btn" data-game="overwatch">🦸 Overwatch</button>
             <button class="game-filter-btn" data-game="fortnite">🏗️ Fortnite</button>
-            <button class="game-filter-btn" data-game="rivals">🎯 Rivals</button>
-            <button class="game-filter-btn" data-game="arsenal">🔫 Arsenal</button>
           </div>
           <div class="task-grid" id="taskGrid"></div>
           <footer class="app-footer">
@@ -360,13 +367,14 @@
             <div class="gt-text"><span class="gt-name">Switching</span><span class="gt-desc">Rapid multi-target</span></div>
           </button>
         </div>
-        <div class="warmup-game-filter-bar" id="warmupGameFilterBar">
+        <!-- WARMUP GAME FILTER BAR -->
+        <div class="game-filter-bar warmup-game-filter-bar" id="warmupGameFilterBar">
           <button class="warmup-game-btn active" data-wgame="all">🎮 General</button>
+          <button class="warmup-game-btn" data-wgame="rivals">🎯 Rivals</button>
+          <button class="warmup-game-btn" data-wgame="arsenal">🔫 Arsenal</button>
           <button class="warmup-game-btn" data-wgame="valorant">⚔️ Valorant</button>
           <button class="warmup-game-btn" data-wgame="cs2">💣 CS2</button>
           <button class="warmup-game-btn" data-wgame="apex">🦾 Apex</button>
-          <button class="warmup-game-btn" data-wgame="rivals">🎯 Rivals</button>
-          <button class="warmup-game-btn" data-wgame="arsenal">🔫 Arsenal</button>
         </div>
         <div class="warmup-game-banner" id="warmupGameBanner" style="display:none"></div>
 
@@ -473,9 +481,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="auth.js?v=19"></script>
-<script src="scores.js?v=19"></script>
-<script src="script.js?v=19"></script>
+<script src="auth.js?v=22"></script>
+<script src="scores.js?v=22"></script>
+<script src="script.js?v=22"></script>
 
   <!-- Auth Modal -->
   <div class="auth-modal-bg" id="authModalBg">
