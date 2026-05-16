@@ -311,6 +311,15 @@ function generateRoutine() {
    RENDER PLAYLIST
    ═══════════════════════════════════════════════════════════════ */
 function renderPlaylist() {
+  // Hide/show priority sliders based on whether a game filter is active
+  const slidersWrap = document.getElementById('prioritySliders');
+  const sliderNote  = document.getElementById('sliderNote');
+  const sliderNoteGame = document.getElementById('sliderNoteGame');
+  const gameActive  = state.activeGame !== 'all';
+  if (slidersWrap) slidersWrap.style.display = gameActive ? 'none' : '';
+  if (sliderNote)  sliderNote.style.display  = gameActive ? '' : 'none';
+  if (sliderNoteGame && gameActive) sliderNoteGame.textContent = GAME_BIAS[state.activeGame]?.label || state.activeGame;
+
   const playlist = generateRoutine();
   state._playlist = playlist;
   const grid = document.getElementById('taskGrid');
@@ -405,14 +414,14 @@ function showSection(target, fromPopState) {
       // Lazy load Three.js only on first warmup visit
       const script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-      script.onload = () => { Warmup3D.init(); };
+      script.onload = () => { Warmup3D.init(); initWarmupFilterBar(); };
       script.onerror = () => {
         const el = document.getElementById('canvasOverlay');
         if (el) el.innerHTML = '<div class="overlay-inner"><div class="overlay-title" style="font-size:20px;color:#ef4444">Three.js failed to load</div><div class="overlay-sub">Check your internet connection</div></div>';
       };
       document.head.appendChild(script);
     } else {
-      setTimeout(() => Warmup3D.resize(), 60);
+      setTimeout(() => { Warmup3D.resize(); initWarmupFilterBar(); }, 60);
     }
   }
 
@@ -530,6 +539,38 @@ function initShare() {
   });
 }
 
+function initWarmupFilterBar() {
+  // Idempotent — safe to call on every warmup visit
+  // Removes old listeners by cloning nodes, then rewires
+  document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(btn => {
+    const fresh = btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh, btn);
+  });
+  document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      warmupActiveGame = btn.dataset.wgame || 'all';
+      const banner = document.getElementById('warmupGameBanner');
+      if (banner) {
+        if (warmupActiveGame === 'all') { banner.style.display = 'none'; }
+        else {
+          const descs = { rivals:'Close-mid range · fast targets', arsenal:'Very close · hyper-fast · bigger targets', valorant:'Long range · small precise heads', cs2:'Long range · small heads · deliberate', apex:'Mid range · large hitboxes · fast movement' };
+          banner.style.display = '';
+          banner.textContent = btn.textContent.trim() + ' — ' + (descs[warmupActiveGame] || 'Game-tuned targets');
+        }
+      }
+      const tipEl = document.getElementById('tipText');
+      if (tipEl) {
+        const mode = document.querySelector('.game-tab.active')?.dataset.game || 'tracking';
+        const prof = WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
+        tipEl.textContent = prof.tip[mode] || WARMUP_GAME_PROFILES.all.tip[mode];
+      }
+      if (!Warmup3D.isRunning()) Warmup3D.rebuild();
+    });
+  });
+}
+
 function initGameFilters() {
   // ── ROUTINES filter ──
   document.querySelectorAll('#gameFilterBar .game-filter-btn').forEach(btn => {
@@ -541,46 +582,8 @@ function initGameFilters() {
     });
   });
 
-  // ── WARMUP filter ──
-  document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      warmupActiveGame = btn.dataset.wgame || 'all';
-
-      // Update banner
-      const banner = document.getElementById('warmupGameBanner');
-      if (banner) {
-        if (warmupActiveGame === 'all') {
-          banner.style.display = 'none';
-        } else {
-          const p = WARMUP_GAME_PROFILES[warmupActiveGame];
-          const descs = {
-            rivals:   'Close-mid range · fast targets · medium hitboxes',
-            arsenal:  'Very close range · hyper-fast · bigger hitboxes',
-            valorant: 'Long range · small precise heads · slow strafe',
-            cs2:      'Long range · small heads · deliberate pace',
-            apex:     'Mid range · large hitboxes · fast chaotic movement',
-          };
-          banner.style.display = '';
-          banner.textContent = `${btn.textContent} mode — ${descs[warmupActiveGame] || 'Game-tuned targets and tips'}`;
-        }
-      }
-
-      // Update tip text
-      const tipEl = document.getElementById('tipText');
-      if (tipEl) {
-        const tipMode = document.querySelector('.game-tab.active')?.dataset.game || 'tracking';
-        const tipProfile = WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
-        tipEl.textContent = tipProfile.tip[tipMode] || WARMUP_GAME_PROFILES.all.tip[tipMode];
-      }
-
-      // Rebuild scene with new profile (only if game not running)
-      if (typeof Warmup3D !== 'undefined' && !Warmup3D.isRunning?.()) {
-        Warmup3D.rebuild?.();
-      }
-    });
-  });
+  // Warmup filter wired via initWarmupFilterBar() — called on each warmup visit
+  initWarmupFilterBar();
 }
 
 function loadFromURL() {
@@ -1170,23 +1173,26 @@ const Warmup3D = (() => {
   // ─── FLICKING — Gridshot style ───
   // All target slots always visible (dim), ONE lit at a time.
   // Feels like KovaaK's Gridshot / Aimlabs Microshot.
-  const FLICK_POSITIONS = [
-    // 3×3 grid front
-    [-4.5, 3.5, -11], [ 0, 3.5, -11], [ 4.5, 3.5, -11],
-    [-4.5, 1.5, -11], [ 0, 1.5, -11], [ 4.5, 1.5, -11],
-    [-4.5,-0.2, -11], [ 0,-0.2, -11], [ 4.5,-0.2, -11],
-    // 2 outer wide targets (angled flicks)
-    [-8,   2.0, -13], [ 8,   2.0, -13],
-    // 2 far targets (long flicks)
-    [-3,   1.5, -16], [ 3,   1.5, -16],
-  ];
+  // Flick positions are generated randomly each round — no memorising spots
+  function randFlickPos(p) {
+    const hw = 5.5 * p.spreadM, hh = 2.8;
+    const zBase = -11 + (p.zOffset || 0);
+    return [
+      (Math.random() * 2 - 1) * hw,
+      Math.random() * hh * 2 - 0.5,
+      zBase + (Math.random() - 0.5) * 4
+    ];
+  }
+  // Keep a pool of 13 positions, regenerated when buildFlicking runs
+  let FLICK_POSITIONS = Array.from({length:13}, () => [0,0,-11]);
 
   function buildFlicking() {
     flickTargets = [];
-    flickActive  = Math.floor(Math.random() * FLICK_POSITIONS.length);
-
     const diff      = document.getElementById('gameDifficulty').value;
     const p         = getWarmupProfile();
+    // Regenerate random positions every round so spots are never the same
+    FLICK_POSITIONS = Array.from({length:13}, () => randFlickPos(p));
+    flickActive  = Math.floor(Math.random() * FLICK_POSITIONS.length);
     const base      = diff === 'easy' ? 0.42 : diff === 'hard' ? 0.18 : 0.28;
     const R         = base * p.sizeM;
     const activeCol = p.color.flicking;
