@@ -87,6 +87,19 @@ const SCENARIO_DB = {
       { name: 'VT Dartswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced darters. Read trajectory on spawn — chasing from behind is a failed switch.' },
       { name: 'VT Smoothswitch Advanced S3', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite stability switching. Invisible micro-corrections and perfect arc transitions.' },
       { name: 'VT Leapswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced stability. Precision over raw speed — smooth flicks only, no slamming.' },
+      /* NON-VT AIMLABS CLASSICS */
+      { name: 'Gridshot Ultimate',           difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'The classic Aimlabs speed test. Click centre of each target the instant it appears.' },
+      { name: 'Microshot',                   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Small static targets. Build precision — accuracy unlocks speed, never the reverse.' },
+      { name: 'Sixshot',                     difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Six spawning targets, rapid cycle. Pre-aim the spawn zone, not the last hit spot.' },
+      { name: 'Strafeshot',                  difficulty: ['intermediate'],  duration: 5, sets: 3, tip: 'Strafing targets at mid range. Lead the target slightly — click just ahead of movement.' },
+      { name: 'Smoothbot',                   difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Classic smooth tracking. Minimise lag angle — stay locked, not chasing.' },
+      { name: 'Multiclick 1wall 5targets',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Five targets in a row. Reset your aim between each — no carryover momentum.' },
+      { name: 'Spidershot',                  difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Scattered spawns, fast TTK. Scan ahead — know the next target before clicking current.' },
+      { name: 'Motionshot',                  difficulty: ['intermediate'],  duration: 5, sets: 4, tip: 'Moving target clicking. Read the arc, flick to the future position, not the current one.' },
+      { name: 'Precisionshot',               difficulty: ['advanced'],     duration: 5, sets: 4, tip: 'Tiny targets, high accuracy demanded. Slow down — one clean click beats three sloppy ones.' },
+      { name: 'Bounce 180',                  difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Target bounces off walls. Predict the next wall — aim before the bounce happens.' },
+      { name: 'Groundshot',                  difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Ground-level strafing targets. Keep your elbow anchored — pure wrist drifts low.' },
+      { name: 'Reactionshot',                difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Reaction time focused. Relax your hand completely between targets — tension slows you.' },
     ],
   },
 
@@ -159,6 +172,19 @@ const SCENARIO_DB = {
       { name: 'VT Dartswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced darters. Chasing from behind is always a failed switch at this speed.' },
       { name: 'VT Smoothswitch Advanced S5', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite stability. Perfect arc transitions — micro-corrections must be invisible.' },
       { name: 'VT Leapswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced stability switching. Precision over raw speed — smooth flicks only.' },
+      /* NON-VT KOVAAK'S CLASSICS */
+      { name: 'Tile Frenzy',                 difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'The KovaaK gridshot. Click each tile the instant it lights up — eyes lead the hand.' },
+      { name: '1wall6targets_pasu',          difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Six static wall targets. Clean flicks — accuracy before speed at this stage.' },
+      { name: 'Pasu Voltaic NB',             difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Moving pasu targets. Predict the arc endpoint — click where it will stop, not where it is.' },
+      { name: 'B180T',                       difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: '180 tracking. Mirror the target — your cursor is its shadow.' },
+      { name: 'Smoothness Short Strafes',    difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Short strafes, pure smoothness. Every micro-correction is visible — breathe through it.' },
+      { name: 'Thin Gauntlet',               difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Thin moving targets. Elite precision — shoot on the peak of the arc, not mid-travel.' },
+      { name: 'PGTI',                        difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Precise ground tracking. Track lower half of body — ground movement is predictable.' },
+      { name: 'PIGI',                        difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Pixel-precise tracking. Stay exactly centred — any deviation scores against you.' },
+      { name: 'ww3t',                        difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Three wide targets. Full arm between targets — pure wrist causes drift and miss.' },
+      { name: 'Pokeball',                    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Classic reaction clicking. Relax hand completely between pops — tension costs time.' },
+      { name: 'Close Fast Strafes',          difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Close-range fast strafes. Wrist dominant — arm for position, wrist for tracking.' },
+      { name: 'TileMan V2',                  difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Tile switching. Next tile visible before clicking current — eyes always ahead.' },
     ],
   },
 }
@@ -1173,97 +1199,66 @@ const Warmup3D = (() => {
   // ─── FLICKING — Gridshot style ───
   // All target slots always visible (dim), ONE lit at a time.
   // Feels like KovaaK's Gridshot / Aimlabs Microshot.
-  // Flick positions are generated randomly each round — no memorising spots
+  // TRUE GRIDSHOT — one random position at a time, no visible ghost spots
   function randFlickPos(p) {
-    const hw = 5.5 * p.spreadM, hh = 2.8;
-    const zBase = -11 + (p.zOffset || 0);
+    const hw  = 5.5 * Math.min(p.spreadM, 1.5);
+    const hh  = 2.6;
+    const zB  = -11 + (p.zOffset || 0);
+    // Snap to a loose grid of ~5×4 cells so targets feel spread out
+    const cols = 5, rows = 4;
+    const cx   = Math.floor(Math.random() * cols);
+    const cy   = Math.floor(Math.random() * rows);
     return [
-      (Math.random() * 2 - 1) * hw,
-      Math.random() * hh * 2 - 0.5,
-      zBase + (Math.random() - 0.5) * 4
+      -hw + cx * (hw * 2 / (cols - 1)),
+      -0.2 + cy * (hh * 2 / (rows - 1)),
+      zB + (Math.random() - 0.5) * 2
     ];
   }
-  // Keep a pool of 13 positions, regenerated when buildFlicking runs
-  let FLICK_POSITIONS = Array.from({length:13}, () => [0,0,-11]);
+  let FLICK_POSITIONS = [randFlickPos(getWarmupProfile())]; // only ONE slot used
 
   function buildFlicking() {
     flickTargets = [];
-    const diff      = document.getElementById('gameDifficulty').value;
-    const p         = getWarmupProfile();
-    // Regenerate random positions every round so spots are never the same
-    FLICK_POSITIONS = Array.from({length:13}, () => randFlickPos(p));
-    flickActive  = Math.floor(Math.random() * FLICK_POSITIONS.length);
-    const base      = diff === 'easy' ? 0.42 : diff === 'hard' ? 0.18 : 0.28;
-    const R         = base * p.sizeM;
-    const activeCol = p.color.flicking;
-
-    FLICK_POSITIONS.forEach((pos, i) => {
-      const isActive = i === flickActive;
-      const geo = new THREE.SphereGeometry(R, 20, 20);
-      const mat = new THREE.MeshStandardMaterial({
-        color:             isActive ? activeCol : 0x1a1a28,
-        emissive:          isActive ? activeCol : 0x0a0a16,
-        emissiveIntensity: isActive ? 1.2        : 0.15,
-        roughness: 0.45, metalness: 0.25,
-        transparent: true,
-        opacity:     isActive ? 1.0 : 0.0,
-      });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(...pos);
-      mesh._flickIdx = i;
-      scene.add(mesh);
-      flickTargets.push(mesh);
-    });
-
-    // Glow + light only on active
-    const gGeo = new THREE.SphereGeometry(base * p.sizeM * 2.0, 12, 12);
-    const gMat = new THREE.MeshBasicMaterial({ color: activeCol, transparent: true, opacity: 0.12, side: THREE.BackSide });
-    const glow = new THREE.Mesh(gGeo, gMat);
-    glow.position.set(...FLICK_POSITIONS[flickActive]);
-    glow._flickGlow = true;
-    scene.add(glow);
-
-    const pt = new THREE.PointLight(activeCol, 4, 9);
-    pt.position.set(...FLICK_POSITIONS[flickActive]);
-    pt._flickLight = true;
-    scene.add(pt);
-  }
-
-  function activateFlickTarget(idx) {
-    // Remove old glow & light
-    scene.children = scene.children.filter(c => !c._flickGlow && !c._flickLight);
-
-    flickActive = idx;
+    flickActive  = 0;
     const diff = document.getElementById('gameDifficulty').value;
     const p    = getWarmupProfile();
     const base = diff === 'easy' ? 0.42 : diff === 'hard' ? 0.18 : 0.28;
     const R    = base * p.sizeM;
     const col  = p.color.flicking;
+    const pos  = randFlickPos(p);
 
-    // Update ALL targets — active = bright, rest = dim (still visible)
-    flickTargets.forEach((mesh, i) => {
-      const active = i === flickActive;
-      mesh.material.color.setHex(active ? col : 0x1a1a28);
-      mesh.material.emissive.setHex(active ? col : 0x0a0a16);
-      mesh.material.emissiveIntensity = active ? 1.2 : 0.0;
-      mesh.material.transparent = true;
-      mesh.material.opacity     = active ? 1.0 : 0.0;
-      mesh.material.needsUpdate = true;
+    // Single target — true gridshot style (one target, teleports on hit)
+    const geo = new THREE.SphereGeometry(R, 22, 22);
+    const mat = new THREE.MeshStandardMaterial({
+      color: col, emissive: col, emissiveIntensity: 1.2,
+      roughness: 0.35, metalness: 0.25,
     });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(...pos);
+    mesh._flickIdx = 0;
+    scene.add(mesh);
+    flickTargets.push(mesh);
 
-    // New glow shell
     const gGeo = new THREE.SphereGeometry(R * 2.0, 12, 12);
-    const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.13, side: THREE.BackSide });
+    const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.12, side: THREE.BackSide });
     const glow = new THREE.Mesh(gGeo, gMat);
-    glow.position.set(...FLICK_POSITIONS[flickActive]);
+    glow.position.set(...pos);
     glow._flickGlow = true;
     scene.add(glow);
 
-    // New point light
     const pt = new THREE.PointLight(col, 4, 9);
-    pt.position.set(...FLICK_POSITIONS[flickActive]);
+    pt.position.set(...pos);
     pt._flickLight = true;
     scene.add(pt);
+  }
+
+  function activateFlickTarget(idx) {
+    const p   = getWarmupProfile();
+    const pos = randFlickPos(p);
+    if (flickTargets[0]) flickTargets[0].position.set(...pos);
+    scene.children.forEach(c => {
+      if (c._flickGlow || c._flickLight) c.position.set(...pos);
+    });
+    flickActive = 0;
   }
 
   function onFlickClick() {
@@ -1272,33 +1267,22 @@ const Warmup3D = (() => {
     raycaster.setFromCamera(CENTER, camera);
     const intersects = raycaster.intersectObjects(flickTargets);
     if (intersects.length > 0) {
-      const hitIdx = intersects[0].object._flickIdx;
-      if (hitIdx === flickActive) {
-        hits++;
-        score++;
-        scoreEl.textContent = score;
-        accEl.textContent   = `${Math.round((hits/shots)*100)}%`;
-        flashHitRing();
-        // Pick new random target (not same)
-        let next;
-        do { next = Math.floor(Math.random() * FLICK_POSITIONS.length); } while (next === flickActive && FLICK_POSITIONS.length > 1);
-        activateFlickTarget(next);
-      }
+      hits++;
+      score++;
+      scoreEl.textContent = score;
+      accEl.textContent   = `${Math.round((hits/shots)*100)}%`;
+      flashHitRing();
+      activateFlickTarget(0);
+    } else {
+      accEl.textContent = `${Math.round((hits/shots)*100)}%`;
     }
   }
 
   // ─── SWITCHING — machine gun feel ───
-  // Low HP per target, hold LMB to spray, targets flash red on death and
-  // instantly respawn with a brief invincibility flash (like aim trainers).
-  const SWITCH_POSITIONS = [
-    [-6.5, 2.8, -13],
-    [-3.2, 1.2, -11],
-    [  0,  3.0, -12],
-    [ 3.2, 1.2, -11],
-    [ 6.5, 2.8, -13],
-    [-5.0, 0.2, -12],
-    [ 5.0, 0.2, -12],
-  ];
+  function randSwitchPos() {
+    return [(Math.random()*2-1)*6.5, Math.random()*3.2-0.2, -11-Math.random()*4];
+  }
+  let SWITCH_POSITIONS = Array.from({length:7}, randSwitchPos);
 
   let switchHealthBars = [];
   let mouseHeld        = false;
@@ -1319,6 +1303,10 @@ const Warmup3D = (() => {
 
   function respawnTarget(mesh) {
     const col = getWarmupProfile().color.switching;
+    const np  = randSwitchPos();
+    mesh.position.set(...np);
+    if (mesh._glow)  mesh._glow.position.set(...np);
+    if (mesh._light) mesh._light.position.set(...np);
     mesh._hp          = mesh._maxHp;
     mesh._dead        = false;
     mesh._invincible  = true;
