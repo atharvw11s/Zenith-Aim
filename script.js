@@ -608,8 +608,7 @@ function initGameFilters() {
     });
   });
 
-  // Warmup filter wired via initWarmupFilterBar() — called on each warmup visit
-  initWarmupFilterBar();
+  // Warmup filter is wired inside showSection after THREE loads
 }
 
 function loadFromURL() {
@@ -1199,66 +1198,65 @@ const Warmup3D = (() => {
   // ─── FLICKING — Gridshot style ───
   // All target slots always visible (dim), ONE lit at a time.
   // Feels like KovaaK's Gridshot / Aimlabs Microshot.
-  // TRUE GRIDSHOT — one random position at a time, no visible ghost spots
+  const GRIDSHOT_COUNT = 6; // always 6 targets visible like real gridshot/sixshot
+
+  // Random position within a bounded square zone in front of camera
   function randFlickPos(p) {
-    const hw  = 5.5 * Math.min(p.spreadM, 1.5);
-    const hh  = 2.6;
+    const hw  = 5.0 * Math.min(p.spreadM, 1.4); // horizontal half-width
+    const hh  = 2.8;                             // vertical half-height
     const zB  = -11 + (p.zOffset || 0);
-    // Snap to a loose grid of ~5×4 cells so targets feel spread out
-    const cols = 5, rows = 4;
-    const cx   = Math.floor(Math.random() * cols);
-    const cy   = Math.floor(Math.random() * rows);
     return [
-      -hw + cx * (hw * 2 / (cols - 1)),
-      -0.2 + cy * (hh * 2 / (rows - 1)),
+      (Math.random() * 2 - 1) * hw,
+      (Math.random() * 2 - 1) * hh + 1.5,       // offset up slightly (eye level)
       zB + (Math.random() - 0.5) * 2
     ];
   }
-  let FLICK_POSITIONS = [randFlickPos(getWarmupProfile())]; // only ONE slot used
 
   function buildFlicking() {
     flickTargets = [];
-    flickActive  = 0;
+    flickActive  = -1; // any target can be hit
     const diff = document.getElementById('gameDifficulty').value;
     const p    = getWarmupProfile();
-    const base = diff === 'easy' ? 0.42 : diff === 'hard' ? 0.18 : 0.28;
+    const base = diff === 'easy' ? 0.38 : diff === 'hard' ? 0.18 : 0.26;
     const R    = base * p.sizeM;
     const col  = p.color.flicking;
-    const pos  = randFlickPos(p);
 
-    // Single target — true gridshot style (one target, teleports on hit)
-    const geo = new THREE.SphereGeometry(R, 22, 22);
-    const mat = new THREE.MeshStandardMaterial({
-      color: col, emissive: col, emissiveIntensity: 1.2,
-      roughness: 0.35, metalness: 0.25,
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(...pos);
-    mesh._flickIdx = 0;
-    scene.add(mesh);
-    flickTargets.push(mesh);
+    for (let i = 0; i < GRIDSHOT_COUNT; i++) {
+      const pos = randFlickPos(p);
+      const geo = new THREE.SphereGeometry(R, 20, 20);
+      const mat = new THREE.MeshStandardMaterial({
+        color: col, emissive: col, emissiveIntensity: 0.9,
+        roughness: 0.35, metalness: 0.25,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(...pos);
+      mesh._flickIdx = i;
+      scene.add(mesh);
+      flickTargets.push(mesh);
 
-    const gGeo = new THREE.SphereGeometry(R * 2.0, 12, 12);
-    const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.12, side: THREE.BackSide });
-    const glow = new THREE.Mesh(gGeo, gMat);
-    glow.position.set(...pos);
-    glow._flickGlow = true;
-    scene.add(glow);
+      // Subtle glow on each target
+      const gGeo = new THREE.SphereGeometry(R * 1.8, 10, 10);
+      const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.07, side: THREE.BackSide });
+      const glow = new THREE.Mesh(gGeo, gMat);
+      glow.position.set(...pos);
+      glow._parentFlick = i;
+      scene.add(glow);
 
-    const pt = new THREE.PointLight(col, 4, 9);
-    pt.position.set(...pos);
-    pt._flickLight = true;
-    scene.add(pt);
+      const pt = new THREE.PointLight(col, 1.5, 6);
+      pt.position.set(...pos);
+      pt._parentFlick = i;
+      scene.add(pt);
+    }
   }
 
   function activateFlickTarget(idx) {
+    // Teleport the HIT target to a new random position (others stay)
     const p   = getWarmupProfile();
     const pos = randFlickPos(p);
-    if (flickTargets[0]) flickTargets[0].position.set(...pos);
+    if (flickTargets[idx]) flickTargets[idx].position.set(...pos);
     scene.children.forEach(c => {
-      if (c._flickGlow || c._flickLight) c.position.set(...pos);
+      if (c._parentFlick === idx) c.position.set(...pos);
     });
-    flickActive = 0;
   }
 
   function onFlickClick() {
@@ -1267,12 +1265,13 @@ const Warmup3D = (() => {
     raycaster.setFromCamera(CENTER, camera);
     const intersects = raycaster.intersectObjects(flickTargets);
     if (intersects.length > 0) {
+      const hitIdx = intersects[0].object._flickIdx;
       hits++;
       score++;
       scoreEl.textContent = score;
       accEl.textContent   = `${Math.round((hits/shots)*100)}%`;
       flashHitRing();
-      activateFlickTarget(0);
+      activateFlickTarget(hitIdx); // teleport only the hit target
     } else {
       accEl.textContent = `${Math.round((hits/shots)*100)}%`;
     }
@@ -1739,7 +1738,7 @@ const Warmup3D = (() => {
   }
 
   function isRunning() { return gameRunning; }
-  function rebuild() { buildScene(); renderIdle(); }
+  function rebuild() { if (!renderer) return; buildScene(); renderIdle(); }
 
   return { init, resize, _showEndOverlay, isRunning, rebuild, _listenersAttached: false };
 })();
