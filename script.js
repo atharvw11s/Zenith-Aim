@@ -434,6 +434,9 @@ function showSection(target, fromPopState) {
 
   document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section === target));
   document.querySelectorAll('.section').forEach(s  => s.classList.toggle('active', s.id === target));
+  // Show warmup filter bar only when on warmup
+  const wfb = document.getElementById('warmupGameFilterBar');
+  if (wfb) wfb.style.display = target === 'warmup' ? '' : 'none';
 
   if (target === 'warmup') {
     if (typeof THREE === 'undefined') {
@@ -1202,13 +1205,13 @@ const Warmup3D = (() => {
 
   // Random position within a bounded square zone in front of camera
   function randFlickPos(p) {
-    const hw  = 5.0 * Math.min(p.spreadM, 1.4); // horizontal half-width
-    const hh  = 2.8;                             // vertical half-height
-    const zB  = -11 + (p.zOffset || 0);
+    const hw = 5.2 * Math.min(p.spreadM, 1.4);
+    const hh = 2.6;
+    const zB = -11 + (p.zOffset || 0);
     return [
       (Math.random() * 2 - 1) * hw,
-      (Math.random() * 2 - 1) * hh + 1.5,       // offset up slightly (eye level)
-      zB + (Math.random() - 0.5) * 2
+      Math.random() * hh * 2 - 0.8,
+      zB + (Math.random() - 0.5) * 1.5
     ];
   }
 
