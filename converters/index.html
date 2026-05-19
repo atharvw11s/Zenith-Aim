@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zenith Aim — App</title>
   <meta name="description" content="Daily aim training routines, sensitivity converters, FOV calculators and 3D warmup games.">
-  <link rel="stylesheet" href="../styles.css?v=29">
+  <link rel="stylesheet" href="../styles.css?v=30">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -346,6 +346,17 @@
           </button>
         </div>
 
+
+        <!-- WARMUP GAME FILTER BAR -->
+        <div class="game-filter-bar warmup-game-filter-bar" id="warmupGameFilterBar">
+          <button class="warmup-game-btn active" data-wgame="all">🎮 General</button>
+          <button class="warmup-game-btn" data-wgame="rivals">🎯 Rivals</button>
+          <button class="warmup-game-btn" data-wgame="arsenal">🔫 Arsenal</button>
+          <button class="warmup-game-btn" data-wgame="valorant">⚔️ Valorant</button>
+          <button class="warmup-game-btn" data-wgame="cs2">💣 CS2</button>
+          <button class="warmup-game-btn" data-wgame="apex">🦾 Apex</button>
+        </div>
+        <div class="warmup-game-banner" id="warmupGameBanner" style="display:none"></div>
         <div class="warmup-hud" id="warmupHUD">
           <div class="hud-stat"><span class="hud-num" id="wScore">0</span><span class="hud-lbl" id="wScoreLbl">Score</span></div>
           <div class="hud-stat hud-center"><span class="hud-num" id="wTimer">30</span><span class="hud-lbl">Seconds</span></div>
@@ -449,9 +460,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="../auth.js?v=29"></script>
-<script src="../scores.js?v=29"></script>
-<script src="../script.js?v=29"></script>
+<script src="../auth.js?v=30"></script>
+<script src="../scores.js?v=30"></script>
+<script src="../script.js?v=30"></script>
 
   <!-- Auth Modal -->
   <div class="auth-modal-bg" id="authModalBg">
