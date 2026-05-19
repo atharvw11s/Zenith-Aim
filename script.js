@@ -434,9 +434,6 @@ function showSection(target, fromPopState) {
 
   document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section === target));
   document.querySelectorAll('.section').forEach(s  => s.classList.toggle('active', s.id === target));
-  // Show warmup filter bar only when on warmup
-  const wfb = document.getElementById('warmupGameFilterBar');
-  if (wfb) wfb.style.display = target === 'warmup' ? '' : 'none';
 
   if (target === 'warmup') {
     if (typeof THREE === 'undefined') {
