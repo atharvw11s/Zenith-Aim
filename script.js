@@ -450,7 +450,7 @@ function showSection(target, fromPopState) {
       };
       document.head.appendChild(script);
     } else {
-      setTimeout(() => { Warmup3D.resize(); initWarmupFilterBar(); }, 60);
+      setTimeout(() => { Warmup3D.init(); initWarmupFilterBar(); }, 60);
     }
   }
 
@@ -595,7 +595,14 @@ function initWarmupFilterBar() {
         const prof = WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
         tipEl.textContent = prof.tip[mode] || WARMUP_GAME_PROFILES.all.tip[mode];
       }
-      if (!Warmup3D.isRunning()) Warmup3D.rebuild();
+      if (typeof THREE === 'undefined') {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        s.onload = () => { Warmup3D.init(); };
+        document.head.appendChild(s);
+      } else if (!Warmup3D.isRunning()) {
+        Warmup3D.rebuild();
+      }
     });
   });
 }
@@ -933,6 +940,7 @@ const Warmup3D = (() => {
 
   // ── INIT ──
   function init() {
+    if (renderer) { Warmup3D.resize(); return; } // already initialized
     canvas          = document.getElementById('warmupCanvas');
     overlay         = document.getElementById('canvasOverlay');
     badge           = document.getElementById('overlayBadge');
@@ -1204,15 +1212,20 @@ const Warmup3D = (() => {
   const GRIDSHOT_COUNT = 6; // always 6 targets visible like real gridshot/sixshot
 
   // Random position within a bounded square zone in front of camera
-  function randFlickPos(p) {
-    const hw = 5.2 * Math.min(p.spreadM, 1.4);
-    const hh = 2.6;
-    const zB = -11 + (p.zOffset || 0);
-    return [
-      (Math.random() * 2 - 1) * hw,
-      Math.random() * hh * 2 - 0.8,
-      zB + (Math.random() - 0.5) * 1.5
-    ];
+  function randFlickPos(p, existing) {
+    const hw   = 5.0 * Math.min(p.spreadM, 1.4);
+    const hh   = 2.5;
+    const zB   = -11 + (p.zOffset || 0);
+    const minD = 2.2; // minimum distance between targets — no touching
+    let pos, tries = 0;
+    do {
+      pos = [(Math.random()*2-1)*hw, Math.random()*hh*2-0.5, zB + (Math.random()-0.5)*1.5];
+      tries++;
+    } while (
+      tries < 30 && existing &&
+      existing.some(e => Math.hypot(pos[0]-e[0], pos[1]-e[1]) < minD)
+    );
+    return pos;
   }
 
   function buildFlicking() {
@@ -1224,8 +1237,10 @@ const Warmup3D = (() => {
     const R    = base * p.sizeM;
     const col  = p.color.flicking;
 
+    const usedPositions = [];
     for (let i = 0; i < GRIDSHOT_COUNT; i++) {
-      const pos = randFlickPos(p);
+      const pos = randFlickPos(p, usedPositions);
+      usedPositions.push(pos);
       const geo = new THREE.SphereGeometry(R, 20, 20);
       const mat = new THREE.MeshStandardMaterial({
         color: col, emissive: col, emissiveIntensity: 0.9,
@@ -1253,9 +1268,10 @@ const Warmup3D = (() => {
   }
 
   function activateFlickTarget(idx) {
-    // Teleport the HIT target to a new random position (others stay)
     const p   = getWarmupProfile();
-    const pos = randFlickPos(p);
+    // Collect positions of all OTHER targets to avoid overlap
+    const others = flickTargets.filter((_,i)=>i!==idx).map(m=>[m.position.x, m.position.y, m.position.z]);
+    const pos = randFlickPos(p, others);
     if (flickTargets[idx]) flickTargets[idx].position.set(...pos);
     scene.children.forEach(c => {
       if (c._parentFlick === idx) c.position.set(...pos);
