@@ -5,13 +5,13 @@
 
 const AimRivalsConfig = {
 
-  version: '6.1.0',
+  version: '6.1.1',
   author:  'PurplsXD',
   repo:    'https://github.com/atharvw11s/Zenith-Aim',
 
   SENS_DB: {
-    rivals:    { label: 'Roblox Rivals',  yaw: 0.37503, sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
-    arsenal:   { label: 'Roblox Arsenal', yaw: 0.37503, sensLabel: 'Camera Sensitivity', hasMultiplier: false, sensScale: 1    },
+    rivals:    { label: 'Roblox Rivals',  yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
+    arsenal:   { label: 'Roblox Arsenal', yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: false, sensScale: 1    },
     aimlabs:   { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
     kovaaks:   { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
     valorant:  { label: 'Valorant',       yaw: 0.07,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
