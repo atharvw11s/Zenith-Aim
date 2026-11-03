@@ -5,5 +5,1964 @@
    ================================================================ */
 'use strict';
 
-/* NOTE: Full content is 103k characters. The restore is being applied from the provided full file. If this push is truncated, the user should paste the full content from the raw link. */
-console.error('RESTORE INCOMPLETE - paste full script.js from the raw GitHub link');
+/* ═══════════════════════════════════════════════════════════════
+   REAL SCENARIO DATABASE  v3
+   ─────────────────────────────────────────────────────────────
+   AIMLABS:  Voltaic S3 benchmark names (VT ... S3) + classic
+             built-in Aimlabs tasks. Search by exact name in-app.
+             S3 sources: aimlab-stats.com, voltaic S2 Steam WS
+             (S3 appends difficulty level to name).
+
+   KOVAAK'S: Voltaic S5 benchmark names (VT ... S5) + classic
+             community scenarios. Search by exact name in-app.
+             S5 sources: blog.voltaic.gg KovaaK's S5 post.
+   ═══════════════════════════════════════════════════════════════ */
+const SCENARIO_DB = {
+  aimlabs: {
+    tracking: [
+      /* BEGINNER */
+      { name: 'VT Verttrack Novice S3',      difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Vertical movement tracking. Engage elbow slightly — pure wrist will tire fast.' },
+      { name: 'VT Shifttrack Novice S3',     difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Small positional shifts. Resist micro-corrections — stay locked through each shift.' },
+      { name: 'VT Jettrack Novice S3',       difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Burst-style tracking. Pre-aim direction, smooth out — never chase the burst.' },
+      { name: 'VT Quaketrack Novice S3',     difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Erratic reactive movement. Keep your hand loose — tension causes lag.' },
+      { name: 'VT Controltrack Novice S3',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Deliberate control tracking. Smoothness over speed — breathe through corrections.' },
+      { name: 'VT Steadytrack Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Continuous steady motion. No twitching — fluid stroke the entire run.' },
+      /* INTERMEDIATE */
+      { name: 'VT Verttrack Intermediate S3',     difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Vertical tracking steps up. Full arm engagement now — wrist alone breaks down.' },
+      { name: 'VT Shifttrack Intermediate S3',    difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster shifts with more variance. Crosshair slightly ahead of where target will be.' },
+      { name: 'VT Jettrack Intermediate S3',      difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Quicker bursts. Anticipate direction — lagging behind means the burst is already over.' },
+      { name: 'VT Quaketrack Intermediate S3',    difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster chaos. Let your grip soften — tension = constant lag behind the target.' },
+      { name: 'VT Controltrack Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'This punishes over-correction harder than under. Breathe, commit, stay steady.' },
+      { name: 'VT Steadytrack Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Maintain fluid stroke at higher speed. Hesitation shows up clearly here.' },
+      /* ADVANCED */
+      { name: 'VT Verttrack Advanced S3',    difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Full vertical at elite speed. Demand full arm engagement and a relaxed grip.' },
+      { name: 'VT Shifttrack Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Maximum shift variance. Position crosshair slightly ahead of where the target will land.' },
+      { name: 'VT Jettrack Advanced S3',     difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Lightning burst tracking. Anticipation is the only skill that works here — reaction is too slow.' },
+      { name: 'VT Quaketrack Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite reactive chaos. Top-tier arm control required — stay loose, stay fast.' },
+      { name: 'VT Controltrack Advanced S3', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Precision over speed. Micro-corrections must be completely invisible at this level.' },
+      { name: 'VT Steadytrack Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite control tracking. No overcorrection — breathe through it, tense arms fail here.' },
+    ],
+    flicking: [
+      /* BEGINNER */
+      { name: 'VT Angleshot Novice S3',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Diagonal-moving targets. Read the trajectory before clicking — predict, not react.' },
+      { name: 'VT Popshot Novice S3',     difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Pop-up dynamic targets. Eyes lead the flick — the click is decided before you move.' },
+      { name: 'VT Quadshot Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Four medium targets. Clean direct flicks — accuracy unlocks speed, not the other way.' },
+      { name: 'VT Wideshot Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Wide spawn range. Start using arm movement for distant targets — don\'t strain the wrist.' },
+      { name: 'VT Frogshot Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Linear moving targets. Smooth acceleration into each click — no abrupt jerks.' },
+      { name: 'VT Floatshot Novice S3',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Floating arc targets. Micro-adjust mastery starts here — overshooting = missed click.' },
+      /* INTERMEDIATE */
+      { name: 'VT Angleshot Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster angles. Commit immediately — hesitation at this speed means a miss.' },
+      { name: 'VT Popshot Intermediate S3',    difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Quicker pop-ups. Visual lead increases in importance — hand follows eyes.' },
+      { name: 'VT Quadshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster four-target flicks. Direct line to each target — eliminate curved approach paths.' },
+      { name: 'VT Wideshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Wider spawns at pace. Full arm mechanics for far targets — wrist only for close ones.' },
+      { name: 'VT Frogshot Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster linear movement. Smooth deceleration into the click — no hard stops.' },
+      { name: 'VT Floatshot Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Floating targets at pace. Adjust before the click window closes — no second chances.' },
+      /* ADVANCED */
+      { name: 'VT Angleshot Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite dynamic clicking. Zero hesitation — commit every flick and own the miss.' },
+      { name: 'VT Popshot Advanced S3',    difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Maximum reaction clicking. Eyes lead, hand follows — the click is already decided.' },
+      { name: 'VT Quadshot Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Four tight targets at elite pace. Any spray is a failed run at this level.' },
+      { name: 'VT Wideshot Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Full arm mechanics demanded. No wrist compensation for wide targets.' },
+      { name: 'VT Frogshot Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Fast linear at elite speed. Smooth acceleration into each target — no abrupt jerks.' },
+      { name: 'VT Floatshot Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Floating targets at max pace. Overshooting at this level costs the entire run.' },
+    ],
+    switching: [
+      /* BEGINNER */
+      { name: 'VT Pokeswitch Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Build decisiveness — the moment you see the next target, go. No hesitation.' },
+      { name: 'VT Temposwitch Novice S3',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Find a rhythm — consistent tempo beats bursts of speed followed by pauses.' },
+      { name: 'VT Boltswitch Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Dashing targets. Acquire immediately on spawn — pre-aim common spawn areas.' },
+      { name: 'VT Dartswitch Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Darting movement. Read trajectory on spawn — chasing from behind always fails.' },
+      { name: 'VT Smoothswitch Novice S3',  difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Controlled arc between each target. Find rhythm — don\'t rush, precision first.' },
+      { name: 'VT Leapswitch Novice S3',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Leaping targets. Smooth controlled flicks — stability over raw switch speed.' },
+      /* INTERMEDIATE */
+      { name: 'VT Pokeswitch Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster poke pace. Decisiveness is the only skill — see target, move immediately.' },
+      { name: 'VT Temposwitch Intermediate S3',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Maintain momentum — find a rhythm and never pause between switches.' },
+      { name: 'VT Boltswitch Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster bolts. Immediate acquisition — any delay and the target is already past you.' },
+      { name: 'VT Dartswitch Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Fast darters. Acquire the trajectory early — eyes lead the flick.' },
+      { name: 'VT Smoothswitch Intermediate S3', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Smooth precise switching. Controlled arc between targets — zero wasted motion.' },
+      { name: 'VT Leapswitch Intermediate S3',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Leaping targets at pace. Smooth, controlled flicks over raw speed.' },
+      /* ADVANCED */
+      { name: 'VT Pokeswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Maximum-speed poke switching. Instant commitment — no second-guessing any target.' },
+      { name: 'VT Temposwitch Advanced S3',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite speed switching. Dead time between targets = lost score. Stay in constant motion.' },
+      { name: 'VT Boltswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite evasive switching. Targets dash fast — immediate acquisition, zero hesitation.' },
+      { name: 'VT Dartswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced darters. Read trajectory on spawn — chasing from behind is a failed switch.' },
+      { name: 'VT Smoothswitch Advanced S3', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite stability switching. Invisible micro-corrections and perfect arc transitions.' },
+      { name: 'VT Leapswitch Advanced S3',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced stability. Precision over raw speed — smooth flicks only, no slamming.' },
+      /* NON-VT AIMLABS CLASSICS */
+      { name: 'Gridshot Ultimate',           difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'The classic Aimlabs speed test. Click centre of each target the instant it appears.' },
+      { name: 'Microshot',                   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Small static targets. Build precision — accuracy unlocks speed, never the reverse.' },
+      { name: 'Sixshot Ultimate',                     difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Six spawning targets, rapid cycle. Pre-aim the spawn zone, not the last hit spot.' },
+      { name: 'Strafetrack Ultimate',                  difficulty: ['intermediate'],  duration: 5, sets: 3, tip: 'Strafing targets at mid range. Lead the target slightly — click just ahead of movement.' },
+      { name: 'Smoothbot',                   difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Classic smooth tracking. Minimise lag angle — stay locked, not chasing.' },
+      { name: 'Multiclick 1wall 5targets Ultimate',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Five targets in a row. Reset your aim between each — no carryover momentum.' },
+      { name: 'Spidershot Precision',                  difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Scattered spawns, fast TTK. Scan ahead — know the next target before clicking current.' },
+      { name: 'Motionshot Ultimate',                  difficulty: ['intermediate'],  duration: 5, sets: 4, tip: 'Moving target clicking. Read the arc, flick to the future position, not the current one.' },
+      { name: 'Precisionshot Ultimate',               difficulty: ['advanced'],     duration: 5, sets: 4, tip: 'Tiny targets, high accuracy demanded. Slow down — one clean click beats three sloppy ones.' },
+      { name: 'Microtrack 180',                  difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Target bounces off walls. Predict the next wall — aim before the bounce happens.' },
+      { name: 'Groundshot Ultimate',                  difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Ground-level strafing targets. Keep your elbow anchored — pure wrist drifts low.' },
+      { name: 'Reactionshot Ultimate',                difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Reaction time focused. Relax your hand completely between targets — tension slows you.' },
+    ],
+  },
+
+  kovaaks: {
+    tracking: [
+      /* BEGINNER */
+      { name: 'VT Verttrack Novice S5',       difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Vertical strafes on KovaaK\'s. Engage elbow — wrist alone breaks down fast.' },
+      { name: 'VT Shifttrack Novice S5',      difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Positional shifts. Read the next shift before it happens — stay slightly ahead.' },
+      { name: 'VT Jettrack Novice S5',        difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Burst tracking. Pre-aim direction — chasing the burst from behind always fails.' },
+      { name: 'VT Quaketrack Novice S5',      difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Erratic movement. Keep your grip loose — tension causes constant lag.' },
+      { name: 'VT Controltrack Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Deliberate control pace. Smooth stroke — over-correction is punished here.' },
+      { name: 'VT Steadytrack Novice S5',     difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Continuous motion. Build the habit of staying locked — no drops in contact.' },
+      /* INTERMEDIATE */
+      { name: 'VT Verttrack Intermediate S5',    difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Vertical tracking increases pace. Full arm engagement required now.' },
+      { name: 'VT Shifttrack Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'More shift variance. Crosshair slightly ahead of predicted position each time.' },
+      { name: 'VT Jettrack Intermediate S5',     difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Quicker bursts. Anticipation beats reaction at this speed — be early.' },
+      { name: 'VT Quaketrack Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster chaos. Stay relaxed — tense grip = constant lag behind target.' },
+      { name: 'VT Controltrack Intermediate S5', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Steady but faster. Over-correction shows clearly — commit and hold.' },
+      { name: 'VT Steadytrack Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Fluid stroke at higher speeds. Any hesitation is immediately visible.' },
+      /* ADVANCED */
+      { name: 'VT Verttrack Advanced S5',    difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite vertical tracking. Relaxed grip + full arm — no other way through this.' },
+      { name: 'VT Shifttrack Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Maximum shift variance. Pre-aim each shift landing zone — reaction alone is too slow.' },
+      { name: 'VT Jettrack Advanced S5',     difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite burst tracking. Anticipation is everything — reaction cannot keep up.' },
+      { name: 'VT Quaketrack Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite reactive chaos. Loose grip, arm-led — the only way to survive this.' },
+      { name: 'VT Controltrack Advanced S5', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Precision at elite pace. Micro-corrections must be completely invisible.' },
+      { name: 'VT Steadytrack Advanced S5',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'No overcorrection allowed. Breathe, commit, maintain contact the entire run.' },
+    ],
+    flicking: [
+      /* BEGINNER */
+      { name: 'VT Angleshot Novice S5',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Diagonal targets. Read trajectory first — predict, then click.' },
+      { name: 'VT Popshot Novice S5',     difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Pop-up targets. Eyes lead hand — flick decision is made before you move.' },
+      { name: 'VT Quadshot Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Four targets. Accuracy first — clean flicks build speed naturally.' },
+      { name: 'VT Wideshot Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Wide spawn range. Begin using arm for distant targets — wrist only for close.' },
+      { name: 'VT Frogshot Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Linear movement. Smooth acceleration — abrupt jerks break the flow.' },
+      { name: 'VT Floatshot Novice S5',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Arc targets. Micro-adjust before clicking — overshooting costs every time.' },
+      /* INTERMEDIATE */
+      { name: 'VT Angleshot Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster angles. Commit immediately — any hesitation at this speed means a miss.' },
+      { name: 'VT Popshot Intermediate S5',    difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Quicker pops. Visual lead is crucial — hand must follow eyes.' },
+      { name: 'VT Quadshot Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster four-target pace. Direct line to each target — no curved paths.' },
+      { name: 'VT Wideshot Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Wider spawns at pace. Full arm for far targets — never drag wrist across full range.' },
+      { name: 'VT Frogshot Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster linear. Smooth deceleration into the click — no hard stops.' },
+      { name: 'VT Floatshot Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Floating at pace. Adjust before the window closes — second chances are rare here.' },
+      /* ADVANCED */
+      { name: 'VT Angleshot Advanced S5',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite dynamic clicking. No hesitation — commit every flick and own the miss.' },
+      { name: 'VT Popshot Advanced S5',    difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Max reaction clicking. Eyes lead, hand follows — decision already made before movement.' },
+      { name: 'VT Quadshot Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Four tight targets elite pace. Any spray is a failed run — pure precision.' },
+      { name: 'VT Wideshot Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Full arm mechanics required. No wrist compensation for wide-range targets.' },
+      { name: 'VT Frogshot Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Fast linear at elite speed. Smooth acceleration into each click — no abrupt jerks.' },
+      { name: 'VT Floatshot Advanced S5',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Floating at max pace. Any overshoot at this level costs the entire run.' },
+    ],
+    switching: [
+      /* BEGINNER */
+      { name: 'VT Pokeswitch Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'See target, go immediately. Decisiveness is the entire skill here.' },
+      { name: 'VT Temposwitch Novice S5',   difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Consistent rhythm beats bursts of speed. Find a tempo and hold it.' },
+      { name: 'VT Boltswitch Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Dashing targets. Acquire immediately on spawn — pre-aim common areas.' },
+      { name: 'VT Dartswitch Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Darting targets. Read trajectory on spawn — chasing from behind always fails.' },
+      { name: 'VT Smoothswitch Novice S5',  difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Controlled arc between each switch. Find rhythm — no rushing.' },
+      { name: 'VT Leapswitch Novice S5',    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Leaping targets. Smooth controlled flicks — stability first, speed follows.' },
+      /* INTERMEDIATE */
+      { name: 'VT Pokeswitch Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster poke pace. See target, move — no thought between the two.' },
+      { name: 'VT Temposwitch Intermediate S5',  difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Maintain momentum — never pause between targets. Rhythm is king.' },
+      { name: 'VT Boltswitch Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Faster bolts. Immediate acquisition — any delay and the target is gone.' },
+      { name: 'VT Dartswitch Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Fast darters. Eyes lead the flick — trajectory read before hand starts moving.' },
+      { name: 'VT Smoothswitch Intermediate S5', difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Smooth arcs at pace. Zero wasted motion between targets.' },
+      { name: 'VT Leapswitch Intermediate S5',   difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Leaping at pace. Smooth controlled switches — no slamming into targets.' },
+      /* ADVANCED */
+      { name: 'VT Pokeswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Maximum-speed poking. Instant commitment — no second-guessing any target.' },
+      { name: 'VT Temposwitch Advanced S5',  difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite speed switching. Any dead time between targets = lost score. Keep moving.' },
+      { name: 'VT Boltswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite evasive switching. Targets dash fast — zero hesitation allowed.' },
+      { name: 'VT Dartswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced darters. Chasing from behind is always a failed switch at this speed.' },
+      { name: 'VT Smoothswitch Advanced S5', difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Elite stability. Perfect arc transitions — micro-corrections must be invisible.' },
+      { name: 'VT Leapswitch Advanced S5',   difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Advanced stability switching. Precision over raw speed — smooth flicks only.' },
+      /* NON-VT KOVAAK'S CLASSICS */
+      { name: 'Tile Frenzy',                 difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'The KovaaK gridshot. Click each tile the instant it lights up — eyes lead the hand.' },
+      { name: '1wall6targets_pasu',          difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Six static wall targets. Clean flicks — accuracy before speed at this stage.' },
+      { name: 'Pasu Voltaic NB',             difficulty: ['intermediate'], duration: 5, sets: 4, tip: 'Moving pasu targets. Predict the arc endpoint — click where it will stop, not where it is.' },
+      { name: 'B180T',                       difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: '180 tracking. Mirror the target — your cursor is its shadow.' },
+      { name: 'Smoothness Short Strafes',    difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Short strafes, pure smoothness. Every micro-correction is visible — breathe through it.' },
+      { name: 'Thin Gauntlet',               difficulty: ['advanced'],     duration: 5, sets: 5, tip: 'Thin moving targets. Elite precision — shoot on the peak of the arc, not mid-travel.' },
+      { name: 'PGTI',                        difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Precise ground tracking. Track lower half of body — ground movement is predictable.' },
+      { name: 'PIGI',                        difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Pixel-precise tracking. Stay exactly centred — any deviation scores against you.' },
+      { name: 'ww3t',                        difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Three wide targets. Full arm between targets — pure wrist causes drift and miss.' },
+      { name: 'Pokeball',                    difficulty: ['beginner'],     duration: 5, sets: 3, tip: 'Classic reaction clicking. Relax hand completely between pops — tension costs time.' },
+      { name: 'Close Fast Strafes',          difficulty: ['intermediate','advanced'], duration: 5, sets: 4, tip: 'Close-range fast strafes. Wrist dominant — arm for position, wrist for tracking.' },
+      { name: 'TileMan V2',                  difficulty: ['beginner','intermediate'], duration: 5, sets: 3, tip: 'Tile switching. Next tile visible before clicking current — eyes always ahead.' },
+    ],
+  },
+}
+/* ═══════════════════════════════════════════════════════════════
+   SENSITIVITY GAME CONSTANTS
+   ─────────────────────────────────────────────────────────────
+   yaw = degrees per mouse count at DPI=1, sens=1.0
+   Formula:
+     cm/360 = 914.4 / (fromDPI × yaw × effectiveSens)
+     toSens = (fromDPI × fromYaw × effectiveSens) / (toDPI × toYaw)
+
+   YAW VALUES — derived from verified ground truth:
+     Roblox 0.06415 @ 800 DPI = 47.51 cm/360
+       → robloxYaw = 914.4 / (800 × 47.51 × 0.06415) = 0.37503
+     Aimlabs 0.48116 @ 800 DPI = 47.51 cm/360
+       → aimlabsYaw = 0.05 (confirmed)
+     KovaaK's: Quake/Source m_yaw = 0.022
+
+   RIVALS TWO-TIER:
+     effectiveSens = CameraSens × RivalsInGameSlider
+     Slider = 1.0 (default) → Rivals ≡ Arsenal
+   ═══════════════════════════════════════════════════════════════ */
+const SENS_DB = {
+  rivals:    { label: 'Roblox Rivals',  yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
+  arsenal:   { label: 'Roblox Arsenal', yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: false, sensScale: 1    },
+  aimlabs:   { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+  kovaaks:   { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+  valorant:  { label: 'Valorant',       yaw: 0.07,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+  cs2:       { label: 'CS2',            yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+  apex:      { label: 'Apex Legends',   yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+  overwatch: { label: 'Overwatch 2',    yaw: 0.0066,  sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+  fortnite:  { label: 'Fortnite',       yaw: 0.005555,sensLabel: 'Sensitivity %',       hasMultiplier: false, sensScale: 1    },
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   FOV GAME CONSTANTS
+   ─────────────────────────────────────────────────────────────
+   Rivals uses a non-standard internal aspect of ~1.464352
+   (NOT the standard 16/9 = 1.7778).
+
+   VERIFIED by user ground truth:
+     Rivals  103 VFOV → Arsenal  92 VFOV  ✓  (with aspect 1.464352)
+     Arsenal  70 VFOV → HFOV 102.447858   ✓
+     Rivals   80 VFOV → Arsenal ~69.3°    ✓  (matches Arsenal default 70)
+
+   type 'vertical'   = game FOV setting is Vertical FOV
+   type 'horizontal' = game FOV setting is Horizontal FOV
+   aspect: internal aspect ratio used to convert VFOV↔HFOV for that game
+   ═══════════════════════════════════════════════════════════════ */
+const FOV_DB = {
+  rivals:  { label: 'Roblox Rivals',  type: 'vertical',   default: 80,  range: [30, 120], aspect: 16/9 },
+  arsenal: { label: 'Roblox Arsenal', type: 'vertical',   default: 70,  range: [30, 120], aspect: 16/9 },
+  aimlabs: { label: 'Aimlabs',        type: 'vertical',   default: 70,  range: [1,  150], aspect: 16/9 },
+  kovaaks: { label: "Kovaak's",       type: 'horizontal', default: 103, range: [60, 150], aspect: 16/9 },
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   APP STATE
+   ═══════════════════════════════════════════════════════════════ */
+const state = {
+  trainer: 'aimlabs',
+  rank: 'beginner',
+  priorities: { tracking: 33, flicking: 34, switching: 33 },
+  activeGame: 'all',
+  _playlist: [],
+};
+
+const GAME_BIAS = {
+  all:       { label: 'All Games',       icon: '🎮', bias: { tracking: 1.0, flicking: 1.0, switching: 1.0 } },
+  // Valorant: one-tap meta — heavy flicking, precise tracking, stable switching
+  valorant:  { label: 'Valorant',        icon: '⚔️', bias: { tracking: 0.9, flicking: 2.2, switching: 0.7 },
+               note: 'Flick-heavy — Vandal one-taps reward precise fast flicks over tracking' },
+  // CS2: similar to Val — one-tap/spray, angle holding
+  cs2:       { label: 'CS2',             icon: '💣', bias: { tracking: 0.8, flicking: 2.0, switching: 0.8 },
+               note: 'Flick-heavy — AK one-taps and AWP require clean precise flicks' },
+  // Apex: movement chaos — tracking dominant, switching for squad fights
+  apex:      { label: 'Apex Legends',    icon: '🦾', bias: { tracking: 2.2, flicking: 0.8, switching: 1.3 },
+               note: 'Tracking-heavy — fast movement targets demand sustained accuracy' },
+  // OW2: large moving targets — tracking dominant
+  overwatch: { label: 'Overwatch 2',     icon: '🦸', bias: { tracking: 2.0, flicking: 0.7, switching: 1.1 },
+               note: 'Tracking-heavy — hitscan heroes reward precise target following' },
+  // Fortnite: build-edit-shoot — switching dominant, some flicking
+  fortnite:  { label: 'Fortnite',        icon: '🏗️', bias: { tracking: 0.9, flicking: 1.3, switching: 2.2 },
+               note: 'Switching-heavy — edit-peek cycles demand fast multi-target speed' },
+  // Rivals: fast SMG spray — tracking + switching balanced high
+  rivals:    { label: 'Roblox Rivals',   icon: '🎯', bias: { tracking: 1.8, flicking: 1.0, switching: 1.8 },
+               note: 'Balanced tracking + switching — SMG spray rewards both skills' },
+  // Arsenal: kill-to-advance — pure switching speed
+  arsenal:   { label: 'Roblox Arsenal',  icon: '🔫', bias: { tracking: 1.0, flicking: 1.2, switching: 2.4 },
+               note: 'Switching-dominant — kill cycling rewards maximum switch speed' },
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   ROUTINE GENERATOR
+   Always outputs exactly 9 tasks. If a category has fewer unique
+   scenarios than its slot count, tasks repeat (shuffled each time
+   so the order still feels fresh).
+   ═══════════════════════════════════════════════════════════════ */
+function generateRoutine() {
+  const { trainer, rank, priorities, activeGame } = state;
+  const db    = SCENARIO_DB[trainer];
+  const TOTAL = 9;
+  const bias = GAME_BIAS[activeGame]?.bias || GAME_BIAS.all.bias;
+  const weighted = {
+    tracking: priorities.tracking * bias.tracking,
+    flicking: priorities.flicking * bias.flicking,
+    switching: priorities.switching * bias.switching
+  };
+  const total = weighted.tracking + weighted.flicking + weighted.switching || 1;
+
+  // Proportional slot counts
+  const raw = {
+    tracking:  (weighted.tracking  / total) * TOTAL,
+    flicking:  (weighted.flicking  / total) * TOTAL,
+    switching: (weighted.switching / total) * TOTAL,
+  };
+  const slots = {
+    tracking:  Math.floor(raw.tracking),
+    flicking:  Math.floor(raw.flicking),
+    switching: Math.floor(raw.switching),
+  };
+
+  // Give remainder slots to categories that lost the most to flooring
+  let rem = TOTAL - (slots.tracking + slots.flicking + slots.switching);
+  ['tracking','flicking','switching']
+    .sort((a,b) => (raw[b] - slots[b]) - (raw[a] - slots[a]))
+    .forEach((k,i) => { if (i < rem) slots[k]++; });
+
+  // Ensure every non-zero priority category gets at least 1 slot
+  ['tracking','flicking','switching'].forEach(t => {
+    if (priorities[t] > 0 && slots[t] === 0) {
+      const big = Object.keys(slots).reduce((a,b) => slots[a] > slots[b] ? a : b);
+      if (slots[big] > 1) { slots[big]--; slots[t]++; }
+    }
+  });
+
+  // Build playlist — repeat tasks cyclically if pool smaller than slots needed
+  const playlist = [];
+  for (const type of ['tracking','flicking','switching']) {
+    const pool = db[type].filter(s => s.difficulty.includes(rank));
+    if (!pool.length || slots[type] === 0) continue;
+
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < slots[type]; i++) {
+      // wrap around with modulo so we never run out of tasks
+      playlist.push({ ...shuffled[i % shuffled.length], type });
+    }
+  }
+
+  return playlist.sort(() => Math.random() - 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER PLAYLIST
+   ═══════════════════════════════════════════════════════════════ */
+function renderPlaylist() {
+  // Hide/show priority sliders based on whether a game filter is active
+  const slidersWrap = document.getElementById('prioritySliders');
+  const sliderNote  = document.getElementById('sliderNote');
+  const sliderNoteGame = document.getElementById('sliderNoteGame');
+  const gameActive  = state.activeGame !== 'all';
+  if (slidersWrap) slidersWrap.style.display = gameActive ? 'none' : '';
+  if (sliderNote)  sliderNote.style.display  = gameActive ? '' : 'none';
+  if (sliderNoteGame && gameActive) sliderNoteGame.textContent = GAME_BIAS[state.activeGame]?.label || state.activeGame;
+
+  const playlist = generateRoutine();
+  state._playlist = playlist;
+  const grid = document.getElementById('taskGrid');
+  const trainerLabel = state.trainer === 'aimlabs' ? 'Aimlabs' : "Kovaak's";
+  const rankLabel = state.rank.charAt(0).toUpperCase() + state.rank.slice(1);
+  const gameInfo = GAME_BIAS[state.activeGame] || GAME_BIAS.all;
+  const totalMins = playlist.reduce((s,t) => s + t.duration * t.sets, 0);
+  const _pmEl = document.getElementById('playlistMeta');
+  const _ttEl = document.getElementById('totalTasks');
+  const _etEl = document.getElementById('estTime');
+  const _nsEl = document.getElementById('navStatus');
+  if (_pmEl) _pmEl.textContent = `${trainerLabel} · ${rankLabel} · ${gameInfo.icon} ${gameInfo.label} · ${playlist.length} tasks`;
+  if (_ttEl) _ttEl.textContent = playlist.length;
+  if (_etEl) _etEl.textContent = `${totalMins}m`;
+  if (_nsEl) _nsEl.textContent = `${trainerLabel} · ${rankLabel} · ${gameInfo.icon} ${gameInfo.label}`;
+  const _subEl = document.getElementById('playlistSubtitle');
+  if (_subEl) _subEl.textContent = `${trainerLabel} · ${rankLabel} · ${gameInfo.icon} ${gameInfo.label} · ~${totalMins} min total`;
+
+  const LABELS = { tracking:'Tracking', flicking:'Flicking', switching:'Switching' };
+
+  // Show/hide game note bar
+  let noteBar = document.getElementById('gameNoteBar');
+  if (!noteBar) {
+    noteBar = document.createElement('div');
+    noteBar.id = 'gameNoteBar';
+    noteBar.style.cssText = 'margin:0 0 14px;padding:8px 14px;border-radius:8px;font-size:12px;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:none';
+    grid.before(noteBar);
+  }
+  if (state.activeGame !== 'all' && gameInfo.note) {
+    noteBar.style.display = '';
+    noteBar.textContent = `${gameInfo.icon} ${gameInfo.label}: ${gameInfo.note}`;
+  } else {
+    noteBar.style.display = 'none';
+  }
+
+  grid.innerHTML = '';
+  // Find the dominant category for this game
+  const bias = gameInfo.bias || {};
+  const dominantType = state.activeGame === 'all' ? null :
+    Object.entries(bias).sort((a,b) => b[1]-a[1])[0][0];
+
+  playlist.forEach((s, i) => {
+    const card = document.createElement('div');
+    const isEmphasised = dominantType && s.type === dominantType;
+    card.className = `task-card ${s.type}${isEmphasised ? ' game-pick' : ''}`;
+    card.style.animationDelay = `${i * 0.055}s`;
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="card-name">${s.name}</div>
+        <div class="card-type">${LABELS[s.type]}${isEmphasised ? ` <span class="game-pick-badge">${gameInfo.icon}</span>` : ''}</div>
+      </div>
+      <div class="card-info">
+        <div class="card-tip">${s.tip}</div>
+        <div class="card-meta-row">
+          <span class="card-dur">${s.duration} min</span>
+          <span class="card-sets">${s.sets}× sets</span>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAVIGATION — sessionStorage routing (no # in URL)
+   ═══════════════════════════════════════════════════════════════ */
+function parsePath() {
+  const valid = ['routines','converters','warmup'];
+  // Read section set by the folder index.html or landing page
+  const stored = sessionStorage.getItem('zenith_section');
+  if (stored && valid.includes(stored)) {
+    sessionStorage.removeItem('zenith_section');
+    return stored;
+  }
+  // Also detect from URL path directly (e.g. /routines/)
+  const slug = location.pathname.replace(/\/+$/, '').split('/').pop();
+  if (valid.includes(slug)) return slug;
+  return 'routines';
+}
+
+let _currentSection = null;
+
+function showSection(target, fromPopState) {
+  const valid = ['routines','converters','warmup'];
+  if (!valid.includes(target)) target = 'routines';
+
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.section === target));
+  document.querySelectorAll('.section').forEach(s  => s.classList.toggle('active', s.id === target));
+
+  if (target === 'warmup') {
+    if (typeof THREE === 'undefined') {
+      // Lazy load Three.js only on first warmup visit
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+      script.onload = () => { Warmup3D.init(); initWarmupFilterBar(); };
+      script.onerror = () => {
+        const el = document.getElementById('canvasOverlay');
+        if (el) el.innerHTML = '<div class="overlay-inner"><div class="overlay-title" style="font-size:20px;color:#ef4444">Three.js failed to load</div><div class="overlay-sub">Check your internet connection</div></div>';
+      };
+      document.head.appendChild(script);
+    } else {
+      setTimeout(() => { Warmup3D.init(); initWarmupFilterBar(); }, 60);
+    }
+  }
+
+  const repoBase = window.location.origin + '/Zenith-Aim';
+  const url = repoBase + '/' + target + '/';
+
+  if (fromPopState) {
+    // Browser already changed URL — just sync state
+    history.replaceState({ section: target }, '', url);
+  } else if (_currentSection === null) {
+    // First load — replace so back button goes to previous site, not duplicate
+    history.replaceState({ section: target }, '', url);
+  } else if (target !== _currentSection) {
+    // Tab clicked — push so back button returns to previous tab
+    history.pushState({ section: target }, '', url);
+  }
+
+  _currentSection = target;
+  const titles = { routines:'Routines', converters:'Converters', warmup:'Warmup' };
+  document.title = 'Zenith Aim — ' + titles[target];
+}
+
+function initNav() {
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      showSection(link.dataset.section);
+    });
+  });
+
+  window.addEventListener('popstate', e => {
+    const section = e.state?.section || location.pathname.replace(/\/+$/, '').split('/').pop();
+    const valid   = ['routines', 'converters', 'warmup'];
+    showSection(valid.includes(section) ? section : 'routines', true);
+  });
+
+  showSection(parsePath());
+}
+
+function initTrainerToggle() {
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.trainer = btn.dataset.trainer;
+      renderPlaylist();
+    });
+  });
+}
+
+function initRankSelector() {
+  document.querySelectorAll('.rank-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.rank-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.rank = btn.dataset.rank;
+      renderPlaylist();
+    });
+  });
+}
+
+function initSliders() {
+  const sliders  = { tracking: document.getElementById('trackingSlider'), flicking: document.getElementById('flickingSlider'), switching: document.getElementById('switchingSlider') };
+  const displays = { tracking: document.getElementById('trackingVal'),    flicking: document.getElementById('flickingVal'),    switching: document.getElementById('switchingVal')    };
+  const COLORS   = { tracking: '#f0c800', flicking: '#4a7fff', switching: '#c040ff' };
+
+  function fill(slider, type) {
+    slider.style.background = `linear-gradient(to right,${COLORS[type]} ${slider.value}%,rgba(255,255,255,0.07) ${slider.value}%)`;
+  }
+  Object.keys(sliders).forEach(t => fill(sliders[t], t));
+
+  Object.keys(sliders).forEach(changed => {
+    sliders[changed].addEventListener('input', () => {
+      const newVal = parseInt(sliders[changed].value, 10);
+      const others = Object.keys(sliders).filter(k => k !== changed);
+      const otherTotal = others.reduce((s,k) => s + parseInt(sliders[k].value,10), 0);
+      const remaining = 100 - newVal;
+      if (otherTotal > 0) {
+        others.forEach(k => { sliders[k].value = Math.max(0, Math.round(remaining * (parseInt(sliders[k].value,10)/otherTotal))); });
+        let sum = newVal + others.reduce((s,k)=>s+parseInt(sliders[k].value,10),0);
+        const diff = 100 - sum;
+        if (diff !== 0) { const t = others.reduce((a,b)=>parseInt(sliders[a].value,10)>parseInt(sliders[b].value,10)?a:b); sliders[t].value = Math.max(0, parseInt(sliders[t].value,10)+diff); }
+      } else {
+        const half = Math.floor(remaining/2);
+        sliders[others[0]].value = half;
+        sliders[others[1]].value = remaining - half;
+      }
+      Object.keys(sliders).forEach(k => { state.priorities[k] = parseInt(sliders[k].value,10); displays[k].textContent=`${sliders[k].value}%`; fill(sliders[k],k); });
+      renderPlaylist();
+    });
+  });
+}
+
+function initCopyPlaylist() {
+  document.getElementById('copyPlaylist').addEventListener('click', () => {
+    if (!state._playlist.length) return;
+    const trainerLabel = state.trainer==='aimlabs'?'Aimlabs':"Kovaak's";
+    const rankLabel    = state.rank.charAt(0).toUpperCase()+state.rank.slice(1);
+    const ICONS = { tracking:'🎯', flicking:'⚡', switching:'🔀' };
+    let text = `⚔ Zenith Aim — ${trainerLabel} · ${rankLabel}\n`;
+    text += `${'─'.repeat(28)}\n`;
+    state._playlist.forEach((s,i) => { text += `${i+1}. ${ICONS[s.type]} ${s.name} · ${s.sets}×${s.duration}min\n`; });
+    text += `${'─'.repeat(28)}\nGenerated by Zenith Aim`;
+    navigator.clipboard.writeText(text).then(()=>showToast('📋 Playlist copied!')).catch(()=>showToast('❌ Copy failed'));
+  });
+}
+
+function initShare() {
+  const shareBtn = document.getElementById('shareBtn');
+  if (!shareBtn) return;
+  shareBtn.addEventListener('click', () => {
+    const p = new URLSearchParams({ t:state.trainer, r:state.rank, tr:state.priorities.tracking, fl:state.priorities.flicking, sw:state.priorities.switching });
+    const url = `${location.origin}${location.pathname}?${p}${location.hash}`;
+    navigator.clipboard.writeText(url).then(()=>showToast('🔗 Config link copied!')).catch(()=>showToast('❌ Copy failed'));
+  });
+}
+
+function initWarmupFilterBar() {
+  // Idempotent — safe to call on every warmup visit
+  // Removes old listeners by cloning nodes, then rewires
+  document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(btn => {
+    const fresh = btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh, btn);
+  });
+  document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#warmupGameFilterBar .warmup-game-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      warmupActiveGame = btn.dataset.wgame || 'all';
+      const banner = document.getElementById('warmupGameBanner');
+      if (banner) {
+        if (warmupActiveGame === 'all') { banner.style.display = 'none'; }
+        else {
+          const descs = { rivals:'Close-mid range · fast targets', arsenal:'Very close · hyper-fast · bigger targets', valorant:'Long range · small precise heads', cs2:'Long range · small heads · deliberate', apex:'Mid range · large hitboxes · fast movement' };
+          banner.style.display = '';
+          banner.textContent = btn.textContent.trim() + ' — ' + (descs[warmupActiveGame] || 'Game-tuned targets');
+        }
+      }
+      const tipEl = document.getElementById('tipText');
+      if (tipEl) {
+        const mode = document.querySelector('.game-tab.active')?.dataset.game || 'tracking';
+        const prof = WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
+        tipEl.textContent = prof.tip[mode] || WARMUP_GAME_PROFILES.all.tip[mode];
+      }
+      if (typeof THREE === 'undefined') {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        s.onload = () => { Warmup3D.init(); };
+        document.head.appendChild(s);
+      } else if (!Warmup3D.isRunning()) {
+        Warmup3D.rebuild();
+      }
+    });
+  });
+}
+
+function initGameFilters() {
+  // ── ROUTINES filter ──
+  document.querySelectorAll('#gameFilterBar .game-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#gameFilterBar .game-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.activeGame = btn.dataset.game || 'all';
+      renderPlaylist();
+    });
+  });
+
+  // Warmup filter is wired inside showSection after THREE loads
+}
+
+function loadFromURL() {
+  const p = new URLSearchParams(location.search);
+  if (p.has('t') && ['aimlabs','kovaaks'].includes(p.get('t'))) {
+    state.trainer = p.get('t');
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.trainer===state.trainer));
+  }
+  if (p.has('r') && ['beginner','intermediate','advanced'].includes(p.get('r'))) {
+    state.rank = p.get('r');
+    document.querySelectorAll('.rank-btn').forEach(b => b.classList.toggle('active', b.dataset.rank===state.rank));
+  }
+  [['tr','tracking','trackingSlider','trackingVal'],['fl','flicking','flickingSlider','flickingVal'],['sw','switching','switchingSlider','switchingVal']].forEach(([param,key,sliderId,valId]) => {
+    if (p.has(param)) { const v=Math.min(100,Math.max(0,parseInt(p.get(param),10))); state.priorities[key]=v; document.getElementById(sliderId).value=v; document.getElementById(valId).textContent=`${v}%`; }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SENSITIVITY CONVERTER — live, single DPI
+   ─────────────────────────────────────────────────────────────
+   cm/360 = 914.4 / (DPI × fromYaw × effectiveSens)
+   toSens = 914.4 / (DPI × toYaw   × cm/360)
+          = (fromYaw × effectiveSens) / toYaw   [DPI cancels]
+
+   Higher DPI → higher eDPI → same physical feel → lower sens number.
+   e.g. Roblox 0.06415 @ 800 DPI = Aimlabs 0.48116 @ 800 DPI
+        Roblox 0.06415 @ 800 DPI = Aimlabs 0.24058 @ 1600 DPI
+   The DPI field controls the target DPI. Change it to see what
+   sensitivity gives the same feel at a different DPI.
+   ═══════════════════════════════════════════════════════════════ */
+function initSensConverter() {
+  const fromEl     = document.getElementById('sensFrom');
+  const toEl       = document.getElementById('sensTo');
+  const sensEl     = document.getElementById('rivalsSens');
+  const dpiFromEl  = document.getElementById('mouseDPIFrom');
+  const dpiToEl    = document.getElementById('mouseDPITo');
+  const lockBtn    = document.getElementById('dpiLockBtn');
+  const multEl     = document.getElementById('rivalsMultiplier');
+  const multRowEl  = document.getElementById('sensMultiplierRow');
+  const fromLbl    = document.getElementById('sensFromLabel');
+  const toLbl      = document.getElementById('sensResultLabel');
+  const rivalsNote = document.getElementById('sensRivalsNote');
+
+  let dpiLocked = false;
+
+  if (lockBtn) {
+    lockBtn.addEventListener('click', () => {
+      dpiLocked = !dpiLocked;
+      lockBtn.classList.toggle('locked', dpiLocked);
+      if (dpiLocked && dpiToEl) dpiToEl.value = dpiFromEl.value;
+      recalc();
+    });
+  }
+  if (dpiFromEl) dpiFromEl.addEventListener('input', () => { if (dpiLocked && dpiToEl) dpiToEl.value = dpiFromEl.value; recalc(); });
+  if (dpiToEl)   dpiToEl.addEventListener('input',   () => { if (dpiLocked && dpiFromEl) dpiFromEl.value = dpiToEl.value; recalc(); });
+
+  function parseSensInput(raw, isRivals) {
+    if (!raw) return NaN;
+    const str    = String(raw).trim();
+    const hasPct = str.endsWith('%');
+    const num    = parseFloat(hasPct ? str.slice(0, -1) : str);
+    if (isNaN(num) || num <= 0) return NaN;
+    if (!isRivals) return num;
+    return hasPct ? num / 100 : num;
+  }
+
+  function formatSensOutput(raw, isRivals) {
+    return raw.toFixed(5);
+  }
+
+  function parseMultiplier(raw) {
+    const str    = String(raw || '1').trim();
+    const hasPct = str.endsWith('%');
+    const num    = parseFloat(hasPct ? str.slice(0, -1) : str);
+    if (isNaN(num)) return 1.0;
+    if (hasPct)     return Math.max(0.001, num / 100);
+    // 0–10 = raw multiplier (1 = 100%), above 10 = treat as percentage (100 = 1.0)
+    return num > 10 ? Math.max(0.001, num / 100) : Math.max(0.001, num);
+  }
+
+  function recalc() {
+    const fg           = SENS_DB[fromEl.value];
+    const tg           = SENS_DB[toEl.value];
+    const dpiFrom      = parseFloat(dpiFromEl?.value) || NaN;
+    const dpiTo        = parseFloat(dpiToEl?.value)   || NaN;
+    const isFromRivals = fromEl.value === 'rivals';
+    const isToRivals   = toEl.value   === 'rivals';
+
+    if (fromLbl) fromLbl.textContent = fg?.sensLabel || 'Sensitivity';
+    if (toLbl)   toLbl.textContent   = isToRivals ? 'Roblox Rivals Camera Sensitivity' : (tg?.label || 'Target') + ' Sensitivity';
+    if (multRowEl) multRowEl.style.display = (isFromRivals && !isToRivals) ? 'flex' : 'none';
+    if (rivalsNote) rivalsNote.style.display = isToRivals ? 'block' : 'none';
+
+    sensEl.placeholder = isFromRivals ? 'e.g. 0.5' : 'e.g. 0.064';
+
+    const effectiveRaw = parseSensInput(sensEl.value, isFromRivals);
+
+    if (!fg || !tg || isNaN(effectiveRaw) || isNaN(dpiFrom) || dpiFrom <= 0 || isNaN(dpiTo) || dpiTo <= 0) {
+      document.getElementById('sensOutput').textContent = '—';
+      document.getElementById('sensNote').textContent   = 'Enter your sensitivity and DPI above';
+      document.getElementById('sensQuick').style.display = 'none';
+      return;
+    }
+
+    const _mr    = String(multEl?.value || '1').trim();
+    const _mn    = parseFloat(_mr.endsWith('%') ? _mr.slice(0,-1) : _mr);
+    const slider = fg.hasMultiplier
+      ? Math.max(0.001, isNaN(_mn) ? 1.0 : (_mr.endsWith('%') || _mn > 10 ? _mn / 100 : _mn))
+      : 1.0;
+    const effectiveSens = effectiveRaw * slider;
+
+    const cm360     = 914.4 / (dpiFrom * fg.yaw * effectiveSens);
+    const toSensRaw = 914.4 / (dpiTo   * tg.yaw * cm360);
+    const toDisplay = formatSensOutput(toSensRaw, isToRivals);
+
+    document.getElementById('sensOutput').textContent = toDisplay;
+
+    const fromDisplay = isFromRivals ? (effectiveRaw * 100).toFixed(2) + '%' : `${effectiveRaw}`;
+    document.getElementById('sensNote').textContent =
+      `${fg.label} ${fromDisplay} at ${dpiFrom} DPI = ${tg.label} ${toDisplay} at ${dpiTo} DPI — same aim speed`;
+    document.getElementById('sensResult').classList.add('has-result');
+
+    const sqGrid = document.getElementById('sqGrid');
+    sqGrid.innerHTML = '';
+    Object.entries(SENS_DB).forEach(([key, game]) => {
+      const eqRaw = 914.4 / (dpiTo * game.yaw * cm360);
+      const eq    = formatSensOutput(eqRaw, key === 'rivals');
+      const item  = document.createElement('div');
+      item.className = 'sq-item';
+      item.innerHTML = `<span class="sq-game">${game.label}</span><span class="sq-val">${eq}</span>`;
+      sqGrid.appendChild(item);
+    });
+    document.getElementById('sensQuick').style.display = 'block';
+  }
+
+  [fromEl, toEl, sensEl, multEl].forEach(el => {
+    if (el) { el.addEventListener('input', recalc); el.addEventListener('change', recalc); }
+  });
+
+  document.getElementById('sensSwapBtn').addEventListener('click', () => {
+    [fromEl.value, toEl.value] = [toEl.value, fromEl.value];
+    recalc();
+  });
+
+  const calcBtn = document.getElementById('convertSens');
+  if (calcBtn) calcBtn.addEventListener('click', recalc);
+
+  recalc();
+}
+function initFOVConverter() {
+  const fromEl  = document.getElementById('fovFrom');
+  const toEl    = document.getElementById('fovTo');
+  const inEl    = document.getElementById('robloxVFOV');
+  const fromLbl = document.getElementById('fovFromLabel');
+  const toLbl   = document.getElementById('fovResultLabel');
+  const typeEl  = document.getElementById('fovType');
+
+  const typeName = t => t === 'vertical' ? 'Vertical' : 'Horizontal';
+
+  function updateFovLabels() {
+    const fg = FOV_DB[fromEl.value];
+    const tg = FOV_DB[toEl.value];
+    if (fromLbl) fromLbl.textContent = fg ? typeName(fg.type) + ' FOV (°)' : 'FOV (°)';
+    if (toLbl)   toLbl.textContent   = (tg?.label || 'Target') + ' FOV';
+    if (typeEl)  typeEl.textContent  = tg ? typeName(tg.type) : '—';
+    if (fg && inEl) inEl.value = fg.default;
+  }
+  fromEl.addEventListener('change', updateFovLabels);
+  toEl.addEventListener('change',   updateFovLabels);
+  updateFovLabels();
+
+  document.getElementById('fovSwapBtn').addEventListener('click', () => {
+    [fromEl.value, toEl.value] = [toEl.value, fromEl.value];
+    updateFovLabels();
+  });
+
+  document.getElementById('convertFOV').addEventListener('click', () => {
+    const fg     = FOV_DB[fromEl.value];
+    const tg     = FOV_DB[toEl.value];
+    const fov    = parseFloat(inEl.value);
+    const userAspect = parseFloat(document.getElementById('fovAspect').value);
+
+    if (!fg || !tg || isNaN(fov) || fov <= 0 || fov >= 180 || isNaN(userAspect)) {
+      document.getElementById('fovOutput').textContent = 'Invalid';
+      return;
+    }
+
+    const toRad = d => d * Math.PI / 180;
+    const toDeg = r => r * 180 / Math.PI;
+
+    // Each game has its own internal aspect for VFOV<->HFOV conversion
+    // Rivals uses 1.464352 (empirically verified), others use 16/9
+    const fromAspect = fg.aspect || (16/9);
+    const toAspect   = tg.aspect || (16/9);
+
+    // Step 1: normalize input to HFOV radians using source game's aspect
+    const hRad = fg.type === 'vertical'
+      ? 2 * Math.atan(Math.tan(toRad(fov) / 2) * fromAspect)
+      : toRad(fov);
+
+    // Step 2: convert HFOV radians to target game's FOV type using target aspect
+    const out = tg.type === 'vertical'
+      ? toDeg(2 * Math.atan(Math.tan(hRad / 2) / toAspect))
+      : toDeg(hRad);
+
+    // HFOV in standard 16:9 for display reference
+    const hfovDeg = toDeg(hRad);
+
+    document.getElementById('fovOutput').textContent = out.toFixed(2) + '°';
+    document.getElementById('fovType').textContent   = typeName(tg.type);
+
+    // Write result info into the info box (replaces "put information here")
+    const fovNoteEl = document.getElementById('fovNote');
+    const fovExtraEl = document.getElementById('fovExtraNote');
+    if (fovNoteEl) fovNoteEl.textContent =
+      `${fg.label} ${fov}° ${typeName(fg.type)} FOV → ${tg.label} ${out.toFixed(2)}° ${typeName(tg.type)} FOV`;
+
+    // Show HFOV helper row whenever input is VFOV (useful for KovaaK's)
+    const hfovRow = document.getElementById('fovHfovRow');
+    const hfovOut = document.getElementById('fovHfovOut');
+    if (fg.type === 'vertical') {
+      hfovOut.textContent = hfovDeg.toFixed(2) + '°';
+      hfovRow.style.display = 'block';
+    } else {
+      hfovRow.style.display = 'none';
+    }
+
+    if (fovExtraEl) {
+      if (fg.type === 'vertical' && tg.type === 'vertical') {
+        fovExtraEl.textContent = 'Both games use Vertical FOV — the number is the same. Use the HFOV above for KovaaK\'s.';
+      } else {
+        fovExtraEl.textContent = '';
+      }
+    }
+
+    document.getElementById('fovResult').classList.add('has-result');
+    const nb = document.getElementById('fovNoteBox');
+    if (nb) nb.style.display = 'block';
+  });
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   WARMUP GAME PROFILES
+   Controls target size, speed, count, depth per game + mode.
+   Multiplied on top of the base difficulty values.
+   ═══════════════════════════════════════════════════════════════ */
+let warmupActiveGame = 'all';
+
+const WARMUP_GAME_PROFILES = {
+  all:      { sizeM:1.00, speedM:1.00, spreadM:1.00, zOffset:0,  switchN:0, color:{ tracking:0x3b82f6, flicking:0xf59e0b, switching:0xa855f7 }, tip:{ tracking:'Keep crosshair ahead of the target — predict, don\'t chase.', flicking:'Flick with your arm, stop cleanly, then click.', switching:'Eyes move to next target before your hand does.' } },
+  rivals:   { sizeM:1.05, speedM:1.55, spreadM:1.25, zOffset:3,  switchN:1, color:{ tracking:0x22c55e, flicking:0xf97316, switching:0xeab308 }, tip:{ tracking:'Rivals targets strafe fast — lead by half a body width.', flicking:'Short tight flicks — Rivals angles are close range.', switching:'Reset crosshair to center screen after each kill.' } },
+  arsenal:  { sizeM:1.15, speedM:1.90, spreadM:1.40, zOffset:4,  switchN:2, color:{ tracking:0xf43f5e, flicking:0xfbbf24, switching:0xa855f7 }, tip:{ tracking:'Arsenal is close range — wrist more than arm.', flicking:'1-tap speed — flick instantly, no hesitation.', switching:'Speed switching is the #1 Arsenal skill.' } },
+  valorant: { sizeM:0.55, speedM:0.55, spreadM:0.75, zOffset:-3, switchN:-1, color:{ tracking:0xff4655, flicking:0xff4655, switching:0xff4655 }, tip:{ tracking:'Wait for the counter-strafe stop, then click.', flicking:'Precision over speed — Vandal is one-tap to head.', switching:'Each switch is a deliberate angle — stop before firing.' } },
+  cs2:      { sizeM:0.60, speedM:0.60, spreadM:0.80, zOffset:-2, switchN:-1, color:{ tracking:0xf59e0b, flicking:0xf59e0b, switching:0xf59e0b }, tip:{ tracking:'Train stopping-point accuracy, not spray tracking.', flicking:'AK one-tap: flick to head, click once, no follow-through.', switching:'Pre-aim each angle before committing to the peek.' } },
+  apex:     { sizeM:1.30, speedM:1.60, spreadM:1.35, zOffset:2,  switchN:1, color:{ tracking:0xf97316, flicking:0xf97316, switching:0xf97316 }, tip:{ tracking:'Apex movement is chaotic — train reactive, stay loose.', flicking:'Flick and hold for 2 shots — shields need more than 1.', switching:'Switch to lowest-shield target first.' } },
+};
+
+function getWarmupProfile() {
+  return WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3D WARMUP GAMES — Three.js
+   Three separate games sharing one renderer & canvas.
+   ═══════════════════════════════════════════════════════════════ */
+const Warmup3D = (() => {
+  // ── Shared three.js state ──
+  let renderer, camera, scene;
+  let animId   = null;
+  let gameMode = 'tracking'; // 'tracking' | 'flicking' | 'switching'
+
+  // ── Input state ──
+  let yaw = 0, pitch = 0;
+  let pointerLocked = false;
+  let mouseSens = 0.0022;
+
+  // ── Touch state ──
+  let touchActive = false;
+  let lastTouchX = 0, lastTouchY = 0;
+  let touchSens = 0.005;
+  const isMobile = () => ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+  // ── Game timer ──
+  let gameRunning = false;
+  let score   = 0;
+  let hits    = 0;
+  let shots   = 0;
+  let timeLeft  = 30;
+  let bestScore = { tracking: null, flicking: null, switching: null };
+  let countdownInt = null;
+
+  // ── Three.js objects ──
+  let trackingTarget = null;
+  let trackingGlow   = null;
+  let trackingLight  = null;
+  let trackingT      = 0;
+
+  let flickTargets   = [];
+  let flickActive    = -1;
+
+  let switchTargets  = [];
+  let switchActive   = 0;
+
+  let raycaster = null;
+  let CENTER    = null;
+
+  // ── DOM refs ──
+  let canvas, overlay, badge, titleEl, subEl, startBtn, beginBtn;
+  let scoreEl, timerEl, accEl, bestEl, scoreLblEl;
+  let crosshairEl, hitRingEl, pointerPromptEl;
+  let currentTabEl;
+
+  const TIPS = {
+    tracking:  'Keep your crosshair ahead of the sphere — predict the path, don\'t just chase.',
+    flicking:  'Fix your eyes on the lit target before moving your mouse — eyes lead, hand follows.',
+    switching: 'All targets are live — deplete each one\'s health bar to zero. Shoot precisely, no HP regenerates.',
+  };
+
+  // ── INIT ──
+  function init() {
+    if (renderer) { Warmup3D.resize(); return; } // already initialized
+    canvas          = document.getElementById('warmupCanvas');
+    overlay         = document.getElementById('canvasOverlay');
+    badge           = document.getElementById('overlayBadge');
+    titleEl         = document.getElementById('overlayTitle');
+    subEl           = document.getElementById('overlaySub');
+    startBtn        = document.getElementById('btnStartGame');
+    scoreEl         = document.getElementById('wScore');
+    timerEl         = document.getElementById('wTimer');
+    accEl           = document.getElementById('wAccuracy');
+    bestEl          = document.getElementById('wBest');
+
+    // Load persisted personal bests from Firebase/localStorage
+    if (typeof Scores !== 'undefined') {
+      Scores.loadBests().then(bests => {
+        ['tracking','flicking','switching'].forEach(m => {
+          if (bests[m] != null) bestScore[m] = bests[m];
+        });
+        if (bestEl) bestEl.textContent = bestScore[gameMode] ?? '—';
+      }).catch(() => {});
+    }
+    scoreLblEl      = document.getElementById('wScoreLbl');
+    crosshairEl     = document.getElementById('crosshair');
+    hitRingEl       = document.getElementById('hitRing');
+    pointerPromptEl = document.getElementById('pointerPrompt');
+
+    // Load persistent personal bests
+    if (typeof Scores !== 'undefined') {
+      Scores.loadBests().then(bests => {
+        if (bests.tracking  != null) bestScore.tracking  = bests.tracking;
+        if (bests.flicking  != null) bestScore.flicking  = bests.flicking;
+        if (bests.switching != null) bestScore.switching = bests.switching;
+        if (bestEl) bestEl.textContent = bestScore[gameMode] ?? '—';
+      }).catch(() => {});
+    }
+
+    // Build Three.js renderer
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    raycaster = new THREE.Raycaster();
+    CENTER    = new THREE.Vector2(0, 0);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setClearColor(0x050507);
+
+    // Camera — FPS perspective
+    camera = new THREE.PerspectiveCamera(90, 1, 0.1, 200);
+    camera.position.set(0, 1.7, 0);
+    camera.rotation.order = 'YXZ';
+
+    buildScene();
+    resize();
+
+    // Game tab switching
+    document.querySelectorAll('.game-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // If game running, stop it silently (no modal) then switch
+        if (gameRunning) {
+          gameRunning = false;
+          mouseHeld = false;
+          clearInterval(autoFireInterval);
+          clearInterval(countdownInt);
+          if (animId) { cancelAnimationFrame(animId); animId = null; }
+          document.exitPointerLock();
+          crosshairEl.classList.remove('visible');
+          pointerPromptEl.classList.remove('visible');
+          timerEl.style.color = '';
+        }
+
+        document.querySelectorAll('.game-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        gameMode = tab.dataset.game;
+
+        // Full reset of all HUD values
+        score = 0; hits = 0; shots = 0;
+        scoreEl.textContent    = '0';
+        timerEl.textContent    = document.getElementById('gameDuration').value || 30;
+        accEl.textContent      = '—';
+        timerEl.style.color    = '';
+        scoreLblEl.textContent = gameMode === 'tracking' ? 'On Target' : gameMode === 'switching' ? 'Damage' : 'Score';
+        bestEl.textContent     = bestScore[gameMode] ?? '—';
+
+        updateOverlayTheme();
+        showOverlay(true);
+        buildScene();
+        renderIdle();
+        const _tipP = WARMUP_GAME_PROFILES[warmupActiveGame] || WARMUP_GAME_PROFILES.all;
+        document.getElementById('tipText').textContent = _tipP.tip[gameMode] || TIPS[gameMode];
+
+        // Sync leaderboard tab to match game mode (use cache, no extra fetch)
+        if (typeof loadLeaderboard === 'function') loadLeaderboard(gameMode, false);
+      });
+    });
+
+    // Attach ALL event listeners only once to avoid duplicates on re-init
+    if (!Warmup3D._listenersAttached) {
+      Warmup3D._listenersAttached = true;
+
+      startBtn.addEventListener('click', startGame);
+      document.getElementById('restartGame').addEventListener('click', () => {
+        gameRunning = false;
+        mouseHeld = false;
+        clearInterval(autoFireInterval);
+        clearInterval(countdownInt);
+        if (animId) { cancelAnimationFrame(animId); animId = null; }
+        document.exitPointerLock();
+        crosshairEl.classList.remove('visible');
+        pointerPromptEl.classList.remove('visible');
+        timerEl.style.color = '';
+        score = 0; hits = 0; shots = 0;
+        resetHUD();
+        buildScene();
+        renderIdle();
+        showOverlay(true);
+      });
+
+      const fsBtn = document.getElementById('fullscreenBtn');
+      if (fsBtn) {
+        fsBtn.addEventListener('click', () => {
+          const wrap = document.getElementById('canvasWrap');
+          if (!document.fullscreenElement) {
+            wrap.requestFullscreen().catch(() => {});
+            fsBtn.textContent = '⛶ Exit';
+          } else {
+            document.exitFullscreen();
+            fsBtn.textContent = '⛶ Fullscreen';
+          }
+        });
+        document.addEventListener('fullscreenchange', () => {
+          if (!document.fullscreenElement) fsBtn.textContent = '⛶ Fullscreen';
+          setTimeout(() => Warmup3D.resize(), 60);
+        });
+      }
+
+      const sensInput = document.getElementById('gameSensitivity');
+      if (sensInput) {
+        mouseSens = parseFloat(sensInput.value) || 0.0022;
+        sensInput.addEventListener('input', e => {
+          const v = parseFloat(e.target.value);
+          if (!isNaN(v) && v > 0) mouseSens = v;
+        });
+      }
+
+      document.addEventListener('pointerlockchange', onPointerLockChange);
+      document.addEventListener('mozpointerlockchange', onPointerLockChange);
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mousedown', onCanvasMouseDown);
+      document.addEventListener('mouseup',   onCanvasMouseUp);
+      canvas.addEventListener('click',     onCanvasClick);
+      canvas.addEventListener('touchstart',  onTouchStart,  { passive: false });
+      canvas.addEventListener('touchmove',   onTouchMove,   { passive: false });
+      canvas.addEventListener('touchend',    onTouchEnd,    { passive: false });
+    }
+
+    // On mobile, show touch hint instead of pointer lock prompt
+    if (isMobile() && pointerPromptEl) {
+      pointerPromptEl.textContent = 'Drag to aim · Tap to shoot';
+    }
+
+    renderIdle();
+  }
+
+  function updateOverlayTheme() {
+    const BADGE_LABELS  = { tracking:'🎯 TRACKING', flicking:'⚡ FLICKING', switching:'🔀 SWITCHING' };
+    const TITLE_CLASSES = { tracking:'tracking-title', flicking:'flicking-title', switching:'switching-title' };
+    const BTN_CLASSES   = { tracking:'tracking-btn',   flicking:'flicking-btn',   switching:'switching-btn'   };
+    badge.textContent  = BADGE_LABELS[gameMode];
+    badge.className    = `overlay-game-badge ${gameMode}`;
+    titleEl.className  = `overlay-title ${TITLE_CLASSES[gameMode]}`;
+    startBtn.className = `btn-begin ${BTN_CLASSES[gameMode]}`;
+  }
+
+  // ── SCENE BUILDER ──
+  function buildScene() {
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x050507, 0.055);
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0x111122, 0.7));
+    const hemi = new THREE.HemisphereLight(0x223344, 0x080810, 0.4);
+    scene.add(hemi);
+
+    // Floor grid
+    const grid = new THREE.GridHelper(80, 80, 0x1a1a2e, 0x111128);
+    grid.position.y = 0;
+    scene.add(grid);
+
+    // Ceiling grid (subtle)
+    const ceiling = new THREE.GridHelper(80, 80, 0x0a0a18, 0x0a0a14);
+    ceiling.position.y = 8;
+    scene.add(ceiling);
+
+    // Back wall indicator (subtle)
+    const wallGeo = new THREE.PlaneGeometry(60, 12);
+    const wallMat = new THREE.MeshBasicMaterial({ color: 0x070712, transparent: true, opacity: 0.5 });
+    const wall = new THREE.Mesh(wallGeo, wallMat);
+    wall.position.set(0, 4, -25);
+    scene.add(wall);
+
+    // Build game-specific objects
+    if (gameMode === 'tracking')  buildTracking();
+    if (gameMode === 'flicking')  buildFlicking();
+    if (gameMode === 'switching') buildSwitching();
+  }
+
+  // ─── TRACKING ───
+  function buildTracking() {
+    trackingT = 0;
+    const diff = document.getElementById('gameDifficulty').value;
+    const p    = getWarmupProfile();
+    const base = diff === 'easy' ? 0.6 : diff === 'hard' ? 0.28 : 0.44;
+    const R    = base * p.sizeM;
+    const col  = p.color.tracking;
+
+    const geo  = new THREE.SphereGeometry(R, 24, 24);
+    const mat  = new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.5, roughness: 0.3, metalness: 0.2 });
+    trackingTarget = new THREE.Mesh(geo, mat);
+    scene.add(trackingTarget);
+
+    const glowGeo  = new THREE.SphereGeometry(R * 1.6, 16, 16);
+    const glowMat  = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.08, side: THREE.BackSide });
+    trackingGlow   = new THREE.Mesh(glowGeo, glowMat);
+    scene.add(trackingGlow);
+
+    trackingLight = new THREE.PointLight(col, 2.5, 12);
+    scene.add(trackingLight);
+  }
+
+  function updateTracking(delta) {
+    if (!trackingTarget) return;
+    const diff   = document.getElementById('gameDifficulty').value;
+    const p      = getWarmupProfile();
+    const baseSpd = diff === 'easy' ? 0.5 : diff === 'hard' ? 1.4 : 0.9;
+    const spd    = baseSpd * p.speedM;
+    const baseSpr = diff === 'easy' ? 3.5 : diff === 'hard' ? 6   : 5;
+    const spread  = baseSpr * p.spreadM;
+    const vspread = (diff === 'easy' ? 1.2 : diff === 'hard' ? 2.5 : 2) * Math.min(p.spreadM, 1.3);
+    const baseZ   = -10 + (p.zOffset || 0);
+
+    trackingT += delta * spd;
+
+    // Lissajous path
+    const x = spread * Math.sin(1.3 * trackingT + 0.4);
+    const y = vspread * Math.sin(0.9 * trackingT) + 2.2;
+    const z = baseZ - 3 * Math.sin(0.6 * trackingT + 1.0);
+
+    trackingTarget.position.set(x, y, z);
+    trackingGlow.position.copy(trackingTarget.position);
+    trackingLight.position.copy(trackingTarget.position);
+
+    // Check if crosshair is on target (raycast from camera center)
+    if (gameRunning && raycaster) {
+      raycaster.setFromCamera(CENTER, camera);
+      const hits_ = raycaster.intersectObject(trackingTarget);
+      const onTarget = hits_.length > 0;
+      if (onTarget) {
+        score++;
+        scoreEl.textContent = score;
+        // Pulse material
+        trackingTarget.material.emissiveIntensity = 1.2;
+      } else {
+        trackingTarget.material.emissiveIntensity = 0.8;
+      }
+    }
+
+    trackingTarget.rotation.y += delta * 0.8;
+  }
+
+  // ─── FLICKING — Gridshot style ───
+  // All target slots always visible (dim), ONE lit at a time.
+  // Feels like KovaaK's Gridshot / Aimlabs Microshot.
+  const GRIDSHOT_COUNT = 6; // always 6 targets visible like real gridshot/sixshot
+
+  // Random position within a bounded square zone in front of camera
+  function randFlickPos(p, existing) {
+    const hw   = 5.0 * Math.min(p.spreadM, 1.4);
+    const hh   = 2.5;
+    const zB   = -11 + (p.zOffset || 0);
+    const minD = 2.2; // minimum distance between targets — no touching
+    let pos, tries = 0;
+    do {
+      pos = [(Math.random()*2-1)*hw, Math.random()*hh*2-0.5, zB + (Math.random()-0.5)*1.5];
+      tries++;
+    } while (
+      tries < 30 && existing &&
+      existing.some(e => Math.hypot(pos[0]-e[0], pos[1]-e[1]) < minD)
+    );
+    return pos;
+  }
+
+  function buildFlicking() {
+    flickTargets = [];
+    flickActive  = -1; // any target can be hit
+    const diff = document.getElementById('gameDifficulty').value;
+    const p    = getWarmupProfile();
+    const base = diff === 'easy' ? 0.38 : diff === 'hard' ? 0.18 : 0.26;
+    const R    = base * p.sizeM;
+    const col  = p.color.flicking;
+
+    const usedPositions = [];
+    for (let i = 0; i < GRIDSHOT_COUNT; i++) {
+      const pos = randFlickPos(p, usedPositions);
+      usedPositions.push(pos);
+      const geo = new THREE.SphereGeometry(R, 20, 20);
+      const mat = new THREE.MeshStandardMaterial({
+        color: col, emissive: col, emissiveIntensity: 0.9,
+        roughness: 0.35, metalness: 0.25,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(...pos);
+      mesh._flickIdx = i;
+      scene.add(mesh);
+      flickTargets.push(mesh);
+
+      // Subtle glow on each target
+      const gGeo = new THREE.SphereGeometry(R * 1.8, 10, 10);
+      const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.07, side: THREE.BackSide });
+      const glow = new THREE.Mesh(gGeo, gMat);
+      glow.position.set(...pos);
+      glow._parentFlick = i;
+      scene.add(glow);
+
+      const pt = new THREE.PointLight(col, 1.5, 6);
+      pt.position.set(...pos);
+      pt._parentFlick = i;
+      scene.add(pt);
+    }
+  }
+
+  function activateFlickTarget(idx) {
+    const p   = getWarmupProfile();
+    // Collect positions of all OTHER targets to avoid overlap
+    const others = flickTargets.filter((_,i)=>i!==idx).map(m=>[m.position.x, m.position.y, m.position.z]);
+    const pos = randFlickPos(p, others);
+    if (flickTargets[idx]) flickTargets[idx].position.set(...pos);
+    scene.children.forEach(c => {
+      if (c._parentFlick === idx) c.position.set(...pos);
+    });
+  }
+
+  function onFlickClick() {
+    if (!gameRunning || flickTargets.length === 0) return;
+    shots++;
+    raycaster.setFromCamera(CENTER, camera);
+    const intersects = raycaster.intersectObjects(flickTargets);
+    if (intersects.length > 0) {
+      const hitIdx = intersects[0].object._flickIdx;
+      hits++;
+      score++;
+      scoreEl.textContent = score;
+      accEl.textContent   = `${Math.round((hits/shots)*100)}%`;
+      flashHitRing();
+      activateFlickTarget(hitIdx); // teleport only the hit target
+    } else {
+      accEl.textContent = `${Math.round((hits/shots)*100)}%`;
+    }
+  }
+
+  // ─── SWITCHING — machine gun feel ───
+  function randSwitchPos() {
+    return [(Math.random()*2-1)*6.5, Math.random()*3.2-0.2, -11-Math.random()*4];
+  }
+  let SWITCH_POSITIONS = Array.from({length:7}, randSwitchPos);
+
+  let switchHealthBars = [];
+  let mouseHeld        = false;
+  let autoFireInterval = null;
+
+  function makeHealthBarTexture(hp, maxHp) {
+    const W = 128, H = 16;
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    const c = cv.getContext('2d');
+    c.fillStyle = 'rgba(0,0,0,0.5)';
+    c.fillRect(0, 0, W, H);
+    const frac = Math.max(0, hp / maxHp);
+    c.fillStyle = frac > 0.5 ? '#22c55e' : frac > 0.25 ? '#f59e0b' : '#ef4444';
+    c.fillRect(2, 3, Math.round((W - 4) * frac), H - 6);
+    return new THREE.CanvasTexture(cv);
+  }
+
+  function respawnTarget(mesh) {
+    const col = getWarmupProfile().color.switching;
+    const np  = randSwitchPos();
+    mesh.position.set(...np);
+    if (mesh._glow)  mesh._glow.position.set(...np);
+    if (mesh._light) mesh._light.position.set(...np);
+    mesh._hp          = mesh._maxHp;
+    mesh._dead        = false;
+    mesh._invincible  = true;
+    // Flash white on spawn
+    mesh.material.color.setHex(0xffffff);
+    mesh.material.emissive.setHex(0xffffff);
+    mesh.material.emissiveIntensity = 2.0;
+    mesh.material.opacity     = 1;
+    mesh.material.transparent = false;
+    if (mesh._glow)  { mesh._glow.visible  = true; mesh._glow.material.opacity = 0.25; }
+    if (mesh._light) { mesh._light.visible = true; mesh._light.intensity = 5; }
+    mesh._barMesh.visible = true;
+    mesh._barMesh.material.map = makeHealthBarTexture(mesh._maxHp, mesh._maxHp);
+    mesh._barMesh.material.needsUpdate = true;
+    // Fade back to normal color after 120ms
+    setTimeout(() => {
+      if (!mesh._dead) {
+        mesh.material.color.setHex(col);
+        mesh.material.emissive.setHex(col);
+        mesh.material.emissiveIntensity = 0.5;
+        if (mesh._glow)  mesh._glow.material.opacity = 0.09;
+        if (mesh._light) mesh._light.intensity = 2.5;
+        mesh._invincible = false;
+      }
+    }, 120);
+  }
+
+  function buildSwitching() {
+    switchTargets    = [];
+    switchHealthBars = [];
+
+    const diff   = document.getElementById('gameDifficulty').value;
+    const p      = getWarmupProfile();
+    const base   = diff === 'easy' ? 0.44 : diff === 'hard' ? 0.24 : 0.32;
+    const R      = base * p.sizeM;
+    // Machine gun HP — much lower so targets die fast and keep cycling
+    const maxHp  = diff === 'easy' ? 3 : diff === 'hard' ? 8 : 5;
+    const col    = p.color.switching;
+    const posCount = Math.min(Math.max(5 + (p.switchN || 0), 3), SWITCH_POSITIONS.length);
+    const positions = SWITCH_POSITIONS.slice(0, posCount);
+
+    positions.forEach((pos) => {
+      const geo = new THREE.SphereGeometry(R, 20, 20);
+      const mat = new THREE.MeshStandardMaterial({
+        color: col, emissive: col, emissiveIntensity: 0.5,
+        roughness: 0.35, metalness: 0.3,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(...pos);
+      mesh._hp         = maxHp;
+      mesh._maxHp      = maxHp;
+      mesh._dead       = false;
+      mesh._invincible = false;
+      scene.add(mesh);
+      switchTargets.push(mesh);
+
+      const gGeo = new THREE.SphereGeometry(R * 1.7, 12, 12);
+      const gMat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.09, side: THREE.BackSide });
+      const glow = new THREE.Mesh(gGeo, gMat);
+      glow.position.set(...pos);
+      mesh._glow = glow;
+      scene.add(glow);
+
+      const pt = new THREE.PointLight(col, 2.5, 8);
+      pt.position.set(...pos);
+      mesh._light = pt;
+      scene.add(pt);
+
+      const tex    = makeHealthBarTexture(maxHp, maxHp);
+      const barGeo = new THREE.PlaneGeometry(R * 3.2, R * 0.55);
+      const barMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false });
+      const bar    = new THREE.Mesh(barGeo, barMat);
+      bar.position.set(pos[0], pos[1] + R * 2.0, pos[2]);
+      scene.add(bar);
+      mesh._barMesh = bar;
+    });
+  }
+
+  function onSwitchFire() {
+    if (!gameRunning || switchTargets.length === 0) return;
+    if (!pointerLocked && !isMobile()) return;
+    shots++;
+    raycaster.setFromCamera(CENTER, camera);
+    const alive = switchTargets.filter(m => !m._dead && !m._invincible);
+    const targets = alive.length ? alive : switchTargets.filter(m => !m._dead);
+    const intersects = raycaster.intersectObjects(targets);
+
+    if (intersects.length > 0) {
+      const hit = intersects[0].object;
+      if (hit._dead || hit._invincible) return;
+      hits++;
+      hit._hp--;
+
+      // Update health bar
+      hit._barMesh.material.map = makeHealthBarTexture(hit._hp, hit._maxHp);
+      hit._barMesh.material.needsUpdate = true;
+
+      // Damage colour shift: green → orange → red as HP drops
+      const frac = hit._hp / hit._maxHp;
+      const col  = getWarmupProfile().color.switching;
+      if (frac > 0.5) {
+        hit.material.emissiveIntensity = 0.9;
+      } else if (frac > 0.25) {
+        hit.material.color.setHex(0xf59e0b);
+        hit.material.emissive.setHex(0xf59e0b);
+        hit.material.emissiveIntensity = 1.1;
+        if (hit._light) hit._light.color.setHex(0xf59e0b);
+      } else {
+        hit.material.color.setHex(0xef4444);
+        hit.material.emissive.setHex(0xef4444);
+        hit.material.emissiveIntensity = 1.4;
+        if (hit._light) hit._light.color.setHex(0xef4444);
+      }
+
+      score++;
+      scoreEl.textContent = score;
+      accEl.textContent   = `${Math.round((hits / shots) * 100)}%`;
+      flashHitRing();
+
+      if (hit._hp <= 0) {
+        // Kill — flash bright white then fade out
+        hit._dead = true;
+        hit.material.color.setHex(0xffffff);
+        hit.material.emissive.setHex(0xffffff);
+        hit.material.emissiveIntensity = 3.0;
+        if (hit._light) { hit._light.color.setHex(0xffffff); hit._light.intensity = 6; }
+
+        setTimeout(() => {
+          hit.material.opacity     = 0;
+          hit.material.transparent = true;
+          if (hit._glow)  hit._glow.visible  = false;
+          if (hit._light) hit._light.visible  = false;
+          hit._barMesh.visible = false;
+        }, 60);
+
+        // Instant respawn — machine gun feel
+        setTimeout(() => { if (gameRunning) respawnTarget(hit); }, 80);
+      }
+    }
+  }
+  // ── CANVAS CLICK + HOLD HANDLER ──
+  function onCanvasMouseDown(e) {
+    if (e.button !== 0) return;
+    if (!gameRunning) return;
+    if (!pointerLocked && !isMobile()) {
+      if (e.target === canvas) canvas.requestPointerLock();
+      return;
+    }
+
+    if (gameMode === 'flicking')  onFlickClick();
+    if (gameMode === 'tracking')  { /* tracking is continuous via raycaster in update */ }
+    if (gameMode === 'switching') {
+      onSwitchFire();
+      // Start auto-fire at ~10 shots/sec while held
+      clearInterval(autoFireInterval);
+      mouseHeld = true;
+      autoFireInterval = setInterval(() => {
+        if (!mouseHeld || !gameRunning) { clearInterval(autoFireInterval); return; }
+        onSwitchFire();
+      }, 65);
+    }
+  }
+
+  function onCanvasMouseUp(e) {
+    if (e.button !== 0) return;
+    mouseHeld = false;
+    clearInterval(autoFireInterval);
+  }
+
+  // Legacy single-click handler kept for flicking (pointer lock re-acquire)
+  function onCanvasClick() {
+    if (!gameRunning) return;
+    if (!pointerLocked && !isMobile()) { canvas.requestPointerLock(); return; }
+    if (gameMode === 'flicking') onFlickClick();
+  }
+
+  // ── POINTER LOCK ──
+  function onPointerLockChange() {
+    if (isMobile()) return; // mobile uses touch, no pointer lock needed
+    pointerLocked = document.pointerLockElement === canvas || document.mozPointerLockElement === canvas;
+    crosshairEl.classList.toggle('visible', pointerLocked);
+    pointerPromptEl.classList.toggle('visible', gameRunning && !pointerLocked);
+  }
+
+  function onMouseMove(e) {
+    if (!pointerLocked || !gameRunning) return;
+    yaw   -= e.movementX * mouseSens;
+    pitch -= e.movementY * mouseSens;
+    pitch  = Math.max(-Math.PI * 0.45, Math.min(Math.PI * 0.45, pitch));
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+  }
+
+  // ── MOBILE TOUCH CONTROLS ──────────────────────────────────────
+  // Left half of screen = look (drag to aim)
+  // Right half of screen = fire (tap)
+  // No pointer lock needed on mobile
+  let _touch = { active: false, id: null, lastX: 0, lastY: 0 };
+
+  function initTouchControls() {
+    if (!isMobile()) return;
+
+    // Hide pointer-lock hint on mobile
+    const hint = document.querySelector('.canvas-hint');
+    if (hint) hint.style.display = 'none';
+
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      if (!gameRunning) return;
+      Array.from(e.changedTouches).forEach(t => {
+        const isRight = t.clientX > canvas.clientWidth / 2;
+        if (isRight) {
+          // Right side tap = fire
+          if (gameMode === 'flicking')  onFlickClick();
+          if (gameMode === 'switching') onSwitchFire();
+        } else {
+          // Left side drag = look
+          if (!_touch.active) {
+            _touch.active = true;
+            _touch.id     = t.identifier;
+            _touch.lastX  = t.clientX;
+            _touch.lastY  = t.clientY;
+          }
+        }
+      });
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (!gameRunning) return;
+      Array.from(e.changedTouches).forEach(t => {
+        if (t.identifier !== _touch.id) return;
+        const dx = t.clientX - _touch.lastX;
+        const dy = t.clientY - _touch.lastY;
+        _touch.lastX = t.clientX;
+        _touch.lastY = t.clientY;
+        // Scale touch sensitivity (touch pixels are smaller movement)
+        const scale = 0.004;
+        yaw   -= dx * scale;
+        pitch -= dy * scale;
+        pitch  = Math.max(-Math.PI * 0.45, Math.min(Math.PI * 0.45, pitch));
+        camera.rotation.y = yaw;
+        camera.rotation.x = pitch;
+      });
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', e => {
+      e.preventDefault();
+      Array.from(e.changedTouches).forEach(t => {
+        if (t.identifier === _touch.id) {
+          _touch.active = false;
+          _touch.id     = null;
+        }
+      });
+    }, { passive: false });
+  }
+
+  function onMobileTap() {
+    if (!gameRunning) return;
+    if (gameMode === 'flicking')  onFlickClick();
+    if (gameMode === 'switching') onSwitchFire();
+  }
+
+  // ── TOUCH HANDLERS ──
+  function onTouchStart(e) {
+    e.preventDefault();
+    if (!gameRunning) {
+      // Tap to start if overlay is showing
+      const overlay = document.getElementById('canvasOverlay');
+      if (overlay && overlay.classList.contains('visible')) return;
+      return;
+    }
+    const t = e.changedTouches[0];
+    touchActive = true;
+    lastTouchX = t.clientX;
+    lastTouchY = t.clientY;
+    // Show crosshair on mobile when game starts
+    if (crosshairEl) crosshairEl.classList.add('visible');
+    pointerLocked = true; // treat touch as always "locked"
+  }
+
+  function onTouchMove(e) {
+    e.preventDefault();
+    if (!gameRunning || !touchActive) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - lastTouchX;
+    const dy = t.clientY - lastTouchY;
+    lastTouchX = t.clientX;
+    lastTouchY = t.clientY;
+
+    // Scale sensitivity by canvas size for consistent feel
+    const sens = touchSens * (600 / (canvas.clientWidth || 600));
+    yaw   -= dx * sens;
+    pitch -= dy * sens;
+    pitch  = Math.max(-Math.PI * 0.45, Math.min(Math.PI * 0.45, pitch));
+    camera.rotation.y = yaw;
+    camera.rotation.x = pitch;
+  }
+
+  function onTouchEnd(e) {
+    e.preventDefault();
+    if (!gameRunning) return;
+    const t = e.changedTouches[0];
+    const dx = Math.abs(t.clientX - lastTouchX);
+    const dy = Math.abs(t.clientY - lastTouchY);
+    touchActive = false;
+    // Tap (minimal movement) = shoot
+    if (dx < 8 && dy < 8) {
+      if (gameMode === 'flicking')  onFlickClick();
+      if (gameMode === 'switching') onSwitchFire();
+      if (gameMode === 'tracking')  { /* tracking is continuous */ }
+      flashHitRing();
+    }
+  }
+
+  // ── GAME FLOW ──
+  function startGame() {
+    const duration = parseInt(document.getElementById('gameDuration').value, 10);
+    if (isMobile()) {
+      pointerLocked = true;
+      if (crosshairEl) crosshairEl.classList.add('visible');
+      if (pointerPromptEl) pointerPromptEl.style.display = 'none';
+    } else {
+      canvas.requestPointerLock();
+    }
+    gameRunning = true;
+    score = 0; hits = 0; shots = 0; timeLeft = duration;
+    resetHUD(duration);
+    buildScene();
+
+    overlay.classList.add('hidden');
+
+    countdownInt = setInterval(() => {
+      timeLeft--;
+      timerEl.textContent = timeLeft;
+      if (timeLeft <= 5) timerEl.style.color = '#ef4444';
+      if (timeLeft <= 0) stopGame();
+    }, 1000);
+
+    if (animId) cancelAnimationFrame(animId);
+    let last = null;
+    function loop(ts) {
+      if (!gameRunning) return;
+      const delta = last ? (ts - last) / 1000 : 0;
+      last = ts;
+      if (gameMode === 'tracking') updateTracking(delta);
+      renderer.render(scene, camera);
+      animId = requestAnimationFrame(loop);
+    }
+    animId = requestAnimationFrame(loop);
+  }
+
+  function stopGame() {
+    gameRunning = false;
+    mouseHeld = false;
+    clearInterval(autoFireInterval);
+    clearInterval(countdownInt);
+    if (animId) { cancelAnimationFrame(animId); animId = null; }
+    document.exitPointerLock();
+    crosshairEl.classList.remove('visible');
+    pointerPromptEl.classList.remove('visible');
+
+    // Capture accuracy NOW before anything resets
+    const acc = shots > 0 ? `${Math.round((hits/shots)*100)}%` : '—';
+
+    // Update persistent personal best
+    if (bestScore[gameMode] === null || score > bestScore[gameMode]) {
+      bestScore[gameMode] = score;
+      if (typeof Scores !== 'undefined') {
+        Scores.saveBest(gameMode, score).catch(() => {});
+      }
+    }
+    bestEl.textContent = bestScore[gameMode] ?? '—';
+    timerEl.style.color = '';
+
+    // Show name prompt — pass captured acc so it survives mode switches
+    showNameModal(gameMode, score, acc);
+  }
+
+  function resetHUD(duration) {
+    const d = duration || parseInt(document.getElementById('gameDuration').value, 10);
+    scoreEl.textContent  = '0';
+    timerEl.textContent  = d;
+    accEl.textContent    = '—';
+    timerEl.style.color  = '';
+    scoreLblEl.textContent = gameMode === 'tracking' ? 'On Target' : gameMode === 'switching' ? 'Damage' : 'Score';
+  }
+
+  function flashHitRing() {
+    // On mobile, only show the hit ring during flicking
+    if (isMobile() && gameMode !== 'flicking') return;
+    hitRingEl.classList.remove('flash');
+    void hitRingEl.offsetWidth; // reflow
+    hitRingEl.classList.add('flash');
+  }
+
+  function showOverlay(isReady) {
+    updateOverlayTheme();
+    titleEl.textContent  = isReady ? 'READY?' : 'ROUND OVER';
+    subEl.textContent    = 'Click Begin to lock cursor & start';
+    startBtn.textContent = '▶ Begin Warmup';
+    overlay.classList.remove('hidden');
+  }
+
+  function renderIdle() {
+    if (!renderer || !scene) return;
+    renderer.render(scene, camera);
+  }
+
+  function resize() {
+    if (!renderer || !canvas) return;
+    const wrap = canvas.parentElement;
+    const w = wrap.clientWidth;
+    const h = wrap.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderIdle();
+  }
+
+  window.addEventListener('resize', resize);
+
+  function _showEndOverlay(mode, finalScore, acc) {
+    updateOverlayTheme();
+    titleEl.textContent  = 'ROUND OVER';
+    const modeMsg = mode === 'tracking' ? 'Tracked well!' : mode === 'switching' ? `Damage dealt: ${finalScore}` : `Accuracy: ${acc}`;
+    subEl.textContent    = `Score: ${finalScore}  ·  ${modeMsg}  ·  Best: ${bestScore[mode]}`;
+    startBtn.textContent = '▶ Play Again';
+    overlay.classList.remove('hidden');
+  }
+
+  function isRunning() { return gameRunning; }
+  function rebuild() { if (!renderer) return; buildScene(); renderIdle(); }
+
+  return { init, resize, _showEndOverlay, isRunning, rebuild, _listenersAttached: false };
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   LEADERBOARD
+   ═══════════════════════════════════════════════════════════════ */
+let lbCurrentMode = 'tracking';
+
+function showNameModal(mode, finalScore, acc) {
+  const bg    = document.getElementById('nameModalBg');
+  const badge = document.getElementById('nmBadge');
+  const sc    = document.getElementById('nmScore');
+  const input = document.getElementById('nmNameInput');
+  if (!bg) { Warmup3D._showEndOverlay(mode, finalScore, acc || '—'); return; }
+
+  const BADGE = { tracking:'🎯 TRACKING', flicking:'⚡ FLICKING', switching:'🔀 SWITCHING' };
+  badge.textContent    = BADGE[mode] || mode.toUpperCase();
+  badge.className      = 'nm-badge nm-badge-' + mode;
+  badge.dataset.mode   = mode;
+  badge.dataset.score  = finalScore;
+  badge.dataset.acc    = acc || '—';
+  sc.textContent       = finalScore;
+
+  // Pre-fill: Google display name > saved name > empty
+  let prefillName = '';
+  if (typeof Auth !== 'undefined' && Auth.isSignedIn()) {
+    // Use Firebase display name (e.g. Google account name) directly
+    prefillName = Auth.getDisplayName() || '';
+  }
+  if (!prefillName) prefillName = localStorage.getItem('zenith_name') || '';
+  input.value = prefillName;
+
+  bg.classList.add('visible');
+  setTimeout(() => input.focus(), 100);
+}
+
+function hideNameModal() {
+  const bg = document.getElementById('nameModalBg');
+  if (bg) bg.classList.remove('visible');
+}
+
+function showEndOverlay(mode, finalScore, acc) {
+  // Read values stored on the badge element — immune to mode switches
+  const badge = document.getElementById('nmBadge');
+  const m     = mode      || badge?.dataset.mode  || 'tracking';
+  const s     = finalScore != null ? finalScore : parseInt(badge?.dataset.score || '0', 10);
+  const a     = acc       || badge?.dataset.acc   || '—';
+  Warmup3D._showEndOverlay(m, s, a);
+}
+
+function renderLeaderboard(entries) {
+  const tbody = document.getElementById('lbTableBody');
+  if (!tbody) return;
+  if (!entries || entries.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="lb-empty">No scores yet — be the first!</td></tr>';
+    return;
+  }
+  const MEDALS = ['🥇','🥈','🥉'];
+  const DIFF_COLOR = { beginner:'#4a7fff', intermediate:'#f0c800', advanced:'#ef4444' };
+  tbody.innerHTML = entries.map((e, i) => {
+    const diff  = (e.difficulty || '').toLowerCase();
+    const label = diff ? diff.charAt(0).toUpperCase() + diff.slice(1) : '—';
+    const color = DIFF_COLOR[diff] || 'var(--tx-3)';
+    return `
+    <tr class="lb-row ${i < 3 ? 'lb-top' : ''}">
+      <td class="lb-rank-col">${MEDALS[i] || (i+1)}</td>
+      <td class="lb-name">${escapeHtml(e.name)}</td>
+      <td class="lb-score-col lb-score-val">${e.score}</td>
+      <td class="lb-diff-col" style="color:${color};font-size:11px;font-weight:600;text-transform:capitalize">${label}</td>
+      <td class="lb-date-col">${e.date || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])
+  );
+}
+
+async function loadLeaderboard(mode, forceFetch = false) {
+  lbCurrentMode = mode;
+  document.querySelectorAll('.lb-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.lbmode === mode)
+  );
+  const tbody = document.getElementById('lbTableBody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="lb-loading">Loading…</td></tr>';
+
+  if (typeof Scores === 'undefined') {
+    if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="lb-empty">Scores unavailable offline</td></tr>';
+    return;
+  }
+  // Always fetch fresh from network (not just cache) so reloads show real data
+  if (forceFetch) await Scores.load();
+  const top = await Scores.getTop(mode, 10);
+  renderLeaderboard(top);
+}
+
+function initLeaderboard() {
+  // Show current week range
+  const weekLbl = document.getElementById('lbWeekLabel');
+  if (weekLbl && typeof Scores !== 'undefined') {
+    weekLbl.textContent = `Week of ${Scores.getWeekLabel()} — resets every Monday`;
+  }
+
+  // Tab switching
+  document.querySelectorAll('.lb-tab').forEach(tab => {
+    tab.addEventListener('click', () => loadLeaderboard(tab.dataset.lbmode, true));
+  });
+
+  // Submit button
+  const submitBtn = document.getElementById('nmSubmit');
+  const skipBtn   = document.getElementById('nmSkip');
+  const input     = document.getElementById('nmNameInput');
+  const bg        = document.getElementById('nameModalBg');
+  if (!submitBtn) return;
+
+  async function doSubmit() {
+    const badge = document.getElementById('nmBadge');
+    const name  = (input?.value || '').trim();
+    const mode  = badge?.dataset.mode  || lbCurrentMode;
+    const score = parseInt(badge?.dataset.score || '0', 10);
+    const acc   = badge?.dataset.acc   || '—';
+
+    // Block submit if no name or reserved placeholder
+    if (!name || name.toLowerCase() === 'anonymous') {
+      input.style.borderColor = '#ef4444';
+      input.placeholder = name.toLowerCase() === 'anonymous' ? 'Please use a real name!' : 'Please enter a name!';
+      input.value = '';
+      input.focus();
+      setTimeout(() => { input.style.borderColor = ''; input.placeholder = 'Your name…'; }, 2500);
+      return;
+    }
+
+    localStorage.setItem('zenith_name', name);
+    submitBtn.textContent = 'Saving…';
+    submitBtn.disabled = true;
+
+    try {
+      if (typeof Scores !== 'undefined') {
+        await Scores.submit(mode, score, name, document.getElementById('gameDifficulty')?.value || 'medium');
+        await loadLeaderboard(mode);
+      }
+    } catch(e) { console.warn('Submit failed', e); }
+
+    submitBtn.textContent = 'Saved ✓';
+    setTimeout(() => {
+      hideNameModal();
+      showEndOverlay(mode, score, acc);
+      submitBtn.textContent = 'Save Score';
+      submitBtn.disabled = false;
+    }, 700);
+  }
+
+  submitBtn.addEventListener('click', doSubmit);
+  input?.addEventListener('keydown', e => { if (e.key === 'Enter') doSubmit(); });
+
+  skipBtn?.addEventListener('click', () => {
+    const skipBadge = document.getElementById('nmBadge');
+    const skipMode  = skipBadge?.dataset.mode  || lbCurrentMode;
+    const skipScore = parseInt(skipBadge?.dataset.score || '0', 10);
+    const skipAcc   = skipBadge?.dataset.acc   || '—';
+    hideNameModal();
+    showEndOverlay(skipMode, skipScore, skipAcc);
+  });
+
+  // Click outside modal to skip
+  bg?.addEventListener('click', e => {
+    if (e.target === bg) skipBtn?.click();
+  });
+
+  // Load initial leaderboard — force network fetch so reload always shows real data
+  if (typeof Scores !== 'undefined') {
+    loadLeaderboard('tracking', true);
+  }
+}
+
+
+let _toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  clearTimeout(_toastTimer);
+  el.textContent = msg;
+  el.classList.add('show');
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadFromURL();
+  initNav();
+  initTrainerToggle();
+  initRankSelector();
+  initSliders();
+  initGameFilters();
+  initCopyPlaylist();
+  initShare();
+  initSensConverter();
+  initFOVConverter();
+  renderPlaylist();
+  initLeaderboard();
+
+  // Three.js is lazy loaded when warmup tab is first opened (see showSection)
+});
