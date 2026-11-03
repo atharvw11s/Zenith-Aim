@@ -4,23 +4,27 @@
 
 const AimRivalsConfig = {
 
-  version: '6.0.0',
+  version: '6.2.0',
   author:  'PurplsXD',
   repo:    'https://github.com/atharvw11s/Zenith-Aim',
 
   SENS_DB: {
-    rivals:  { label: 'Roblox Rivals',  yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: true  },
-    arsenal: { label: 'Roblox Arsenal', yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: false },
-    aimlabs: { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',         hasMultiplier: false },
-    kovaaks: { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false },
-    valorant:{ label: 'Valorant',       yaw: 0.07,    sensLabel: 'Sensitivity',         hasMultiplier: false },
+    rivals:    { label: 'Roblox Rivals',  yaw: 0.5,     sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
+    arsenal:   { label: 'Roblox Arsenal', yaw: 0.375,   sensLabel: 'Camera Sensitivity', hasMultiplier: false, sensScale: 1    },
+    aimlabs:   { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+    kovaaks:   { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+    valorant:  { label: 'Valorant',       yaw: 0.07,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+    cs2:       { label: 'CS2',            yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+    apex:      { label: 'Apex Legends',   yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+    overwatch: { label: 'Overwatch 2',    yaw: 0.0066,  sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
+    fortnite:  { label: 'Fortnite',       yaw: 0.005555,sensLabel: 'Sensitivity %',       hasMultiplier: false, sensScale: 1    },
   },
 
   FOV_DB: {
-    rivals:  { label: 'Roblox Rivals',  type: 'vertical',   default: 80,  range: [30, 120] },
-    arsenal: { label: 'Roblox Arsenal', type: 'vertical',   default: 70,  range: [30, 120] },
-    aimlabs: { label: 'Aimlabs',        type: 'vertical',   default: 70,  range: [1,  150] },
-    kovaaks: { label: "Kovaak's",       type: 'horizontal', default: 103, range: [60, 150] },
+    rivals:  { label: 'Roblox Rivals',  type: 'vertical',   default: 80,  range: [30, 120], aspect: 16/9 },
+    arsenal: { label: 'Roblox Arsenal', type: 'vertical',   default: 70,  range: [30, 120], aspect: 16/9 },
+    aimlabs: { label: 'Aimlabs',        type: 'vertical',   default: 70,  range: [1,  150], aspect: 16/9 },
+    kovaaks: { label: "Kovaak's",       type: 'horizontal', default: 103, range: [60, 150], aspect: 16/9 },
   },
 
   defaults: {
