@@ -208,8 +208,8 @@ const SCENARIO_DB = {
      Slider = 1.0 (default) → Rivals ≡ Arsenal
    ═══════════════════════════════════════════════════════════════ */
 const SENS_DB = {
-  rivals:    { label: 'Roblox Rivals',  yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
-  arsenal:   { label: 'Roblox Arsenal', yaw: 0.39783, sensLabel: 'Camera Sensitivity', hasMultiplier: false, sensScale: 1    },
+  rivals:    { label: 'Roblox Rivals',  yaw: 0.5,     sensLabel: 'Camera Sensitivity', hasMultiplier: true,  sensScale: 0.01 },
+  arsenal:   { label: 'Roblox Arsenal', yaw: 0.375,   sensLabel: 'Camera Sensitivity', hasMultiplier: false, sensScale: 1    },
   aimlabs:   { label: 'Aimlabs',        yaw: 0.05,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
   kovaaks:   { label: "Kovaak's",       yaw: 0.022,   sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
   valorant:  { label: 'Valorant',       yaw: 0.07,    sensLabel: 'Sensitivity',         hasMultiplier: false, sensScale: 1    },
