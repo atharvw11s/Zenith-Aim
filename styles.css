@@ -1807,3 +1807,38 @@ main{position:relative;z-index:1}
   margin-left: 4px;
   font-size: 11px;
 }
+
+/* Focus presets */
+.focus-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0 12px}
+.focus-btn{
+  padding:7px 8px;border-radius:8px;
+  border:1px solid var(--bdr);background:rgba(255,255,255,.03);
+  color:var(--tx-3);font-family:var(--f-k);font-size:11px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.focus-btn:hover{border-color:rgba(139,0,255,.4);color:var(--tx-2)}
+.focus-btn.active{border-color:rgba(139,0,255,.65);color:var(--tx);background:var(--accent-lo);box-shadow:0 0 14px rgba(139,0,255,.16)}
+
+/* Share menu */
+.share-box{display:flex;flex-direction:column;gap:8px}
+.share-panel{display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid rgba(139,0,255,.28);border-radius:10px;background:rgba(8,6,18,.72)}
+.share-panel[hidden]{display:none}
+.share-action{
+  width:100%;text-align:left;padding:8px 10px;border-radius:8px;
+  border:1px solid rgba(255,255,255,.08);background:transparent;
+  color:var(--tx);font-family:var(--f-j);font-size:13px;font-weight:500;
+}
+.share-action small{display:block;margin-top:2px;color:var(--tx-4);font-size:11px;font-weight:400;letter-spacing:0}
+.share-action:hover{border-color:rgba(139,0,255,.45);background:rgba(139,0,255,.12)}
+.btn-share{
+  width:100%;padding:11px 12px;font-family:var(--f-k);font-size:12px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:#fff;
+  background:var(--accent);border:none;border-radius:var(--r-s);
+  box-shadow:0 0 18px var(--accent-glow);
+}
+.btn-share:hover{filter:brightness(1.08)}
+.card-name-row{display:flex;align-items:center;gap:8px}
+.card-name-row .card-name{flex:1;min-width:0;margin-bottom:0}
+.card-index{font-family:var(--f-o);font-size:12px;color:var(--tx-4);flex-shrink:0}
+.card-ws{align-self:flex-start;font-family:var(--f-k);font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--accent);text-decoration:none}
+.card-ws:hover{text-decoration:underline}

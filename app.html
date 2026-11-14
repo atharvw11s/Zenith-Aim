@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zenith Aim — App</title>
   <meta name="description" content="Daily aim training routines, sensitivity converters, FOV calculators and 3D warmup games.">
-  <link rel="stylesheet" href="styles.css?v=26">
+  <link rel="stylesheet" href="styles.css?v=32">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Karla:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -76,6 +76,12 @@
             </div>
             <div class="setting-block" id="prioritySliders">
               <label class="setting-label">Training Priority</label>
+              <div class="focus-row" id="focusPresets">
+                <button type="button" class="focus-btn active" data-focus="balance">Balanced</button>
+                <button type="button" class="focus-btn" data-focus="flick">Flick day</button>
+                <button type="button" class="focus-btn" data-focus="track">Track day</button>
+                <button type="button" class="focus-btn" data-focus="switch">Switch day</button>
+              </div>
               <div class="sliders-wrap">
                 <div class="slider-row">
                   <div class="slider-header">
@@ -110,9 +116,14 @@
             <span id="playlistMeta" style="display:none"></span>
             <span id="estTime"      style="display:none"></span>
             <span id="navStatus"    style="display:none"></span>
-            <button class="btn-copy" id="copyPlaylist">Copy playlist</button>
-            <button class="btn-copy" id="copyPlaylistLink">Copy playlist link</button>
-            <button class="btn-copy" id="copyWorkshop">Copy workshop links</button>
+            <div class="share-box">
+              <div class="share-panel" id="sharePanel" hidden>
+                <button type="button" class="share-action" id="copyPlaylist">Copy as text<small>Names, sets, and minutes</small></button>
+                <button type="button" class="share-action" id="copyPlaylistLink">Copy playlist link<small>Reopens this exact routine</small></button>
+                <button type="button" class="share-action" id="copyWorkshop">Workshop searches<small>One Steam link per task</small></button>
+              </div>
+              <button type="button" class="btn-share" id="shareToggle" aria-expanded="false">Share routine</button>
+            </div>
           </div>
         </aside>
 
@@ -488,7 +499,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="auth.js?v=26"></script>
 <script src="scores.js?v=26"></script>
-<script src="script.js?v=31"></script>
+<script src="script.js?v=32"></script>
 
   <!-- Auth Modal -->
   <div class="auth-modal-bg" id="authModalBg">

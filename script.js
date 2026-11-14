@@ -396,9 +396,13 @@ function renderPlaylist() {
     const isEmphasised = dominantType && s.type === dominantType;
     card.className = `task-card ${s.type}${isEmphasised ? ' game-pick' : ''}`;
     card.style.animationDelay = `${i * 0.055}s`;
+    const ws = workshopSearchUrl(s.name).replace(/&/g, '&').replace(/"/g, '"');
     card.innerHTML = `
       <div class="card-top">
-        <div class="card-name">${s.name}</div>
+        <div class="card-name-row">
+          <div class="card-name">${s.name}</div>
+          <span class="card-index">${String(i + 1).padStart(2, '0')}</span>
+        </div>
         <div class="card-type">${LABELS[s.type]}${isEmphasised ? ` <span class="game-pick-badge">${gameInfo.icon}</span>` : ''}</div>
       </div>
       <div class="card-info">
@@ -407,6 +411,7 @@ function renderPlaylist() {
           <span class="card-dur">${s.duration} min</span>
           <span class="card-sets">${s.sets}× sets</span>
         </div>
+        <a class="card-ws" href="${ws}" target="_blank" rel="noreferrer">Workshop</a>
       </div>
     `;
     grid.appendChild(card);
@@ -540,9 +545,39 @@ function initSliders() {
         sliders[others[1]].value = remaining - half;
       }
       Object.keys(sliders).forEach(k => { state.priorities[k] = parseInt(sliders[k].value,10); displays[k].textContent=`${sliders[k].value}%`; fill(sliders[k],k); });
+      syncFocusPresets();
       renderPlaylist();
     });
   });
+
+  const PRESETS = {
+    balance: { flicking: 34, tracking: 33, switching: 33 },
+    flick:   { flicking: 70, tracking: 15, switching: 15 },
+    track:   { flicking: 15, tracking: 70, switching: 15 },
+    switch:  { flicking: 15, tracking: 15, switching: 70 }
+  };
+  function syncFocusPresets() {
+    document.querySelectorAll('.focus-btn').forEach(btn => {
+      const p = PRESETS[btn.dataset.focus];
+      const on = p && state.priorities.flicking === p.flicking && state.priorities.tracking === p.tracking && state.priorities.switching === p.switching;
+      btn.classList.toggle('active', !!on);
+    });
+  }
+  document.querySelectorAll('.focus-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = PRESETS[btn.dataset.focus];
+      if (!p) return;
+      Object.keys(p).forEach(k => {
+        state.priorities[k] = p[k];
+        sliders[k].value = p[k];
+        displays[k].textContent = p[k] + '%';
+        fill(sliders[k], k);
+      });
+      syncFocusPresets();
+      renderPlaylist();
+    });
+  });
+  syncFocusPresets();
 }
 
 
@@ -594,6 +629,18 @@ function initCopyPlaylist() {
     state._playlist.forEach((s,i) => { text += `${i+1}. ${s.name}\n${workshopSearchUrl(s.name)}\n`; });
     navigator.clipboard.writeText(text).then(()=>showToast('Workshop links copied')).catch(()=>showToast('Copy failed'));
   });
+
+  const shareToggle = document.getElementById('shareToggle');
+  const sharePanel = document.getElementById('sharePanel');
+  if (shareToggle && sharePanel) {
+    shareToggle.addEventListener('click', () => {
+      const open = sharePanel.hasAttribute('hidden');
+      if (open) sharePanel.removeAttribute('hidden');
+      else sharePanel.setAttribute('hidden', '');
+      shareToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      shareToggle.textContent = open ? 'Hide share' : 'Share routine';
+    });
+  }
 }
 
 function initShare() {
