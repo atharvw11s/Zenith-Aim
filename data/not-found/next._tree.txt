@@ -1,3 +1,3 @@
-:HL["/Zenith-Aim/_next/static/chunks/3660fdefc79d4258.css","style"]
-:HL["/Zenith-Aim/_next/static/chunks/cbb169423e4eab7c.css","style"]
+:HL["/Zenith-Aim/next/static/chunks/3660fdefc79d4258.css","style"]
+:HL["/Zenith-Aim/next/static/chunks/cbb169423e4eab7c.css","style"]
 0:{"buildId":"7Ee_9xzSDKwReE0ukznKP","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"/_not-found","paramType":null,"paramKey":"/_not-found","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
