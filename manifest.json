@@ -1,17 +1,17 @@
 {
-  "name": "Zenith Aim",
+  "name": "Zenith Aim — Aim Training Hub",
   "short_name": "Zenith Aim",
-  "description": "Daily aim training routines, sensitivity & FOV converters, and 3D warmup games for Roblox FPS players.",
-  "start_url": "/",
+  "description": "Daily aim training routines, sensitivity converters, FOV calculators and 3D warmup games.",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#080612",
-  "theme_color": "#8b00ff",
-  "orientation": "landscape-primary",
+  "background_color": "#070510",
+  "theme_color": "#070510",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ],
-  "categories": ["games", "utilities", "sports"],
-  "author": "PurplsXD",
-  "repository": "https://github.com/atharvw11s/Zenith-Aim"
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
 }
